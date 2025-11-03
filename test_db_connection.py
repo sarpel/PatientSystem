@@ -1,10 +1,13 @@
 """Simple database connection test script."""
+
 import sys
-sys.path.insert(0, '.')
+
+sys.path.insert(0, ".")
+
+from sqlalchemy import text
 
 from src.config.settings import settings
 from src.database.connection import create_db_engine, test_connection
-from sqlalchemy import text
 
 print("=" * 60)
 print("DATABASE CONNECTION TEST")

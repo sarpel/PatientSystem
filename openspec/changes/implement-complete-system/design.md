@@ -5,12 +5,14 @@
 The Clinical AI Assistant project has successfully completed foundational phases (1-3), implementing database infrastructure, domain models, and clinical decision support modules. This design document covers the architectural decisions for implementing the remaining system components: AI integration, user interfaces (Desktop/Web/CLI), API layer, and production deployment.
 
 ### Background
+
 - **Domain**: Family medicine clinical decision support
 - **Database**: SQL Server 2014/2022 with 641 tables (~350MB, 7 years, 6-7k patients)
 - **Users**: Single doctor, local deployment, no KVKK/GDPR constraints
 - **Platform**: Windows 11, Python 3.11+, Local + Remote AI services
 
 ### Constraints
+
 - **No Authentication Required**: Single-user, local deployment
 - **No Encryption Required**: Secure local environment
 - **Full Debug Logging**: Acceptable for personal use
@@ -18,6 +20,7 @@ The Clinical AI Assistant project has successfully completed foundational phases
 - **Turkish Language Support**: UI and prompts must support Turkish medical terminology
 
 ### Stakeholders
+
 - **Primary User**: Family medicine practitioner
 - **Technical Owner**: Solo developer
 - **End Goal**: Production-ready multi-interface clinical assistant
@@ -25,6 +28,7 @@ The Clinical AI Assistant project has successfully completed foundational phases
 ## Goals / Non-Goals
 
 ### Goals
+
 1. **Multi-Interface Access**: Provide Desktop GUI, Web UI, and CLI interfaces for flexible access
 2. **Intelligent AI Routing**: Optimize cost/performance by routing simple tasks to local models, complex tasks to premium cloud models
 3. **Clinical Safety**: Implement drug interaction checking, allergy alerts, and red flag detection
@@ -33,6 +37,7 @@ The Clinical AI Assistant project has successfully completed foundational phases
 6. **Offline Capability**: Basic functionality with Ollama when internet unavailable
 
 ### Non-Goals
+
 1. **Multi-User Support**: No user management, authentication, or authorization
 2. **Mobile Applications**: Desktop/Web/CLI only, no native mobile apps
 3. **Real-Time Collaboration**: No concurrent multi-user editing
@@ -47,12 +52,14 @@ The Clinical AI Assistant project has successfully completed foundational phases
 **Choice**: Implement smart routing between local (Ollama) and remote (Claude/GPT/Gemini) AI models based on task complexity.
 
 **Rationale**:
+
 - **Cost Optimization**: Use free local Ollama for simple tasks (patient summaries, basic stats)
 - **Quality for Critical Tasks**: Use Claude 3.5 Sonnet for complex clinical decisions (diagnosis, treatment planning)
 - **Fallback Reliability**: Chain Claude → GPT-4o → Gemini Pro → Ollama for high availability
 - **Offline Capability**: Ollama provides basic functionality when internet unavailable
 
 **Implementation**:
+
 ```python
 class AIRouter:
     TASK_COMPLEXITY = {
@@ -69,11 +76,13 @@ class AIRouter:
 ```
 
 **Alternatives Considered**:
+
 - **Senaryo B (Single Premium Model)**: Claude-only would be simpler but expensive and lacks offline capability
 - **Senaryo C (Ensemble Voting)**: Multiple models voting would be most accurate but slow and costly
 - **Local-Only**: Ollama-only would be free but insufficient quality for critical clinical decisions
 
 **Trade-offs**:
+
 - ✅ **Pro**: Cost-effective ($10-20/month vs $100+/month for Claude-only)
 - ✅ **Pro**: Offline fallback capability
 - ✅ **Pro**: Performance optimization (Ollama <2s vs Claude ~10s for simple tasks)
@@ -85,6 +94,7 @@ class AIRouter:
 **Choice**: Use PySide6 (Qt6 official Python bindings) for desktop application.
 
 **Rationale**:
+
 - **Official Support**: PySide6 is Qt's official Python binding, better maintained than PyQt6
 - **Medical-Grade UI**: Qt provides professional widgets suitable for medical applications
 - **Native Performance**: True native Windows application, not Electron-based
@@ -92,18 +102,21 @@ class AIRouter:
 - **PyInstaller Compatible**: Easy to build standalone .exe
 
 **Implementation**:
+
 - Main window with QTabWidget for organized clinical views
 - Custom widgets for patient search, diagnosis panel, treatment recommendations
 - Qt stylesheet for medical-themed blue/green color scheme
 - Signal/slot architecture for reactive UI updates
 
 **Alternatives Considered**:
+
 - **Tkinter**: Standard library but limited widgets and dated appearance
 - **PyQt6**: Similar to PySide6 but licensing concerns (GPL vs LGPL)
 - **Electron + Python backend**: Would reuse React frontend but heavy (~200MB) and non-native
 - **Kivy**: Cross-platform but poor Windows native integration
 
 **Trade-offs**:
+
 - ✅ **Pro**: Professional appearance suitable for medical use
 - ✅ **Pro**: Native Windows performance and integration
 - ✅ **Pro**: Extensive documentation and examples
@@ -115,6 +128,7 @@ class AIRouter:
 **Choice**: Build modern web UI with React 18 + Vite frontend and FastAPI backend.
 
 **Rationale**:
+
 - **Modern Developer Experience**: Vite provides instant HMR, fast builds
 - **Component Reusability**: React components can be shared across views
 - **Rich Ecosystem**: Tailwind CSS, shadcn/ui, Chart.js for polished UI
@@ -122,6 +136,7 @@ class AIRouter:
 - **Type Safety**: TypeScript frontend + Pydantic backend for end-to-end type safety
 
 **Architecture**:
+
 ```
 Frontend (React + Vite)          Backend (FastAPI)
 ├── Patient Search               ├── /api/v1/patients
@@ -132,11 +147,13 @@ Frontend (React + Vite)          Backend (FastAPI)
 ```
 
 **Alternatives Considered**:
+
 - **Django + Jinja Templates**: Traditional server-side rendering but dated UX
 - **Vue.js + Flask**: Lighter weight but smaller ecosystem than React + FastAPI
 - **Blazor**: Would require C# backend, not aligned with Python stack
 
 **Trade-offs**:
+
 - ✅ **Pro**: Best-in-class developer experience and tooling
 - ✅ **Pro**: API backend enables future mobile apps or integrations
 - ✅ **Pro**: Real-time updates with React state management
@@ -148,6 +165,7 @@ Frontend (React + Vite)          Backend (FastAPI)
 **Choice**: Use Typer for command structure and Rich for beautiful terminal output.
 
 **Rationale**:
+
 - **Modern CLI Experience**: Typer provides clean argparse-based CLI with type hints
 - **Beautiful Output**: Rich enables tables, progress bars, syntax highlighting
 - **Batch Processing Support**: CLI ideal for scripting and automation workflows
@@ -155,6 +173,7 @@ Frontend (React + Vite)          Backend (FastAPI)
 - **Professional Appearance**: Color-coded severity indicators, formatted tables
 
 **Commands**:
+
 ```bash
 clinical-ai analyze --tckn 12345678901           # Patient analysis
 clinical-ai diagnose --complaint "ateş, öksürük"  # Diagnosis
@@ -164,11 +183,13 @@ clinical-ai batch analyze --input patients.csv    # Batch processing
 ```
 
 **Alternatives Considered**:
+
 - **Click**: Popular but Typer provides better type safety and modern API
 - **argparse**: Standard library but verbose and dated compared to Typer
 - **Plain print statements**: Would work but unprofessional appearance
 
 **Trade-offs**:
+
 - ✅ **Pro**: Scriptable for automation workflows
 - ✅ **Pro**: Professional appearance with minimal code
 - ✅ **Pro**: JSON export for programmatic integration
@@ -180,12 +201,14 @@ clinical-ai batch analyze --input patients.csv    # Batch processing
 **Choice**: Implement database connection pooling with SQLAlchemy's QueuePool (default).
 
 **Rationale**:
+
 - **Concurrent Access**: Desktop GUI, Web API, CLI may access database simultaneously
 - **Performance**: Reusing connections avoids ~100ms overhead per query
 - **Resource Management**: Pool limits prevent exhausting database connections
 - **SQLAlchemy Default**: QueuePool is battle-tested and requires minimal configuration
 
 **Configuration**:
+
 ```python
 engine = create_engine(
     connection_string,
@@ -197,11 +220,13 @@ engine = create_engine(
 ```
 
 **Alternatives Considered**:
+
 - **NullPool**: No pooling, simplest but poor performance for multiple interfaces
 - **StaticPool**: Single connection, insufficient for concurrent access
 - **AsyncIO Engine**: Would require rewriting all models for async/await
 
 **Trade-offs**:
+
 - ✅ **Pro**: Good performance with minimal configuration
 - ✅ **Pro**: Handles concurrent access from multiple interfaces
 - ✅ **Pro**: Automatic connection health checks with pool_recycle
@@ -213,12 +238,14 @@ engine = create_engine(
 **Choice**: Use `tenacity` library for retry logic with exponential backoff.
 
 **Rationale**:
+
 - **Transient Failures**: Network glitches, API rate limits are common with cloud AI services
 - **User Experience**: Automatic retry avoids showing errors for temporary issues
 - **Backpressure**: Exponential backoff prevents overwhelming failing services
 - **Declarative**: `@retry` decorator keeps business logic clean
 
 **Implementation**:
+
 ```python
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -233,11 +260,13 @@ def call_ai_service(prompt: str) -> dict:
 ```
 
 **Alternatives Considered**:
+
 - **Manual try/except**: More control but boilerplate code scattered everywhere
 - **Circuit Breaker**: Good for preventing cascade failures but overkill for single-user app
 - **No Retry**: Simplest but poor UX when transient errors occur
 
 **Trade-offs**:
+
 - ✅ **Pro**: Clean code with declarative retry policies
 - ✅ **Pro**: Handles transient failures gracefully
 - ✅ **Pro**: Configurable per operation (DB vs AI have different retry needs)
@@ -249,12 +278,14 @@ def call_ai_service(prompt: str) -> dict:
 **Choice**: Create structured prompt templates with Turkish medical terminology embedded.
 
 **Rationale**:
+
 - **Medical Context**: Turkish medical terms (e.g., "diferansiyel tanı", "ilaç etkileşimi") improve AI understanding
 - **Consistency**: Templates ensure consistent prompt structure across all clinical tasks
 - **Maintainability**: Centralized prompts easier to update than scattered strings
 - **JSON Output**: Structured prompts yield structured responses easier to parse
 
 **Template Example**:
+
 ```python
 DIAGNOSIS_PROMPT = """
 Hasta bilgileri:
@@ -276,11 +307,13 @@ JSON formatında dön:
 ```
 
 **Alternatives Considered**:
+
 - **English-Only Prompts**: Simpler but AI may miss Turkish medical nuances
 - **Bilingual Prompts**: More robust but verbose and confusing
 - **User-Editable Prompts**: Flexible but risky for non-technical users
 
 **Trade-offs**:
+
 - ✅ **Pro**: Better AI understanding of Turkish medical context
 - ✅ **Pro**: Structured JSON responses easier to parse
 - ✅ **Pro**: Centralized templates for easy updates
@@ -294,6 +327,7 @@ JSON formatında dön:
 **Risk**: OpenAI, Anthropic, Google may change API pricing or deprecate models.
 
 **Mitigation**:
+
 - Abstraction layer (`src/ai/base_client.py`) isolates provider-specific code
 - Smart router allows seamless fallback to alternative providers
 - Ollama local model ensures offline capability
@@ -305,6 +339,7 @@ JSON formatında dön:
 **Risk**: Complex patient analysis queries may timeout on large datasets (6-7k patients).
 
 **Mitigation**:
+
 - Connection pooling reduces per-query overhead
 - Database indexes on frequently queried columns (TCKN, HASTA_ID)
 - Query optimization using SQLAlchemy explain() for slow queries
@@ -317,6 +352,7 @@ JSON formatında dön:
 **Risk**: Desktop GUI bundled with PySide6, AI SDKs, and dependencies may exceed 500MB.
 
 **Mitigation**:
+
 - Exclude unnecessary packages (e.g., unused AI providers can be optional)
 - Use `--exclude-module` for development-only dependencies
 - Consider UPX compression (reduces size ~30%)
@@ -329,6 +365,7 @@ JSON formatında dön:
 **Risk**: AI models may return non-JSON or malformed responses.
 
 **Mitigation**:
+
 - Retry with more explicit JSON formatting instructions
 - Graceful degradation: show raw AI response if JSON parsing fails
 - Fallback to rule-based logic for critical safety checks (e.g., allergy detection)
@@ -340,6 +377,7 @@ JSON formatında dön:
 **Risk**: AI models trained primarily on English may produce lower quality Turkish responses.
 
 **Mitigation**:
+
 - Use Claude 3.5 Sonnet (best multilingual support) for complex tasks
 - Provide context-rich prompts with medical terminology
 - Hybrid approach: AI for analysis, pre-built Turkish templates for output formatting
@@ -354,24 +392,28 @@ JSON formatında dön:
 ### Rollout Strategy
 
 **Phase 4 (Week 1-2)**: AI Integration + Desktop GUI
+
 1. Implement AI clients and router
 2. Build Desktop GUI skeleton and core widgets
 3. Test AI integration with real clinical modules
 4. User acceptance testing with Desktop GUI
 
 **Phase 5 (Week 3)**: Web Interface + API
+
 1. Set up FastAPI backend with all endpoints
 2. Build React frontend components
 3. Connect frontend to API and test workflows
 4. Deploy web app to localhost
 
 **Phase 6 (Week 3-4)**: CLI + Testing
+
 1. Implement CLI commands
 2. Write comprehensive test suites
 3. Run performance benchmarks
 4. Fix any identified issues
 
 **Phase 7 (Week 4)**: Documentation + Deployment
+
 1. Write user documentation
 2. Create deployment scripts
 3. Build PyInstaller executable
@@ -380,6 +422,7 @@ JSON formatında dön:
 ### Rollback Plan
 
 If critical issues arise during implementation:
+
 1. **AI Integration Issues**: Fall back to rule-based clinical logic (already implemented in Phase 3)
 2. **GUI Issues**: Use CLI or Web interface as interim solution
 3. **Database Issues**: Restore from backup, revert ORM changes
@@ -389,17 +432,17 @@ If critical issues arise during implementation:
 
 ### Response Time Targets
 
-| Operation | Target | Acceptable | Unacceptable |
-|-----------|--------|------------|--------------|
-| Patient Summary | <2s | <5s | >10s |
-| Diagnosis (Ollama) | <5s | <10s | >15s |
-| Diagnosis (Claude/GPT) | <30s | <60s | >90s |
-| Treatment Recommendations | <30s | <60s | >90s |
-| Lab Analysis | <5s | <10s | >15s |
-| Drug Interaction Check | <1s | <3s | >5s |
-| API Endpoint (Patient) | <500ms | <1s | >2s |
-| Desktop GUI Launch | <5s | <10s | >15s |
-| Web Frontend Load | <3s | <5s | >10s |
+| Operation                 | Target | Acceptable | Unacceptable |
+| ------------------------- | ------ | ---------- | ------------ |
+| Patient Summary           | <2s    | <5s        | >10s         |
+| Diagnosis (Ollama)        | <5s    | <10s       | >15s         |
+| Diagnosis (Claude/GPT)    | <30s   | <60s       | >90s         |
+| Treatment Recommendations | <30s   | <60s       | >90s         |
+| Lab Analysis              | <5s    | <10s       | >15s         |
+| Drug Interaction Check    | <1s    | <3s        | >5s          |
+| API Endpoint (Patient)    | <500ms | <1s        | >2s          |
+| Desktop GUI Launch        | <5s    | <10s       | >15s         |
+| Web Frontend Load         | <3s    | <5s        | >10s         |
 
 ### Scalability Targets
 
@@ -415,6 +458,7 @@ If critical issues arise during implementation:
 **Question**: Should we distribute as PyInstaller .exe or Python + requirements?
 
 **Options**:
+
 - **Option A (PyInstaller .exe)**: Single-file distribution, easier for non-technical user
 - **Option B (Python + requirements)**: Smaller download, easier to update dependencies
 
@@ -425,6 +469,7 @@ If critical issues arise during implementation:
 **Question**: Should web interface run permanently or on-demand?
 
 **Options**:
+
 - **Option A (Systemd/Windows Service)**: Always running, instant access but consumes resources
 - **Option B (On-Demand)**: Start via script when needed, saves resources
 
@@ -435,6 +480,7 @@ If critical issues arise during implementation:
 **Question**: Should we default to Ollama or Claude for moderate-complexity tasks?
 
 **Options**:
+
 - **Option A (Ollama First)**: Cost-free, faster, but lower quality
 - **Option B (Claude First)**: Higher quality, but costs $0.01-0.05 per request
 

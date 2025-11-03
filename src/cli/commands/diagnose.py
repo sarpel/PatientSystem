@@ -1,13 +1,14 @@
 """Diagnosis generation CLI commands."""
 
-import typer
 import asyncio
 import json
+
+import typer
 from rich.console import Console
 from rich.table import Table
 
-from ...database.connection import get_session
 from ...clinical.diagnosis_engine import DiagnosisEngine
+from ...database.connection import get_session
 
 app = typer.Typer()
 console = Console()

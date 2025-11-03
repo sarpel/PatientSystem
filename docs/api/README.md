@@ -7,15 +7,18 @@ The Clinical AI Assistant REST API provides comprehensive endpoints for clinical
 ## 🚀 Getting Started
 
 ### Base URL
+
 ```
 Development: http://localhost:8000
 Production: https://your-domain.com/api
 ```
 
 ### Authentication
+
 Currently, the API does not require authentication (single-user deployment). This may change in future versions.
 
 ### CORS Configuration
+
 ```json
 {
   "allowed_origins": ["http://localhost:5173"],
@@ -29,11 +32,13 @@ Currently, the API does not require authentication (single-user deployment). Thi
 ### Health Check Endpoints
 
 #### System Health
+
 ```http
 GET /health
 ```
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -44,11 +49,13 @@ GET /health
 ```
 
 #### Database Health
+
 ```http
 GET /health/database
 ```
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -66,15 +73,18 @@ GET /health/database
 ### Patient Management Endpoints
 
 #### Search Patients
+
 ```http
 GET /patients/search?q={query}&limit={limit}
 ```
 
 **Parameters:**
+
 - `q` (required): Search query (min 2 characters)
 - `limit` (optional): Maximum results (default: 20)
 
 **Response:**
+
 ```json
 [
   {
@@ -90,14 +100,17 @@ GET /patients/search?q={query}&limit={limit}
 ```
 
 #### Get Patient Details
+
 ```http
 GET /patients/{tckn}
 ```
 
 **Path Parameters:**
+
 - `tckn` (required): Patient TCKN
 
 **Response:**
+
 ```json
 {
   "TCKN": "12345678901",
@@ -113,11 +126,13 @@ GET /patients/{tckn}
 ### AI Analysis Endpoints
 
 #### Generate Differential Diagnosis
+
 ```http
 POST /analyze/diagnosis
 ```
 
 **Request Body:**
+
 ```json
 {
   "tckn": "12345678901",
@@ -127,6 +142,7 @@ POST /analyze/diagnosis
 ```
 
 **Response:**
+
 ```json
 {
   "differential_diagnosis": [
@@ -159,11 +175,13 @@ POST /analyze/diagnosis
 ```
 
 #### Generate Treatment Recommendations
+
 ```http
 POST /analyze/treatment
 ```
 
 **Request Body:**
+
 ```json
 {
   "tckn": "12345678901",
@@ -173,6 +191,7 @@ POST /analyze/treatment
 ```
 
 **Response:**
+
 ```json
 {
   "medications": [
@@ -195,11 +214,13 @@ POST /analyze/treatment
 ### Drug Interaction Endpoints
 
 #### Check Drug Interactions
+
 ```http
 POST /drugs/interactions
 ```
 
 **Request Body:**
+
 ```json
 {
   "tckn": "12345678901",
@@ -209,6 +230,7 @@ POST /drugs/interactions
 ```
 
 **Response:**
+
 ```json
 {
   "interactions": [
@@ -232,15 +254,18 @@ POST /drugs/interactions
 ### Laboratory Endpoints
 
 #### Get Laboratory Results
+
 ```http
 GET /labs/{tckn}?test={test}
 ```
 
 **Parameters:**
+
 - `tckn` (required): Patient TCKN
 - `test` (optional): Specific test name
 
 **Response:**
+
 ```json
 [
   {
@@ -263,23 +288,26 @@ GET /labs/{tckn}?test={test}
 ```
 
 #### Get Laboratory Trends
+
 ```http
 GET /labs/{tckn}/trends?test={test}&months={months}
 ```
 
 **Parameters:**
+
 - `tckn` (required): Patient TCKN
 - `test` (required): Test name
 - `months` (optional): Analysis period in months (default: 12)
 
 **Response:**
+
 ```json
 {
   "test_name": "Hemoglobin",
   "trend_data": [
-    {"date": "2024-01-01", "value": 14.0},
-    {"date": "2024-02-01", "value": 14.2},
-    {"date": "2024-03-01", "value": 13.8}
+    { "date": "2024-01-01", "value": 14.0 },
+    { "date": "2024-02-01", "value": 14.2 },
+    { "date": "2024-03-01", "value": 13.8 }
   ],
   "trend_direction": "stable",
   "reference_range": {
@@ -294,23 +322,27 @@ GET /labs/{tckn}/trends?test={test}&months={months}
 ### Success Responses
 
 **HTTP Status Codes:**
+
 - `200 OK`: Request successful
 - `201 Created`: Resource created
 - `202 Accepted`: Request accepted for processing
 
 **Content-Type:**
+
 - `application/json`: Standard JSON responses
 - `text/plain`: Error messages
 
 ### Error Responses
 
 **Common Error Codes:**
+
 - `400 Bad Request`: Invalid request data
 - `404 Not Found`: Resource not found
 - `422 Unprocessable Entity`: Validation error
 - `500 Internal Server Error`: Server error
 
 **Error Response Format:**
+
 ```json
 {
   "detail": "Validation error: Chief complaint is required",
@@ -563,6 +595,7 @@ else:
 ### HTTP Status Codes
 
 **Client Errors (4xx):**
+
 ```python
 import requests
 from requests.exceptions import HTTPError
@@ -618,11 +651,13 @@ except ConnectionError:
 ### Request Optimization
 
 **Batch Operations:**
+
 - Use single requests for multiple items when possible
 - Implement client-side caching for frequently accessed data
 - Use pagination for large datasets
 
 **Efficient Data Loading:**
+
 ```python
 # Good: Load specific patient data
 response = requests.get(f"http://localhost:8000/patients/{tckn}")
@@ -634,6 +669,7 @@ response = requests.get("http://localhost:8000/patients")  # May be slow
 ### Rate Limiting
 
 **Recommendations:**
+
 - Implement request throttling for bulk operations
 - Add delays between AI model calls
 - Cache AI responses when appropriate
@@ -664,6 +700,7 @@ for request in diagnosis_requests:
 ### Request Logging
 
 The API logs all requests with:
+
 - HTTP method and endpoint
 - Response status codes
 - Processing time
@@ -672,6 +709,7 @@ The API logs all requests with:
 ### Health Monitoring
 
 Regular health checks should monitor:
+
 - Database connectivity
 - AI service availability
 - Response times
@@ -703,6 +741,7 @@ def monitor_api_health():
 ### Data Validation
 
 **Input Sanitization:**
+
 - All inputs validated using Pydantic models
 - SQL injection prevention through parameterized queries
 - XSS protection through response encoding
@@ -710,6 +749,7 @@ def monitor_api_health():
 ### Error Information
 
 **Security Best Practices:**
+
 - Never expose sensitive information in error messages
 - Log errors without including PHI
 - Implement proper error handling without information disclosure
@@ -719,6 +759,7 @@ def monitor_api_health():
 ### Troubleshooting
 
 **Common Issues:**
+
 1. **Connection Refused**: Check if API server is running
 2. **Timeouts**: Increase timeout values for long operations
 3. **Validation Errors**: Check request format and required fields
@@ -727,6 +768,7 @@ def monitor_api_health():
 ### Testing Tools
 
 **Command Line Testing:**
+
 ```bash
 # Test basic connectivity
 curl -X GET http://localhost:8000/health
@@ -741,6 +783,7 @@ curl -X POST http://localhost:8000/analyze/diagnosis \
 ```
 
 **Python Testing:**
+
 ```python
 import requests
 

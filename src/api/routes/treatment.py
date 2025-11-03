@@ -1,12 +1,13 @@
 """Treatment recommendation API endpoints."""
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from loguru import logger
+from typing import List, Optional
 
-from ...database.connection import get_session
+from fastapi import APIRouter, HTTPException
+from loguru import logger
+from pydantic import BaseModel, Field
+
 from ...clinical.treatment_engine import TreatmentEngine
+from ...database.connection import get_session
 
 router = APIRouter()
 

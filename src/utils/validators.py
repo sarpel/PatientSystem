@@ -6,9 +6,9 @@ and API inputs with proper error handling and user feedback.
 """
 
 import re
-from typing import Any, List, Optional, Dict, Union
-from datetime import datetime, date
+from datetime import date, datetime
 from decimal import Decimal
+from typing import Any, Dict, List, Optional, Union
 
 from .exceptions import ValidationError
 
@@ -37,7 +37,7 @@ class LengthRule(ValidationRule):
         field_name: str,
         min_length: Optional[int] = None,
         max_length: Optional[int] = None,
-        required: bool = True
+        required: bool = True,
     ):
         super().__init__(field_name, required)
         self.min_length = min_length
@@ -83,7 +83,7 @@ class NumericRule(ValidationRule):
         field_name: str,
         min_value: Optional[Union[int, float, Decimal]] = None,
         max_value: Optional[Union[int, float, Decimal]] = None,
-        required: bool = True
+        required: bool = True,
     ):
         super().__init__(field_name, required)
         self.min_value = min_value
@@ -126,13 +126,7 @@ class NumericRule(ValidationRule):
 class RegexRule(ValidationRule):
     """Validates string patterns using regular expressions."""
 
-    def __init__(
-        self,
-        field_name: str,
-        pattern: str,
-        description: str,
-        required: bool = True
-    ):
+    def __init__(self, field_name: str, pattern: str, description: str, required: bool = True):
         super().__init__(field_name, required)
         self.pattern = re.compile(pattern)
         self.description = description
@@ -164,7 +158,7 @@ class DateRule(ValidationRule):
         field_name: str,
         min_date: Optional[date] = None,
         max_date: Optional[date] = None,
-        required: bool = True
+        required: bool = True,
     ):
         super().__init__(field_name, required)
         self.min_date = min_date
@@ -176,7 +170,7 @@ class DateRule(ValidationRule):
 
         if isinstance(value, str):
             try:
-                value = datetime.fromisoformat(value.replace('Z', '+00:00')).date()
+                value = datetime.fromisoformat(value.replace("Z", "+00:00")).date()
             except ValueError:
                 try:
                     value = datetime.strptime(value, "%Y-%m-%d").date()
@@ -204,12 +198,7 @@ class DateRule(ValidationRule):
 class EnumRule(ValidationRule):
     """Validates values against an allowed set."""
 
-    def __init__(
-        self,
-        field_name: str,
-        allowed_values: List[Any],
-        required: bool = True
-    ):
+    def __init__(self, field_name: str, allowed_values: List[Any], required: bool = True):
         super().__init__(field_name, required)
         self.allowed_values = allowed_values
 
@@ -234,7 +223,7 @@ class Validator:
     def __init__(self):
         self.rules: Dict[str, List[ValidationRule]] = {}
 
-    def add_rule(self, field_name: str, rule: ValidationRule) -> 'Validator':
+    def add_rule(self, field_name: str, rule: ValidationRule) -> "Validator":
         """Add a validation rule for a field."""
         if field_name not in self.rules:
             self.rules[field_name] = []
@@ -273,6 +262,7 @@ class Validator:
 
 # Predefined validation rules for common clinical data
 
+
 class ClinicalValidators:
     """Predefined validators for clinical data."""
 
@@ -280,9 +270,7 @@ class ClinicalValidators:
     def turkish_tckn_validator(field_name: str = "TCKN") -> ValidationRule:
         """Validate Turkish ID number (11 digits, specific algorithm)."""
         return RegexRule(
-            field_name=field_name,
-            pattern=r'^\d{11}$',
-            description="11-digit Turkish ID number"
+            field_name=field_name, pattern=r"^\d{11}$", description="11-digit Turkish ID number"
         )
 
     @staticmethod
@@ -290,8 +278,8 @@ class ClinicalValidators:
         """Validate person names (Turkish characters allowed)."""
         return RegexRule(
             field_name=field_name,
-            pattern=r'^[a-zA-ZçğıöşüÇĞİÖŞÜ\s\-\.]+$',
-            description="valid name (letters, spaces, hyphens, dots)"
+            pattern=r"^[a-zA-ZçğıöşüÇĞİÖŞÜ\s\-\.]+$",
+            description="valid name (letters, spaces, hyphens, dots)",
         )
 
     @staticmethod
@@ -299,8 +287,8 @@ class ClinicalValidators:
         """Validate blood pressure format (120/80)."""
         return RegexRule(
             field_name=field_name,
-            pattern=r'^\d{1,3}\/\d{1,3}$',
-            description="blood pressure in format '120/80'"
+            pattern=r"^\d{1,3}\/\d{1,3}$",
+            description="blood pressure in format '120/80'",
         )
 
     @staticmethod
@@ -308,8 +296,8 @@ class ClinicalValidators:
         """Validate ICD-10 code format."""
         return RegexRule(
             field_name=field_name,
-            pattern=r'^[A-Z]\d{2}(\.\d{1,2})?$',
-            description="ICD-10 code format (e.g., 'I10', 'E11.9')"
+            pattern=r"^[A-Z]\d{2}(\.\d{1,2})?$",
+            description="ICD-10 code format (e.g., 'I10', 'E11.9')",
         )
 
     @staticmethod
@@ -317,8 +305,8 @@ class ClinicalValidators:
         """Validate email addresses."""
         return RegexRule(
             field_name=field_name,
-            pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-            description="valid email address"
+            pattern=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+            description="valid email address",
         )
 
     @staticmethod
@@ -326,12 +314,13 @@ class ClinicalValidators:
         """Validate phone numbers (Turkish format)."""
         return RegexRule(
             field_name=field_name,
-            pattern=r'^(\+90|0)?\s?\d{3}\s?\d{3}\s?\d{2}\s?\d{2}$',
-            description="valid Turkish phone number"
+            pattern=r"^(\+90|0)?\s?\d{3}\s?\d{3}\s?\d{2}\s?\d{2}$",
+            description="valid Turkish phone number",
         )
 
 
 # Convenience functions for common validation scenarios
+
 
 def validate_patient_demographics(data: Dict[str, Any]) -> Dict[str, List[str]]:
     """Validate patient demographic data."""
@@ -348,12 +337,12 @@ def validate_patient_demographics(data: Dict[str, Any]) -> Dict[str, List[str]]:
     validator.add_rule("birth_date", DateRule("birth_date"))
 
     # Contact information
-    validator.add_rule("email", ClinicalValidators.email_validator("email").__class__(
-        "email", required=False
-    ))
-    validator.add_rule("phone", ClinicalValidators.phone_validator("phone").__class__(
-        "phone", required=False
-    ))
+    validator.add_rule(
+        "email", ClinicalValidators.email_validator("email").__class__("email", required=False)
+    )
+    validator.add_rule(
+        "phone", ClinicalValidators.phone_validator("phone").__class__("phone", required=False)
+    )
 
     return validator.validate(data)
 
@@ -376,7 +365,9 @@ def validate_vital_signs(data: Dict[str, Any]) -> Dict[str, List[str]]:
     validator.add_rule("oxygen_sat", NumericRule("oxygen_sat", min_value=70, max_value=100))
 
     # Respiratory rate
-    validator.add_rule("respiratory_rate", NumericRule("respiratory_rate", min_value=8, max_value=40))
+    validator.add_rule(
+        "respiratory_rate", NumericRule("respiratory_rate", min_value=8, max_value=40)
+    )
 
     return validator.validate(data)
 
@@ -396,10 +387,14 @@ def validate_lab_results(data: Dict[str, Any]) -> Dict[str, List[str]]:
         validator.add_rule("glucose", NumericRule("glucose", min_value=20, max_value=500))
 
     if "cholesterol_ldl" in data:
-        validator.add_rule("cholesterol_ldl", NumericRule("cholesterol_ldl", min_value=20, max_value=400))
+        validator.add_rule(
+            "cholesterol_ldl", NumericRule("cholesterol_ldl", min_value=20, max_value=400)
+        )
 
     if "cholesterol_hdl" in data:
-        validator.add_rule("cholesterol_hdl", NumericRule("cholesterol_hdl", min_value=10, max_value=200))
+        validator.add_rule(
+            "cholesterol_hdl", NumericRule("cholesterol_hdl", min_value=10, max_value=200)
+        )
 
     if "creatinine" in data:
         validator.add_rule("creatinine", NumericRule("creatinine", min_value=0.1, max_value=20.0))

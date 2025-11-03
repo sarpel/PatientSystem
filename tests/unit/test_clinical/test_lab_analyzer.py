@@ -2,13 +2,12 @@
 Tests for Lab Analyzer module.
 """
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-from src.clinical.lab_analyzer import (
-    LabAnalyzer, AlertLevel, LabResult, LabTrend
-)
+import pytest
+
+from src.clinical.lab_analyzer import AlertLevel, LabAnalyzer, LabResult, LabTrend
 
 
 class TestLabAnalyzer:
@@ -34,14 +33,11 @@ class TestLabAnalyzer:
             LabResult("Creatinine", 2.1, "mg/dL", "0.6-1.3", base_date + timedelta(days=60)),
             LabResult("Potassium", 5.9, "mmol/L", "3.5-5.1", base_date + timedelta(days=60)),
             LabResult("CRP", 45, "mg/L", "0-3.0", base_date + timedelta(days=60)),
-
             # Moderately abnormal values
             LabResult("HbA1c", 7.8, "%", "4.8-5.6", base_date + timedelta(days=60)),
             LabResult("Fasting Glucose", 165, "mg/dL", "70-99", base_date + timedelta(days=60)),
-
             # Normal values
             LabResult("WBC", 8.5, "x10^9/L", "4.5-11.0", base_date + timedelta(days=60)),
-
             # Previous values for trend analysis
             LabResult("HbA1c", 7.2, "%", "4.8-5.6", base_date + timedelta(days=30)),
             LabResult("HbA1c", 6.8, "%", "4.8-5.6", base_date),
@@ -57,7 +53,7 @@ class TestLabAnalyzer:
 
     def test_analyze_patient_labs(self, lab_analyzer, sample_lab_results):
         """Test comprehensive lab analysis."""
-        with patch.object(lab_analyzer, '_get_sample_lab_results', return_value=sample_lab_results):
+        with patch.object(lab_analyzer, "_get_sample_lab_results", return_value=sample_lab_results):
             result = lab_analyzer.analyze_patient_labs(12345)
 
             # Verify structure
@@ -214,10 +210,18 @@ class TestLabAnalyzer:
 
     def test_generate_analysis_summary(self, lab_analyzer, sample_lab_results):
         """Test analysis summary generation."""
-        with patch.object(lab_analyzer, '_get_latest_results', return_value={}):
-            with patch.object(lab_analyzer, '_find_abnormal_results', return_value=sample_lab_results):
-                with patch.object(lab_analyzer, '_find_critical_alerts', return_value=sample_lab_results[:2]):
-                    with patch.object(lab_analyzer, '_generate_recommendations', return_value=["Test recommendation"]):
+        with patch.object(lab_analyzer, "_get_latest_results", return_value={}):
+            with patch.object(
+                lab_analyzer, "_find_abnormal_results", return_value=sample_lab_results
+            ):
+                with patch.object(
+                    lab_analyzer, "_find_critical_alerts", return_value=sample_lab_results[:2]
+                ):
+                    with patch.object(
+                        lab_analyzer,
+                        "_generate_recommendations",
+                        return_value=["Test recommendation"],
+                    ):
                         summary = lab_analyzer._generate_analysis_summary(sample_lab_results)
 
                         assert "total_unique_tests" in summary
@@ -231,10 +235,12 @@ class TestLabAnalyzer:
         """Test recommendations for critical glucose values."""
         latest_results = {
             "HbA1c": LabResult("HbA1c", 8.4, "%", "4.8-5.6", datetime.now()),
-            "Fasting Glucose": LabResult("Fasting Glucose", 200, "mg/dL", "70-99", datetime.now())
+            "Fasting Glucose": LabResult("Fasting Glucose", 200, "mg/dL", "70-99", datetime.now()),
         }
 
-        recommendations = lab_analyzer._generate_recommendations(latest_results, ["HbA1c", "Fasting Glucose"])
+        recommendations = lab_analyzer._generate_recommendations(
+            latest_results, ["HbA1c", "Fasting Glucose"]
+        )
 
         assert "diabetes management review" in " ".join(recommendations).lower()
 
@@ -260,9 +266,7 @@ class TestLabAnalyzer:
 
     def test_generate_recommendations_critical_crp(self, lab_analyzer):
         """Test recommendations for critical CRP."""
-        latest_results = {
-            "CRP": LabResult("CRP", 60, "mg/L", "0-3.0", datetime.now())
-        }
+        latest_results = {"CRP": LabResult("CRP", 60, "mg/L", "0-3.0", datetime.now())}
 
         recommendations = lab_analyzer._generate_recommendations(latest_results, ["CRP"])
 
@@ -270,9 +274,7 @@ class TestLabAnalyzer:
 
     def test_generate_recommendations_critical_wbc(self, lab_analyzer):
         """Test recommendations for critical WBC."""
-        latest_results = {
-            "WBC": LabResult("WBC", 30.0, "x10^9/L", "4.5-11.0", datetime.now())
-        }
+        latest_results = {"WBC": LabResult("WBC", 30.0, "x10^9/L", "4.5-11.0", datetime.now())}
 
         recommendations = lab_analyzer._generate_recommendations(latest_results, ["WBC"])
 
@@ -283,22 +285,20 @@ class TestLabAnalyzer:
         mock_analysis = {
             "latest_results": {
                 "HbA1c": LabResult("HbA1c", 8.4, "%", "4.8-5.6", datetime.now()),
-                "Creatinine": LabResult("Creatinine", 2.1, "mg/dL", "0.6-1.3", datetime.now())
+                "Creatinine": LabResult("Creatinine", 2.1, "mg/dL", "0.6-1.3", datetime.now()),
             },
-            "critical_alerts": [
-                LabResult("Creatinine", 2.1, "mg/dL", "0.6-1.3", datetime.now())
-            ],
+            "critical_alerts": [LabResult("Creatinine", 2.1, "mg/dL", "0.6-1.3", datetime.now())],
             "abnormal_results": [],
             "trends": [],
             "summary": {
                 "analysis_date": datetime.now().isoformat(),
                 "critical_alert_count": 1,
                 "abnormal_result_count": 2,
-                "recommendations": ["Monitor kidney function"]
-            }
+                "recommendations": ["Monitor kidney function"],
+            },
         }
 
-        with patch.object(lab_analyzer, 'analyze_patient_labs', return_value=mock_analysis):
+        with patch.object(lab_analyzer, "analyze_patient_labs", return_value=mock_analysis):
             report = lab_analyzer.get_lab_analysis_report(12345)
 
             assert "LABORATORY ANALYSIS REPORT" in report
@@ -313,7 +313,7 @@ class TestLabAnalyzer:
         mock_analysis = {
             "latest_results": {
                 "HbA1c": LabResult("HbA1c", 5.5, "%", "4.8-5.6", datetime.now()),
-                "WBC": LabResult("WBC", 7.5, "x10^9/L", "4.5-11.0", datetime.now())
+                "WBC": LabResult("WBC", 7.5, "x10^9/L", "4.5-11.0", datetime.now()),
             },
             "critical_alerts": [],
             "abnormal_results": [],
@@ -322,11 +322,11 @@ class TestLabAnalyzer:
                 "analysis_date": datetime.now().isoformat(),
                 "critical_alert_count": 0,
                 "abnormal_result_count": 0,
-                "recommendations": []
-            }
+                "recommendations": [],
+            },
         }
 
-        with patch.object(lab_analyzer, 'analyze_patient_labs', return_value=mock_analysis):
+        with patch.object(lab_analyzer, "analyze_patient_labs", return_value=mock_analysis):
             report = lab_analyzer.get_lab_analysis_report(12345)
 
             assert "LABORATORY ANALYSIS REPORT" in report
@@ -340,9 +340,16 @@ class TestLabAnalyzer:
 
         # Check that key tests have reference ranges
         required_tests = [
-            "HbA1c", "Fasting Glucose", "Creatinine", "Potassium",
-            "CRP", "WBC", "LDL Cholesterol", "eGFR",
-            "ALT (SGPT)", "AST (SGOT)"
+            "HbA1c",
+            "Fasting Glucose",
+            "Creatinine",
+            "Potassium",
+            "CRP",
+            "WBC",
+            "LDL Cholesterol",
+            "eGFR",
+            "ALT (SGPT)",
+            "AST (SGOT)",
         ]
 
         for test in required_tests:
@@ -351,7 +358,7 @@ class TestLabAnalyzer:
 
     def test_edge_case_empty_lab_results(self, lab_analyzer):
         """Test analysis with empty lab results."""
-        with patch.object(lab_analyzer, '_get_sample_lab_results', return_value=[]):
+        with patch.object(lab_analyzer, "_get_sample_lab_results", return_value=[]):
             result = lab_analyzer.analyze_patient_labs(12345)
 
             assert result["latest_results"] == {}
@@ -363,7 +370,7 @@ class TestLabAnalyzer:
         """Test analysis with single lab result."""
         single_result = [LabResult("HbA1c", 7.5, "%", "4.8-5.6", datetime.now())]
 
-        with patch.object(lab_analyzer, '_get_sample_lab_results', return_value=single_result):
+        with patch.object(lab_analyzer, "_get_sample_lab_results", return_value=single_result):
             result = lab_analyzer.analyze_patient_labs(12345)
 
             assert len(result["latest_results"]) == 1

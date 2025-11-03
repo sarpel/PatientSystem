@@ -1,10 +1,11 @@
 """Comorbidity detection and pattern analysis for clinical insights."""
 
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from collections import defaultdict, Counter
 
 from ..database.connection import get_session
 
@@ -20,52 +21,63 @@ class ComorbidityDetector:
         return {
             "Hypertension": {
                 "icd10_codes": ["I10", "I11", "I12", "I13", "I15"],
-                "medications": ["AMLODIPINE", "LISINOPRIL", "ATENOLOL", "METOPROLOL", "HYDROCHLOROTHIAZIDE"],
+                "medications": [
+                    "AMLODIPINE",
+                    "LISINOPRIL",
+                    "ATENOLOL",
+                    "METOPROLOL",
+                    "HYDROCHLOROTHIAZIDE",
+                ],
                 "lab_markers": ["Blood Pressure"],
-                "keywords": ["hipertansiyon", "yüksek tansiyon", "ht"]
+                "keywords": ["hipertansiyon", "yüksek tansiyon", "ht"],
             },
             "Diabetes Mellitus": {
                 "icd10_codes": ["E10", "E11", "E12", "E13", "E14"],
                 "medications": ["METFORMIN", "INSULIN", "GLICLAZIDE", "SITAGLIPTIN"],
                 "lab_markers": ["Glucose", "HbA1c"],
-                "keywords": ["diyabet", "şeker hastalığı", "dm"]
+                "keywords": ["diyabet", "şeker hastalığı", "dm"],
             },
             "Hyperlipidemia": {
                 "icd10_codes": ["E78"],
                 "medications": ["ATORVASTATIN", "SIMVASTATIN", "ROSUVASTATIN"],
-                "lab_markers": ["Total Cholesterol", "LDL Cholesterol", "HDL Cholesterol", "Triglycerides"],
-                "keywords": ["kolesterol", "lipid", "yağ"]
+                "lab_markers": [
+                    "Total Cholesterol",
+                    "LDL Cholesterol",
+                    "HDL Cholesterol",
+                    "Triglycerides",
+                ],
+                "keywords": ["kolesterol", "lipid", "yağ"],
             },
             "Coronary Artery Disease": {
                 "icd10_codes": ["I20", "I21", "I22", "I23", "I24", "I25"],
                 "medications": ["ASPIRIN", "CLOPIDOGREL", "ATENOLOL", "LISINOPRIL"],
                 "lab_markers": ["Troponin", "CK-MB"],
-                "keywords": ["kalp", "koroner", "anjina", "mi"]
+                "keywords": ["kalp", "koroner", "anjina", "mi"],
             },
             "Chronic Kidney Disease": {
                 "icd10_codes": ["N18"],
                 "medications": ["ATORVASTATIN", "FAMOTIDINE", "CALCIUM CARBONATE"],
                 "lab_markers": ["Creatinine", "eGFR", "BUN"],
-                "keywords": ["böbrek", "nefropati", "ckd"]
+                "keywords": ["böbrek", "nefropati", "ckd"],
             },
             "Chronic Obstructive Pulmonary Disease": {
                 "icd10_codes": ["J44"],
                 "medications": ["SALBUTAMOL", "BUDESONIDE", "TIOTROPIUM"],
                 "lab_markers": ["SpO2", "FEV1"],
-                "keywords": ["astım", "koah", "nefes"]
+                "keywords": ["astım", "koah", "nefes"],
             },
             "Depression": {
                 "icd10_codes": ["F32", "F33"],
                 "medications": ["SERTRALINE", "FLUOXETINE", "ESCITALOPRAM"],
                 "lab_markers": [],
-                "keywords": ["depresyon", "anksiyete", "ruh"]
+                "keywords": ["depresyon", "anksiyete", "ruh"],
             },
             "Osteoporosis": {
                 "icd10_codes": ["M80", "M81"],
                 "medications": ["CALCIUM", "VITAMIN D", "ALENDRONATE"],
                 "lab_markers": ["Vitamin D", "Calcium"],
-                "keywords": ["kemik erimesi", "osteoporoz"]
-            }
+                "keywords": ["kemik erimesi", "osteoporoz"],
+            },
         }
 
     def detect_comorbidities_by_icd10(self) -> Dict:
@@ -76,7 +88,8 @@ class ComorbidityDetector:
             for code in data["icd10_codes"]:
                 reverse_mapping[code] = condition
 
-        query = text("""
+        query = text(
+            """
             SELECT
                 h.TCKN,
                 t.KOD,
@@ -86,7 +99,8 @@ class ComorbidityDetector:
             JOIN TANI t ON h.TCKN = t.TCKN
             WHERE t.TANI_TARIHI >= DATEADD(YEAR, -2, GETDATE())
             AND t.KOD IS NOT NULL
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
@@ -126,12 +140,12 @@ class ComorbidityDetector:
             "condition_prevalence": {
                 condition: {
                     "patient_count": count,
-                    "prevalence_percentage": round((count / total_patients) * 100, 1)
+                    "prevalence_percentage": round((count / total_patients) * 100, 1),
                 }
                 for condition, count in condition_counts.items()
             },
             "comorbidity_rates": comorbidity_rates,
-            "patient_conditions": dict(patient_conditions)
+            "patient_conditions": dict(patient_conditions),
         }
 
     def detect_comorbidities_by_medications(self) -> Dict:
@@ -142,7 +156,8 @@ class ComorbidityDetector:
             for medication in data["medications"]:
                 reverse_mapping[medication.upper()] = condition
 
-        query = text("""
+        query = text(
+            """
             SELECT DISTINCT
                 r.TCKN,
                 UPPER(i.ILAC_ADI) as medication_name
@@ -150,7 +165,8 @@ class ComorbidityDetector:
             JOIN ILACLAR i ON r.RECETE_ID = i.RECETE_ID
             WHERE r.RECETE_TARIHI >= DATEADD(YEAR, -1, GETDATE())
             AND i.ILAC_ADI IS NOT NULL
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
@@ -179,18 +195,21 @@ class ComorbidityDetector:
                 medication: {
                     "condition": reverse_mapping.get(medication, "Unknown"),
                     "patient_count": len(tckns),
-                    "patients": tckns[:5]  # First 5 patients for example
+                    "patients": tckns[:5],  # First 5 patients for example
                 }
                 for medication, tckns in medication_conditions.items()
             },
             "detected_conditions": {
                 condition: {
                     "patient_count": len(tckns),
-                    "medications": [med for med, conds in medication_conditions.items()
-                                  if reverse_mapping.get(med) == condition]
+                    "medications": [
+                        med
+                        for med, conds in medication_conditions.items()
+                        if reverse_mapping.get(med) == condition
+                    ],
                 }
                 for condition, tckns in patient_conditions.items()
-            }
+            },
         }
 
     def analyze_comorbidity_clusters(self) -> Dict:
@@ -241,7 +260,7 @@ class ComorbidityDetector:
                 {
                     "conditions": list(pair),
                     "patient_count": count,
-                    "percentage": round((count / len(all_patient_conditions)) * 100, 1)
+                    "percentage": round((count / len(all_patient_conditions)) * 100, 1),
                 }
                 for pair, count in top_pairs
             ],
@@ -249,7 +268,7 @@ class ComorbidityDetector:
                 {
                     "conditions": list(triple),
                     "patient_count": count,
-                    "percentage": round((count / len(all_patient_conditions)) * 100, 1)
+                    "percentage": round((count / len(all_patient_conditions)) * 100, 1),
                 }
                 for triple, count in top_triples
             ],
@@ -257,14 +276,12 @@ class ComorbidityDetector:
                 {
                     "tckn": tckn,
                     "condition_count": len(conditions),
-                    "conditions": sorted(list(conditions))
+                    "conditions": sorted(list(conditions)),
                 }
                 for tckn, conditions in sorted(
-                    all_patient_conditions.items(),
-                    key=lambda x: len(x[1]),
-                    reverse=True
+                    all_patient_conditions.items(), key=lambda x: len(x[1]), reverse=True
                 )[:10]
-            ]
+            ],
         }
 
     def get_high_risk_comorbidity_profiles(self) -> Dict:
@@ -275,7 +292,10 @@ class ComorbidityDetector:
             ("Hypertension", "Coronary Artery Disease", "Hyperlipidemia"),  # Cardiovascular risk
             ("Diabetes Mellitus", "Chronic Kidney Disease"),  # Diabetic nephropathy risk
             ("Coronary Artery Disease", "Depression"),  # Mental health impact
-            ("Chronic Obstructive Pulmonary Disease", "Coronary Artery Disease")  # Cardiopulmonary risk
+            (
+                "Chronic Obstructive Pulmonary Disease",
+                "Coronary Artery Disease",
+            ),  # Cardiopulmonary risk
         ]
 
         icd_data = self.detect_comorbidities_by_icd10()
@@ -288,12 +308,14 @@ class ComorbidityDetector:
 
             for risk_combo in high_risk_combinations:
                 if set(risk_combo).issubset(condition_list):
-                    high_risk_patients.append({
-                        "tckn": tckn,
-                        "risk_profile": list(risk_combo),
-                        "total_conditions": len(condition_list),
-                        "all_conditions": sorted(list(condition_list))
-                    })
+                    high_risk_patients.append(
+                        {
+                            "tckn": tckn,
+                            "risk_profile": list(risk_combo),
+                            "total_conditions": len(condition_list),
+                            "all_conditions": sorted(list(condition_list)),
+                        }
+                    )
                     break
 
         # Sort by number of conditions (most complex first)
@@ -302,27 +324,34 @@ class ComorbidityDetector:
         return {
             "total_high_risk_patients": len(high_risk_patients),
             "high_risk_combinations": [
-                {
-                    "combination": list(combo),
-                    "description": self._get_risk_description(combo)
-                }
+                {"combination": list(combo), "description": self._get_risk_description(combo)}
                 for combo in high_risk_combinations
             ],
             "patients": high_risk_patients[:20],  # Top 20 patients
             "risk_distribution": Counter(
-                tuple(sorted(patient["risk_profile"]))
-                for patient in high_risk_patients
-            )
+                tuple(sorted(patient["risk_profile"])) for patient in high_risk_patients
+            ),
         }
 
     def _get_risk_description(self, combination: Tuple) -> str:
         """Get description for risk combination."""
         descriptions = {
-            ("Diabetes Mellitus", "Hypertension", "Hyperlipidemia"): "Metabolic Syndrome - High cardiovascular risk",
-            ("Hypertension", "Coronary Artery Disease", "Hyperlipidemia"): "Established Cardiovascular Disease",
+            (
+                "Diabetes Mellitus",
+                "Hypertension",
+                "Hyperlipidemia",
+            ): "Metabolic Syndrome - High cardiovascular risk",
+            (
+                "Hypertension",
+                "Coronary Artery Disease",
+                "Hyperlipidemia",
+            ): "Established Cardiovascular Disease",
             ("Diabetes Mellitus", "Chronic Kidney Disease"): "Diabetic Nephropathy Risk",
             ("Coronary Artery Disease", "Depression"): "Post-MI Depression Risk",
-            ("Chronic Obstructive Pulmonary Disease", "Coronary Artery Disease"): "Cardiopulmonary Disease"
+            (
+                "Chronic Obstructive Pulmonary Disease",
+                "Coronary Artery Disease",
+            ): "Cardiopulmonary Disease",
         }
         return descriptions.get(tuple(sorted(combination)), "Multiple Chronic Conditions")
 
@@ -333,7 +362,7 @@ class ComorbidityDetector:
             "icd10_based_analysis": self.detect_comorbidities_by_icd10(),
             "medication_based_analysis": self.detect_comorbidities_by_medications(),
             "comorbidity_clusters": self.analyze_comorbidity_clusters(),
-            "high_risk_profiles": self.get_high_risk_comorbidity_profiles()
+            "high_risk_profiles": self.get_high_risk_comorbidity_profiles(),
         }
 
 
@@ -350,5 +379,9 @@ if __name__ == "__main__":
     print("Comorbidity Analysis Report")
     print("=" * 35)
     print(f"Generated: {comorbidity_report['generated_at']}")
-    print(f"Total Patients: {comorbidity_report['icd10_based_analysis']['total_patients_analyzed']}")
-    print(f"High Risk Patients: {comorbidity_report['high_risk_profiles']['total_high_risk_patients']}")
+    print(
+        f"Total Patients: {comorbidity_report['icd10_based_analysis']['total_patients_analyzed']}"
+    )
+    print(
+        f"High Risk Patients: {comorbidity_report['high_risk_profiles']['total_high_risk_patients']}"
+    )

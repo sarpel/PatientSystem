@@ -2,11 +2,12 @@
 
 import os
 import time
-from typing import Optional, List
-from anthropic import AsyncAnthropic, APIError, APITimeoutError
+from typing import List, Optional
+
+from anthropic import APIError, APITimeoutError, AsyncAnthropic
 from loguru import logger
 
-from .base_client import BaseAIClient, AIResponse, AIProviderError
+from .base_client import AIProviderError, AIResponse, BaseAIClient
 
 
 class AnthropicClient(BaseAIClient):
@@ -98,9 +99,7 @@ class AnthropicClient(BaseAIClient):
             )
 
         except APITimeoutError as e:
-            raise TimeoutError(
-                f"Claude request timeout after {self.timeout}s"
-            ) from e
+            raise TimeoutError(f"Claude request timeout after {self.timeout}s") from e
         except APIError as e:
             raise AIProviderError(
                 message=f"Claude API error: {str(e)}",

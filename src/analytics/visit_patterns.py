@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -19,7 +20,8 @@ class VisitPatternAnalyzer:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=months * 30)
 
-        query = text("""
+        query = text(
+            """
             SELECT
                 FORMAT(MUAYENE_TARIHI, 'yyyy-MM') as month,
                 COUNT(*) as visit_count,
@@ -28,12 +30,12 @@ class VisitPatternAnalyzer:
             WHERE MUAYENE_TARIHI BETWEEN :start_date AND :end_date
             GROUP BY FORMAT(MUAYENE_TARIHI, 'yyyy-MM')
             ORDER BY month
-        """)
+        """
+        )
 
-        result = self.session.execute(query, {
-            "start_date": start_date,
-            "end_date": end_date
-        }).fetchall()
+        result = self.session.execute(
+            query, {"start_date": start_date, "end_date": end_date}
+        ).fetchall()
 
         return {
             "trends": [
@@ -41,17 +43,18 @@ class VisitPatternAnalyzer:
                     "month": row.month,
                     "visits": row.visit_count,
                     "unique_patients": row.unique_patients,
-                    "avg_visits_per_patient": round(row.visit_count / row.unique_patients, 2)
+                    "avg_visits_per_patient": round(row.visit_count / row.unique_patients, 2),
                 }
                 for row in result
             ],
             "total_months": len(result),
-            "analysis_period": f"{months} months"
+            "analysis_period": f"{months} months",
         }
 
     def get_peak_visit_times(self) -> Dict:
         """Analyze peak visit times by hour and day of week."""
-        query = text("""
+        query = text(
+            """
             SELECT
                 DATEPART(HOUR, MUAYENE_TARIHI) as hour,
                 DATEPART(WEEKDAY, MUAYENE_TARIHI) as day_of_week,
@@ -62,7 +65,8 @@ class VisitPatternAnalyzer:
                 DATEPART(HOUR, MUAYENE_TARIHI),
                 DATEPART(WEEKDAY, MUAYENE_TARIHI)
             ORDER BY visit_count DESC
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
@@ -88,17 +92,18 @@ class VisitPatternAnalyzer:
                 {
                     "day": day_names[peak.day_of_week],
                     "hour": f"{peak.hour:02d}:00",
-                    "visit_count": peak.visit_count
+                    "visit_count": peak.visit_count,
                 }
                 for peak in peak_times
             ],
             "busiest_day": day_names[peak_times[0].day_of_week] if peak_times else None,
-            "busiest_hour": f"{peak_times[0].hour:02d}:00" if peak_times else None
+            "busiest_hour": f"{peak_times[0].hour:02d}:00" if peak_times else None,
         }
 
     def get_patient_visit_frequency_distribution(self) -> Dict:
         """Analyze distribution of patient visit frequencies."""
-        query = text("""
+        query = text(
+            """
             SELECT
                 visit_counts.frequency_range,
                 COUNT(*) as patient_count,
@@ -135,7 +140,8 @@ class VisitPatternAnalyzer:
                     WHEN visit_counts.frequency_range = '11-20 visits' THEN 6
                     ELSE 7
                 END
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
@@ -144,16 +150,17 @@ class VisitPatternAnalyzer:
                 {
                     "frequency_range": row.frequency_range,
                     "patient_count": row.patient_count,
-                    "percentage": row.percentage
+                    "percentage": row.percentage,
                 }
                 for row in result
             ],
-            "total_patients": sum(row.patient_count for row in result)
+            "total_patients": sum(row.patient_count for row in result),
         }
 
     def get_return_patient_analysis(self, days: int = 30) -> Dict:
         """Analyze patient return rates within specified timeframe."""
-        query = text("""
+        query = text(
+            """
             WITH PatientVisits AS (
                 SELECT
                     TCKN,
@@ -180,7 +187,8 @@ class VisitPatternAnalyzer:
                 ROUND(AVG(CAST(days_until_return AS FLOAT)), 1) as avg_days_until_return,
                 ROUND(SUM(returned_within_period) * 100.0 / COUNT(*), 2) as return_rate_percentage
             FROM ReturnAnalysis
-        """)
+        """
+        )
 
         result = self.session.execute(query, {"days": days}).fetchone()
 
@@ -189,12 +197,13 @@ class VisitPatternAnalyzer:
             "total_visits_with_followup": result.total_visits_with_followup,
             "returns_within_period": result.returns_within_period,
             "return_rate_percentage": result.return_rate_percentage,
-            "average_days_until_return": result.avg_days_until_return
+            "average_days_until_return": result.avg_days_until_return,
         }
 
     def get_seasonal_patterns(self) -> Dict:
         """Analyze seasonal visit patterns."""
-        query = text("""
+        query = text(
+            """
             SELECT
                 CASE
                     WHEN MONTH(MUAYENE_TARIHI) IN (12, 1, 2) THEN 'Winter'
@@ -217,7 +226,8 @@ class VisitPatternAnalyzer:
                     ELSE 'Fall'
                 END
             ORDER BY visit_count DESC
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
@@ -227,12 +237,12 @@ class VisitPatternAnalyzer:
                     "season": row.season,
                     "visit_count": row.visit_count,
                     "unique_patients": row.unique_patients,
-                    "avg_days_between_visits": row.avg_days_between_visits
+                    "avg_days_between_visits": row.avg_days_between_visits,
                 }
                 for row in result
             ],
             "busiest_season": max(result, key=lambda x: x.visit_count).season if result else None,
-            "analysis_period": "2 years"
+            "analysis_period": "2 years",
         }
 
     def generate_comprehensive_report(self) -> Dict:
@@ -243,7 +253,7 @@ class VisitPatternAnalyzer:
             "peak_visit_times": self.get_peak_visit_times(),
             "patient_frequency_distribution": self.get_patient_visit_frequency_distribution(),
             "return_patient_analysis": self.get_return_patient_analysis(),
-            "seasonal_patterns": self.get_seasonal_patterns()
+            "seasonal_patterns": self.get_seasonal_patterns(),
         }
 
 
@@ -261,4 +271,6 @@ if __name__ == "__main__":
     print("=" * 40)
     print(f"Generated: {patterns['generated_at']}")
     print(f"Busiest Season: {patterns['seasonal_patterns']['busiest_season']}")
-    print(f"Return Rate (30 days): {patterns['return_patient_analysis']['return_rate_percentage']}%")
+    print(
+        f"Return Rate (30 days): {patterns['return_patient_analysis']['return_rate_percentage']}%"
+    )

@@ -9,6 +9,7 @@ This guide covers deployment options for the Clinical AI Assistant system, inclu
 ### System Requirements
 
 **Minimum Requirements:**
+
 - **Operating System**: Windows 10/11, Ubuntu 20.04+, macOS 10.15+
 - **Python**: 3.11+ (with pip)
 - **Database**: SQL Server 2014/2022
@@ -16,6 +17,7 @@ This guide covers deployment options for the Clinical AI Assistant system, inclu
 - **Storage**: 10GB free space
 
 **Optional Requirements:**
+
 - **Docker**: 20.10+ (for containerized deployment)
 - **Node.js**: 18+ (for web frontend)
 - **PySide6**: For desktop GUI application
@@ -24,6 +26,7 @@ This guide covers deployment options for the Clinical AI Assistant system, inclu
 ### Software Dependencies
 
 **Python Packages:**
+
 ```bash
 # Core dependencies
 fastapi>=0.104.0
@@ -225,6 +228,7 @@ DATABASE_URL=mssql+pyodbc://localhost/ClinicalAI;UID=clinicalai_user;PWD=secure_
 #### Reverse Proxy (Optional)
 
 **Nginx Configuration:**
+
 ```bash
 sudo apt install nginx
 
@@ -257,8 +261,9 @@ sudo nginx -t && sudo systemctl restart nginx
 #### Docker Compose Configuration
 
 **docker-compose.yml:**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   api:
@@ -315,6 +320,7 @@ services:
 ```
 
 **Dockerfile:**
+
 ```dockerfile
 FROM python:3.11-slim
 
@@ -347,6 +353,7 @@ CMD ["python", "-m", "src.api.fastapi_app"]
 ```
 
 **Docker Commands:**
+
 ```bash
 # Build and start services
 docker-compose up -d
@@ -368,6 +375,7 @@ docker-compose up -d --force-recreate
 #### AWS EC2 Deployment
 
 **Instance Setup:**
+
 ```bash
 # Launch EC2 instance
 aws ec2 run \
@@ -380,6 +388,7 @@ aws ec2 run \
 ```
 
 **cloud-init.sh:**
+
 ```bash
 #!/bin/bash
 # Update system
@@ -402,6 +411,7 @@ docker-compose up -d
 #### Azure App Service
 
 **app-service.json:**
+
 ```json
 {
   "version": "2.0",
@@ -429,6 +439,7 @@ docker-compose up -d
 ```
 
 **Deployment:**
+
 ```bash
 # Configure Azure CLI
 az login
@@ -443,6 +454,7 @@ az webapp up --name clinical-ai-assistant
 **kubernetes Manifests:**
 
 **api-deployment.yaml:**
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -520,6 +532,7 @@ spec:
 ```
 
 **Secrets Configuration:**
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -544,6 +557,7 @@ data:
 ### Environment Variables
 
 **Development (.env.development):**
+
 ```bash
 # Database
 DATABASE_URL=mssql+pyodbc://localhost/ClinicalAI_DEV
@@ -564,6 +578,7 @@ CORS_ORIGINS=["http://localhost:5173", "http://localhost:3000"]
 ```
 
 **Production (.env.production):**
+
 ```bash
 # Database
 DATABASE_URL=mssql+pyodbc://prod-server/ClinicalAI_PROD
@@ -648,6 +663,7 @@ AI_MAX_TOKENS = Field(
 ### Application Logging
 
 **Logging Configuration:**
+
 ```python
 import logging
 from loguru import logger
@@ -668,6 +684,7 @@ logger.info("Clinical AI Assistant started")
 ### Health Monitoring
 
 **Health Check Implementation:**
+
 ```python
 from fastapi import FastAPI
 from prometheus_client import Counter, Histogram
@@ -693,6 +710,7 @@ async def log_requests(request: Request, call_next):
 ### Performance Monitoring
 
 **Performance Metrics:**
+
 - Request response times
 - Database query performance
 - AI model response times
@@ -701,6 +719,7 @@ async def log_requests(request: Request, call_next):
 - Error rates
 
 **Monitoring Stack Options:**
+
 - **Prometheus**: Metrics collection and alerting
 - **Grafana**: Visualization dashboards
 - **ELK Stack**: Elasticsearch, Logstash, Kibana
@@ -711,6 +730,7 @@ async def log_requests(request: Request, call_next):
 ### Network Security
 
 **SSL/TLS Configuration:**
+
 ```nginx
 server {
     listen 443 ssl;
@@ -726,6 +746,7 @@ server {
 ```
 
 **Firewall Configuration:**
+
 ```bash
 # Open necessary ports
 sudo ufw allow 22/tcp      # SSH
@@ -738,12 +759,14 @@ sudo ufw allow 5173/tcp     # Web development
 ### Application Security
 
 **Input Validation:**
+
 - All API endpoints use Pydantic models
 - Request/response validation
 - SQL injection prevention
 - XSS protection
 
 **Data Protection:**
+
 - No sensitive data in logs
 - Encrypted data transmission
 - Regular security updates
@@ -754,6 +777,7 @@ sudo ufw allow 5173/tcp     # Web development
 ### Database Backup Strategy
 
 **SQL Server Backup Script:**
+
 ```sql
 -- Create backup job
 USE msdb;
@@ -781,6 +805,7 @@ GO
 ```
 
 **Automated Backup:**
+
 ```bash
 #!/bin/bash
 # backup.sh - Automated backup script
@@ -814,6 +839,7 @@ find "$BACKUP_DIR" -type f -mtime +30 -delete
 ### Recovery Procedures
 
 **Database Recovery:**
+
 ```bash
 # Restore from backup
 sqlcmd -S localhost -S "
@@ -830,6 +856,7 @@ GO
 ### Horizontal Scaling
 
 **Load Balancer Configuration:**
+
 ```nginx
 upstream api_servers {
     server api1:8000;
@@ -852,6 +879,7 @@ server {
 ### Database Scaling
 
 **Connection Pooling:**
+
 ```python
 # In settings.py
 DATABASE_POOL_SIZE = 50  # Increased for production
@@ -863,6 +891,7 @@ DATABASE_POOL_RECYCLE = 3600
 ### Caching Strategy
 
 **Redis Integration:**
+
 ```python
 # Cache frequently accessed data
 REDIS_URL = "redis://localhost:6379/0"
@@ -888,6 +917,7 @@ def get_patient_summary(tckn: str):
 ### Common Issues
 
 **Database Connection Issues:**
+
 ```bash
 # Check database status
 sqlcmd -S localhost -Q "SELECT @@VERSION"
@@ -904,6 +934,7 @@ with get_session() as session:
 ```
 
 **AI Service Issues:**
+
 ```bash
 # Test AI provider connectivity
 python -c "
@@ -915,6 +946,7 @@ for provider, status in results.items():
 ```
 
 **Performance Issues:**
+
 ```bash
 # Monitor system resources
 htop
@@ -933,6 +965,7 @@ ps aux | grep python
 ### Log Analysis
 
 **Common Log Patterns:**
+
 ```bash
 # Error patterns
 grep "ERROR" logs/app.log

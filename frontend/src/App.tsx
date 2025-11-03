@@ -1,17 +1,17 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { useAppStore } from './stores/useAppStore'
-import Layout from './components/Layout'
-import Dashboard from './pages/Dashboard'
-import PatientSearch from './pages/PatientSearch'
-import PatientDetails from './pages/PatientDetails'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { useAppStore } from "./stores/useAppStore";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import PatientSearch from "./pages/PatientSearch";
+import PatientDetails from "./pages/PatientDetails";
 
 function App() {
-  const { initializeApp, appReady } = useAppStore()
+  const { initializeApp, appReady } = useAppStore();
 
   React.useEffect(() => {
-    initializeApp()
-  }, [initializeApp])
+    initializeApp();
+  }, [initializeApp]);
 
   if (!appReady) {
     return (
@@ -21,7 +21,7 @@ function App() {
           <p className="text-gray-600">Initializing Clinical AI Assistant...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -32,7 +32,7 @@ function App() {
         <Route path="/patient/:tckn" element={<PatientDetails />} />
       </Routes>
     </Layout>
-  )
+  );
 }
 
-export default App
+export default App;

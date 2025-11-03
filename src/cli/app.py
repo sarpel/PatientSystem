@@ -1,16 +1,17 @@
 """Clinical AI Assistant CLI application using Typer."""
 
+import sys
+from pathlib import Path
+
 import typer
+from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
-from rich import print as rprint
-from pathlib import Path
-import sys
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.cli.commands import analyze, diagnose, inspect, config, drug_check
+from src.cli.commands import analyze, config, diagnose, drug_check, inspect
 
 # Create Typer app
 app = typer.Typer(
@@ -49,9 +50,7 @@ def version():
 
 @app.callback()
 def main(
-    verbose: bool = typer.Option(
-        False, "--verbose", "-v", help="Enable verbose output"
-    ),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output"),
 ):
     """
     Clinical AI Assistant CLI.
@@ -60,6 +59,7 @@ def main(
     """
     if verbose:
         import logging
+
         logging.basicConfig(level=logging.DEBUG)
 
 

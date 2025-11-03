@@ -1,53 +1,57 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { usePatientState, useAppActions } from '../stores/useAppStore'
-import { Patient } from '../services/api'
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePatientState, useAppActions } from "../stores/useAppStore";
+import { Patient } from "../services/api";
 
 const PatientSearch: React.FC = () => {
-  const navigate = useNavigate()
-  const { patientSearchResults, searchingPatients } = usePatientState()
-  const { searchPatients, clearPatientSearch, setCurrentPatient } = useAppActions()
+  const navigate = useNavigate();
+  const { patientSearchResults, searchingPatients } = usePatientState();
+  const { searchPatients, clearPatientSearch, setCurrentPatient } =
+    useAppActions();
 
-  const [query, setQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedQuery(query)
-    }, 300)
+      setDebouncedQuery(query);
+    }, 300);
 
-    return () => clearTimeout(timer)
-  }, [query])
+    return () => clearTimeout(timer);
+  }, [query]);
 
   // Search when debounced query changes
   useEffect(() => {
     if (debouncedQuery) {
-      searchPatients(debouncedQuery)
+      searchPatients(debouncedQuery);
     } else {
-      clearPatientSearch()
+      clearPatientSearch();
     }
-  }, [debouncedQuery, searchPatients, clearPatientSearch])
+  }, [debouncedQuery, searchPatients, clearPatientSearch]);
 
   const handlePatientSelect = (patient: Patient) => {
-    setCurrentPatient(patient)
-    navigate(`/patient/${patient.TCKN}`)
-  }
+    setCurrentPatient(patient);
+    navigate(`/patient/${patient.TCKN}`);
+  };
 
   const calculateAge = (birthDate?: string): string => {
-    if (!birthDate) return 'Unknown'
+    if (!birthDate) return "Unknown";
 
-    const birth = new Date(birthDate)
-    const today = new Date()
-    const age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
+    const birth = new Date(birthDate);
+    const today = new Date();
+    const age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
 
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      return `${age - 1} years`
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
+      return `${age - 1} years`;
     }
 
-    return `${age} years`
-  }
+    return `${age} years`;
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -72,8 +76,18 @@ const PatientSearch: React.FC = () => {
               autoFocus
             />
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
 
@@ -113,8 +127,18 @@ const PatientSearch: React.FC = () => {
               </div>
             ) : patientSearchResults.length === 0 ? (
               <div className="text-center py-8">
-                <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400 mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"
+                  />
                 </svg>
                 <p className="text-gray-600">No patients found for "{query}"</p>
                 <p className="text-sm text-gray-500 mt-1">
@@ -140,16 +164,33 @@ const PatientSearch: React.FC = () => {
                           <span className="font-medium">Age:</span>
                           <span>{calculateAge(patient.DOGUM_TARIHI)}</span>
                           <span className="font-medium">Gender:</span>
-                          <span>{patient.CINSIYET === 'E' ? 'Male' : patient.CINSIYET === 'K' ? 'Female' : 'Unknown'}</span>
+                          <span>
+                            {patient.CINSIYET === "E"
+                              ? "Male"
+                              : patient.CINSIYET === "K"
+                                ? "Female"
+                                : "Unknown"}
+                          </span>
                         </div>
                         {patient.TELEFON && (
                           <div className="mt-1 text-sm text-gray-600">
-                            <span className="font-medium">Phone:</span> {patient.TELEFON}
+                            <span className="font-medium">Phone:</span>{" "}
+                            {patient.TELEFON}
                           </div>
                         )}
                       </div>
-                      <svg className="h-5 w-5 text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="h-5 w-5 text-gray-400 mt-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -168,12 +209,14 @@ const PatientSearch: React.FC = () => {
             <li>• Enter partial names (e.g., "Ahm" for "Ahmet")</li>
             <li>• Search by TCKN (Turkish ID number) with partial digits</li>
             <li>• Results are limited to 20 patients for performance</li>
-            <li>• Click on any patient to view their complete medical record</li>
+            <li>
+              • Click on any patient to view their complete medical record
+            </li>
           </ul>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PatientSearch
+export default PatientSearch;

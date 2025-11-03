@@ -6,9 +6,9 @@ functionality across the application.
 """
 
 import traceback
-from typing import Optional, Callable, Any, Dict, Type
-from functools import wraps
 from contextlib import contextmanager
+from functools import wraps
+from typing import Any, Callable, Dict, Optional, Type
 
 from loguru import logger
 
@@ -25,9 +25,7 @@ class ErrorHandler:
 
     @staticmethod
     def log_error(
-        error: Exception,
-        operation: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        error: Exception, operation: Optional[str] = None, context: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Log error with appropriate severity level.
@@ -46,25 +44,17 @@ class ErrorHandler:
 
             # Log based on severity
             if error.severity == ErrorSeverity.CRITICAL:
-                logger.critical(
-                    f"Critical error in {operation}: {error.message}",
-                    extra=error_info
-                )
+                logger.critical(f"Critical error in {operation}: {error.message}", extra=error_info)
             elif error.severity == ErrorSeverity.HIGH:
                 logger.error(
-                    f"High severity error in {operation}: {error.message}",
-                    extra=error_info
+                    f"High severity error in {operation}: {error.message}", extra=error_info
                 )
             elif error.severity == ErrorSeverity.MEDIUM:
                 logger.warning(
-                    f"Medium severity error in {operation}: {error.message}",
-                    extra=error_info
+                    f"Medium severity error in {operation}: {error.message}", extra=error_info
                 )
             else:
-                logger.info(
-                    f"Low severity error in {operation}: {error.message}",
-                    extra=error_info
-                )
+                logger.info(f"Low severity error in {operation}: {error.message}", extra=error_info)
         else:
             # Generic exception
             logger.error(
@@ -73,8 +63,8 @@ class ErrorHandler:
                     "error_type": type(error).__name__,
                     "operation": operation,
                     "context": context or {},
-                    "traceback": traceback.format_exc()
-                }
+                    "traceback": traceback.format_exc(),
+                },
             )
 
     @staticmethod
@@ -83,7 +73,7 @@ class ErrorHandler:
         operation: str,
         category: ErrorCategory = ErrorCategory.SYSTEM,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> BasePatientSystemError:
         """
         Wrap generic exceptions in appropriate PatientSystem exceptions.
@@ -99,8 +89,13 @@ class ErrorHandler:
             Appropriate PatientSystem exception
         """
         from .exceptions import (
-            DatabaseError, AIServiceError, ValidationError, APIError,
-            BusinessLogicError, ExternalServiceError, ConfigurationError
+            AIServiceError,
+            APIError,
+            BusinessLogicError,
+            ConfigurationError,
+            DatabaseError,
+            ExternalServiceError,
+            ValidationError,
         )
 
         # Determine appropriate exception type based on category or error type
@@ -108,38 +103,36 @@ class ErrorHandler:
             return DatabaseError(
                 message=f"Database operation failed in {operation}: {str(error)}",
                 cause=error,
-                context=context
+                context=context,
             )
         elif category == ErrorCategory.AI_SERVICE:
             return AIServiceError(
                 message=f"AI service error in {operation}: {str(error)}",
                 cause=error,
-                context=context
+                context=context,
             )
         elif category == ErrorCategory.VALIDATION:
             return ValidationError(
                 message=f"Validation error in {operation}: {str(error)}",
                 cause=error,
-                context=context
+                context=context,
             )
         elif category == ErrorCategory.API:
             return APIError(
-                message=f"API error in {operation}: {str(error)}",
-                cause=error,
-                context=context
+                message=f"API error in {operation}: {str(error)}", cause=error, context=context
             )
         elif category == ErrorCategory.BUSINESS_LOGIC:
             return BusinessLogicError(
                 message=f"Business logic error in {operation}: {str(error)}",
                 operation=operation,
                 cause=error,
-                context=context
+                context=context,
             )
         elif category == ErrorCategory.EXTERNAL_SERVICE:
             return ExternalServiceError(
                 message=f"External service error in {operation}: {str(error)}",
                 cause=error,
-                context=context
+                context=context,
             )
         else:
             return BasePatientSystemError(
@@ -147,7 +140,7 @@ class ErrorHandler:
                 category=category,
                 severity=severity,
                 context={"original_error_type": type(error).__name__, **(context or {})},
-                cause=error
+                cause=error,
             )
 
     @staticmethod
@@ -159,7 +152,7 @@ class ErrorHandler:
         category: ErrorCategory = ErrorCategory.SYSTEM,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> Any:
         """
         Safely execute a function with standardized error handling.
@@ -197,7 +190,7 @@ def handle_errors(
     severity: ErrorSeverity = ErrorSeverity.MEDIUM,
     context: Optional[Dict[str, Any]] = None,
     default_return: Any = None,
-    re_raise: bool = True
+    re_raise: bool = True,
 ):
     """
     Decorator for standardized error handling in functions.
@@ -210,6 +203,7 @@ def handle_errors(
         default_return: Default return value if error occurs and re_raise=False
         re_raise: Whether to re-raise exceptions or return default_return
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -218,9 +212,7 @@ def handle_errors(
             try:
                 return func(*args, **kwargs)
             except Exception as e:
-                wrapped_error = ErrorHandler.wrap_error(
-                    e, op_name, category, severity, context
-                )
+                wrapped_error = ErrorHandler.wrap_error(e, op_name, category, severity, context)
                 ErrorHandler.log_error(wrapped_error, op_name, context)
 
                 if re_raise:
@@ -233,6 +225,7 @@ def handle_errors(
                     return default_return
 
         return wrapper
+
     return decorator
 
 
@@ -241,7 +234,7 @@ def error_context(
     operation: str,
     category: ErrorCategory = ErrorCategory.SYSTEM,
     severity: ErrorSeverity = ErrorSeverity.MEDIUM,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
 ):
     """
     Context manager for standardized error handling.

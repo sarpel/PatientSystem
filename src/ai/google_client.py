@@ -2,12 +2,13 @@
 
 import os
 import time
-from typing import Optional, List
+from typing import List, Optional
+
 import google.generativeai as genai
 from google.api_core import exceptions as google_exceptions
 from loguru import logger
 
-from .base_client import BaseAIClient, AIResponse, AIProviderError
+from .base_client import AIProviderError, AIResponse, BaseAIClient
 
 
 class GoogleClient(BaseAIClient):
@@ -67,9 +68,7 @@ class GoogleClient(BaseAIClient):
             )
 
             # Generate content (synchronous - Gemini doesn't have async API yet)
-            response = self.model.generate_content(
-                full_prompt, generation_config=generation_config
-            )
+            response = self.model.generate_content(full_prompt, generation_config=generation_config)
 
             latency_ms = (time.time() - start_time) * 1000
 
@@ -97,26 +96,24 @@ class GoogleClient(BaseAIClient):
                 tokens_used=tokens_used,
                 latency_ms=latency_ms,
                 metadata={
-                    "prompt_token_count": getattr(
-                        response.usage_metadata, "prompt_token_count", None
-                    )
-                    if hasattr(response, "usage_metadata")
-                    else None,
-                    "candidates_token_count": getattr(
-                        response.usage_metadata, "candidates_token_count", None
-                    )
-                    if hasattr(response, "usage_metadata")
-                    else None,
-                    "finish_reason": response.candidates[0].finish_reason.name
-                    if response.candidates
-                    else None,
+                    "prompt_token_count": (
+                        getattr(response.usage_metadata, "prompt_token_count", None)
+                        if hasattr(response, "usage_metadata")
+                        else None
+                    ),
+                    "candidates_token_count": (
+                        getattr(response.usage_metadata, "candidates_token_count", None)
+                        if hasattr(response, "usage_metadata")
+                        else None
+                    ),
+                    "finish_reason": (
+                        response.candidates[0].finish_reason.name if response.candidates else None
+                    ),
                 },
             )
 
         except google_exceptions.DeadlineExceeded as e:
-            raise TimeoutError(
-                f"Google Gemini request timeout after {self.timeout}s"
-            ) from e
+            raise TimeoutError(f"Google Gemini request timeout after {self.timeout}s") from e
         except google_exceptions.GoogleAPIError as e:
             raise AIProviderError(
                 message=f"Google Gemini API error: {str(e)}",
@@ -147,7 +144,11 @@ class GoogleClient(BaseAIClient):
         """List available Gemini models."""
         try:
             models = genai.list_models()
-            return [model.name for model in models if "generateContent" in model.supported_generation_methods]
+            return [
+                model.name
+                for model in models
+                if "generateContent" in model.supported_generation_methods
+            ]
         except Exception as e:
             logger.error(f"Failed to list Google models: {e}")
             return ["gemini-pro", "gemini-pro-vision"]

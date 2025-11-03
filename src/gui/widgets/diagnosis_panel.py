@@ -1,16 +1,26 @@
 """Diagnosis panel with AI-powered analysis interface."""
 
 import asyncio
-from typing import Optional, Dict, Any
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit,
-    QPushButton, QLabel, QTableWidget, QTableWidgetItem,
-    QComboBox, QProgressBar, QMessageBox, QGroupBox
-)
-from PySide6.QtCore import Qt, Signal, QThread
+from typing import Any, Dict, Optional
 
-from ...database.connection import get_session
+from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
 from ...clinical.diagnosis_engine import DiagnosisEngine
+from ...database.connection import get_session
 
 
 class DiagnosisWorker(QThread):
@@ -34,7 +44,7 @@ class DiagnosisWorker(QThread):
                     engine.generate_differential_diagnosis_ai(
                         tckn=self.tckn,
                         chief_complaint=self.complaint,
-                        preferred_provider=self.model
+                        preferred_provider=self.model,
                     )
                 )
                 self.finished.emit(result)
@@ -97,9 +107,9 @@ class DiagnosisPanelWidget(QWidget):
 
         self.results_table = QTableWidget()
         self.results_table.setColumnCount(4)
-        self.results_table.setHorizontalHeaderLabels([
-            "Diagnosis", "ICD-10", "Probability", "Urgency"
-        ])
+        self.results_table.setHorizontalHeaderLabels(
+            ["Diagnosis", "ICD-10", "Probability", "Urgency"]
+        )
         self.results_table.setEditTriggers(QTableWidget.NoEditTriggers)
         results_layout.addWidget(self.results_table)
 
@@ -151,12 +161,7 @@ class DiagnosisPanelWidget(QWidget):
 
         # Get selected model
         model_text = self.model_combo.currentText()
-        model_map = {
-            "Claude": "claude",
-            "GPT-4o": "gpt-4o",
-            "Gemini": "gemini",
-            "Ollama": "ollama"
-        }
+        model_map = {"Claude": "claude", "GPT-4o": "gpt-4o", "Gemini": "gemini", "Ollama": "ollama"}
         model = model_map.get(model_text)
 
         # Show progress
@@ -220,8 +225,4 @@ class DiagnosisPanelWidget(QWidget):
         """Handle diagnosis error."""
         self.progress_bar.setVisible(False)
         self.analyze_button.setEnabled(True)
-        QMessageBox.critical(
-            self,
-            "Diagnosis Error",
-            f"Failed to generate diagnosis:\n{error_msg}"
-        )
+        QMessageBox.critical(self, "Diagnosis Error", f"Failed to generate diagnosis:\n{error_msg}")

@@ -1,14 +1,20 @@
 """Lab results visualization with interactive trend charts."""
 
-from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QComboBox,
-    QLabel, QPushButton, QMessageBox
-)
-from PySide6.QtCore import Qt
+from typing import Any, Dict, List, Optional
+
 import pyqtgraph as pg
 from pyqtgraph import PlotWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 from sqlalchemy import text
 
 from ...database.connection import get_session
@@ -33,19 +39,21 @@ class LabChartsWidget(QWidget):
         controls_layout.addWidget(QLabel("Test Type:"))
 
         self.test_combo = QComboBox()
-        self.test_combo.addItems([
-            "Hemoglobin (HGB)",
-            "White Blood Cell (WBC)",
-            "Platelet Count (PLT)",
-            "Glucose",
-            "Creatinine",
-            "ALT (SGPT)",
-            "AST (SGOT)",
-            "Total Cholesterol",
-            "LDL Cholesterol",
-            "HDL Cholesterol",
-            "Triglycerides"
-        ])
+        self.test_combo.addItems(
+            [
+                "Hemoglobin (HGB)",
+                "White Blood Cell (WBC)",
+                "Platelet Count (PLT)",
+                "Glucose",
+                "Creatinine",
+                "ALT (SGPT)",
+                "AST (SGOT)",
+                "Total Cholesterol",
+                "LDL Cholesterol",
+                "HDL Cholesterol",
+                "Triglycerides",
+            ]
+        )
         self.test_combo.currentIndexChanged.connect(self._update_chart)
         controls_layout.addWidget(self.test_combo)
 
@@ -66,10 +74,10 @@ class LabChartsWidget(QWidget):
 
         # Chart widget
         self.chart_widget = PlotWidget()
-        self.chart_widget.setBackground('w')
+        self.chart_widget.setBackground("w")
         self.chart_widget.showGrid(x=True, y=True, alpha=0.3)
-        self.chart_widget.setLabel('left', 'Value')
-        self.chart_widget.setLabel('bottom', 'Date')
+        self.chart_widget.setLabel("left", "Value")
+        self.chart_widget.setLabel("bottom", "Date")
 
         # Add legend
         self.chart_widget.addLegend()
@@ -88,7 +96,8 @@ class LabChartsWidget(QWidget):
         try:
             with get_session() as session:
                 # Load lab tests for patient using SQL query
-                query = text("""
+                query = text(
+                    """
                     SELECT
                         TEST_ADI,
                         SONUC,
@@ -100,8 +109,9 @@ class LabChartsWidget(QWidget):
                     WHERE TCKN = :tckn
                     AND SONUC IS NOT NULL
                     ORDER BY TEST_TARIHI DESC
-                """)
-                
+                """
+                )
+
                 result = session.execute(query, {"tckn": tckn}).fetchall()
 
                 # Group by test type
@@ -110,7 +120,7 @@ class LabChartsWidget(QWidget):
                     test_name = row.TEST_ADI or "Unknown"
                     if test_name not in self.lab_data:
                         self.lab_data[test_name] = []
-                    
+
                     # Convert row to dict
                     test_dict = {
                         "TEST_ADI": row.TEST_ADI,
@@ -118,7 +128,7 @@ class LabChartsWidget(QWidget):
                         "BIRIM": row.BIRIM,
                         "TEST_TARIHI": row.TEST_TARIHI,
                         "NORMAL_MIN": row.NORMAL_MIN,
-                        "NORMAL_MAX": row.NORMAL_MAX
+                        "NORMAL_MAX": row.NORMAL_MAX,
                     }
                     self.lab_data[test_name].append(test_dict)
 
@@ -133,11 +143,7 @@ class LabChartsWidget(QWidget):
                 self._update_chart()
 
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Load Error",
-                f"Failed to load lab data:\n{str(e)}"
-            )
+            QMessageBox.critical(self, "Load Error", f"Failed to load lab data:\n{str(e)}")
 
     def _update_chart(self):
         """Update chart based on selected test and time range."""
@@ -164,18 +170,14 @@ class LabChartsWidget(QWidget):
 
         # Filter by time range
         range_text = self.range_combo.currentText()
-        range_map = {
-            "1 Month": 30,
-            "3 Months": 90,
-            "6 Months": 180,
-            "1 Year": 365,
-            "All": None
-        }
+        range_map = {"1 Month": 30, "3 Months": 90, "6 Months": 180, "1 Year": 365, "All": None}
         days = range_map.get(range_text)
 
         if days:
             cutoff_date = datetime.now() - timedelta(days=days)
-            test_data = [t for t in test_data if t.get("TEST_TARIHI") and t["TEST_TARIHI"] >= cutoff_date]
+            test_data = [
+                t for t in test_data if t.get("TEST_TARIHI") and t["TEST_TARIHI"] >= cutoff_date
+            ]
 
         if not test_data:
             self.status_label.setText("No data in selected time range")
@@ -193,7 +195,7 @@ class LabChartsWidget(QWidget):
                     dates.append(timestamp)
 
                     # Parse value (handle different formats)
-                    value_str = str(test["SONUC"]).replace(',', '.')
+                    value_str = str(test["SONUC"]).replace(",", ".")
                     value = float(value_str)
                     values.append(value)
                 except (ValueError, AttributeError):
@@ -204,14 +206,15 @@ class LabChartsWidget(QWidget):
             return
 
         # Plot the data
-        pen = pg.mkPen(color='b', width=2)
+        pen = pg.mkPen(color="b", width=2)
         self.chart_widget.plot(
-            dates, values,
+            dates,
+            values,
             pen=pen,
-            symbol='o',
+            symbol="o",
             symbolSize=8,
-            symbolBrush='b',
-            name=available_tests[0]
+            symbolBrush="b",
+            name=available_tests[0],
         )
 
         # Add reference range shading (example values)
@@ -223,9 +226,9 @@ class LabChartsWidget(QWidget):
             # Create shaded region
             region = pg.LinearRegionItem(
                 values=[normal_min, normal_max],
-                orientation='horizontal',
+                orientation="horizontal",
                 brush=pg.mkBrush(0, 255, 0, 50),
-                movable=False
+                movable=False,
             )
             self.chart_widget.addItem(region)
 
@@ -249,14 +252,6 @@ class LabChartsWidget(QWidget):
 
         try:
             exporter.export(filename)
-            QMessageBox.information(
-                self,
-                "Export Success",
-                f"Chart saved to: {filename}"
-            )
+            QMessageBox.information(self, "Export Success", f"Chart saved to: {filename}")
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Export Error",
-                f"Failed to export chart:\n{str(e)}"
-            )
+            QMessageBox.critical(self, "Export Error", f"Failed to export chart:\n{str(e)}")

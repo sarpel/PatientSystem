@@ -2,11 +2,12 @@
 Unit tests for Visit models.
 """
 
-import pytest
 from datetime import datetime
 from decimal import Decimal
 
-from src.models.visit import Visit, PatientAdmission
+import pytest
+
+from src.models.visit import PatientAdmission, Visit
 
 
 class TestVisit:
@@ -14,10 +15,7 @@ class TestVisit:
 
     def test_visit_creation(self):
         """Test creating a Visit instance."""
-        visit = Visit(
-            HASTA_KABUL=1,
-            MUAYENE_TURU=1
-        )
+        visit = Visit(HASTA_KABUL=1, MUAYENE_TURU=1)
 
         assert visit.HASTA_KABUL == 1
         assert visit.MUAYENE_TURU == 1
@@ -32,7 +30,7 @@ class TestVisit:
             SISTOLIK_KAN_BASINCI=120,
             DIASTOLIK_KAN_BASINCI=80,
             NABIZ=72,
-            VUCUT_ISISI=Decimal("36.5")
+            VUCUT_ISISI=Decimal("36.5"),
         )
 
         assert visit.AGIRLIK == 70000
@@ -44,12 +42,7 @@ class TestVisit:
 
     def test_visit_bmi_calculation(self):
         """Test BMI calculation for visit."""
-        visit = Visit(
-            HASTA_KABUL=1,
-            MUAYENE_TURU=1,
-            AGIRLIK=70000,  # 70kg
-            BOY=175  # 175cm
-        )
+        visit = Visit(HASTA_KABUL=1, MUAYENE_TURU=1, AGIRLIK=70000, BOY=175)  # 70kg  # 175cm
 
         bmi = visit.bmi
         assert bmi is not None
@@ -57,10 +50,7 @@ class TestVisit:
 
     def test_visit_bmi_none_when_no_measurements(self):
         """Test BMI returns None when measurements missing."""
-        visit = Visit(
-            HASTA_KABUL=1,
-            MUAYENE_TURU=1
-        )
+        visit = Visit(HASTA_KABUL=1, MUAYENE_TURU=1)
 
         assert visit.bmi is None
 
@@ -70,7 +60,7 @@ class TestVisit:
             HASTA_KABUL=1,
             MUAYENE_TURU=1,
             BEL_CEVRESI=90,  # 90cm waist
-            KALCA_CEVRESI=100  # 100cm hip
+            KALCA_CEVRESI=100,  # 100cm hip
         )
 
         ratio = visit.waist_hip_ratio
@@ -79,20 +69,14 @@ class TestVisit:
 
     def test_waist_hip_ratio_none_when_missing(self):
         """Test waist-to-hip ratio returns None when missing."""
-        visit = Visit(
-            HASTA_KABUL=1,
-            MUAYENE_TURU=1
-        )
+        visit = Visit(HASTA_KABUL=1, MUAYENE_TURU=1)
 
         assert visit.waist_hip_ratio is None
 
     def test_blood_pressure_string_format(self):
         """Test blood pressure string formatting."""
         visit = Visit(
-            HASTA_KABUL=1,
-            MUAYENE_TURU=1,
-            SISTOLIK_KAN_BASINCI=120,
-            DIASTOLIK_KAN_BASINCI=80
+            HASTA_KABUL=1, MUAYENE_TURU=1, SISTOLIK_KAN_BASINCI=120, DIASTOLIK_KAN_BASINCI=80
         )
 
         bp_str = visit.blood_pressure_str
@@ -100,10 +84,7 @@ class TestVisit:
 
     def test_blood_pressure_string_none_when_missing(self):
         """Test blood pressure string returns None when missing."""
-        visit = Visit(
-            HASTA_KABUL=1,
-            MUAYENE_TURU=1
-        )
+        visit = Visit(HASTA_KABUL=1, MUAYENE_TURU=1)
 
         assert visit.blood_pressure_str is None
 
@@ -115,7 +96,7 @@ class TestVisit:
             SIKAYETI="Headache and fever",
             HIKAYESI="History of migraines",
             BULGU="Elevated temperature",
-            MUAYENE_NOT="Patient advised rest"
+            MUAYENE_NOT="Patient advised rest",
         )
 
         assert visit.SIKAYETI == "Headache and fever"
@@ -130,7 +111,7 @@ class TestVisit:
             MUAYENE_TURU=1,
             OLAY_AFET_BILGISI="Earthquake victim",
             HAYATI_TEHLIKE_DURUMU=2,
-            GLASGOW_KOMA_SKALASI=15
+            GLASGOW_KOMA_SKALASI=15,
         )
 
         assert visit.OLAY_AFET_BILGISI == "Earthquake victim"
@@ -139,11 +120,7 @@ class TestVisit:
 
     def test_visit_repr(self):
         """Test string representation."""
-        visit = Visit(
-            MUAYENE_ID=123,
-            HASTA_KABUL=456,
-            MUAYENE_TURU=1
-        )
+        visit = Visit(MUAYENE_ID=123, HASTA_KABUL=456, MUAYENE_TURU=1)
 
         repr_str = repr(visit)
         assert "Visit" in repr_str
@@ -157,10 +134,7 @@ class TestPatientAdmission:
     def test_patient_admission_creation(self):
         """Test creating a PatientAdmission instance."""
         admission = PatientAdmission(
-            HASTA_KAYIT=1,
-            KABUL_TARIHI=datetime(2024, 1, 15, 10, 30),
-            KABUL_TURU=1,
-            DURUM=1
+            HASTA_KAYIT=1, KABUL_TARIHI=datetime(2024, 1, 15, 10, 30), KABUL_TURU=1, DURUM=1
         )
 
         assert admission.HASTA_KAYIT == 1
@@ -175,7 +149,7 @@ class TestPatientAdmission:
             KABUL_TARIHI=datetime(2024, 1, 15, 10, 30),
             KABUL_TURU=1,
             DURUM=1,
-            HEKIM=123
+            HEKIM=123,
         )
 
         assert admission.HEKIM == 123
@@ -187,7 +161,7 @@ class TestPatientAdmission:
             KABUL_TARIHI=datetime(2024, 1, 15, 10, 30),
             KABUL_TURU=1,
             DURUM=1,
-            BASVURU_NEDENI=5
+            BASVURU_NEDENI=5,
         )
 
         assert admission.BASVURU_NEDENI == 5
@@ -199,7 +173,7 @@ class TestPatientAdmission:
             HASTA_KAYIT=456,
             KABUL_TARIHI=datetime(2024, 1, 15, 10, 30),
             KABUL_TURU=1,
-            DURUM=1
+            DURUM=1,
         )
 
         repr_str = repr(admission)
@@ -213,7 +187,7 @@ class TestPatientAdmission:
             HASTA_KAYIT=1,
             KABUL_TARIHI=datetime(2024, 1, 15, 10, 30),
             KABUL_TURU=1,
-            DURUM=1  # Active
+            DURUM=1,  # Active
         )
 
         assert admission.DURUM == 1
@@ -224,7 +198,7 @@ class TestPatientAdmission:
             HASTA_KAYIT=1,
             KABUL_TARIHI=datetime(2024, 1, 15, 10, 30),
             KABUL_TURU=1,
-            DURUM=2  # Completed
+            DURUM=2,  # Completed
         )
 
         assert admission.DURUM == 2

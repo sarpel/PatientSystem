@@ -2,19 +2,27 @@
 Comprehensive tests for Diagnosis Engine, Treatment Engine, and Drug Interaction Checker modules.
 """
 
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from src.clinical.diagnosis_engine import (
-    DiagnosisEngine, DiagnosisSuggestion, DiagnosisContext
-)
-from src.clinical.treatment_engine import (
-    TreatmentEngine, MedicationRecommendation, InteractionSeverity
+    DiagnosisContext,
+    DiagnosisEngine,
+    DiagnosisSuggestion,
 )
 from src.clinical.drug_interaction import (
-    DrugInteractionChecker, DrugInteraction, InteractionSeverity as DrugInteractionSeverity,
-    AllergyWarning, InteractionResult
+    AllergyWarning,
+    DrugInteraction,
+    DrugInteractionChecker,
+    InteractionResult,
+)
+from src.clinical.drug_interaction import InteractionSeverity as DrugInteractionSeverity
+from src.clinical.treatment_engine import (
+    InteractionSeverity,
+    MedicationRecommendation,
+    TreatmentEngine,
 )
 
 
@@ -54,21 +62,21 @@ class TestDiagnosisEngine:
         assert isinstance(engine._red_flag_patterns, list)
 
     def test_generate_differential_diagnosis_rule_based(
-        self,
-        diagnosis_engine,
-        sample_patient_context
+        self, diagnosis_engine, sample_patient_context
     ):
         """Test rule-based differential diagnosis generation."""
         complaints = ["göğüs ağrısı", "nefes darlığı"]
 
         # Mock patient context building
-        with patch.object(diagnosis_engine, '_build_diagnosis_context', return_value=sample_patient_context):
+        with patch.object(
+            diagnosis_engine, "_build_diagnosis_context", return_value=sample_patient_context
+        ):
             result = diagnosis_engine.generate_differential_diagnosis(
                 patient_id=12345,
                 chief_complaints=complaints,
                 vital_signs={"BP": "150/90", "HR": 95},
                 physical_exam={"chest_clear": True},
-                lab_results={"Troponin": 0.5}
+                lab_results={"Troponin": 0.5},
             )
 
             # Verify structure
@@ -125,7 +133,7 @@ class TestDiagnosisEngine:
             lab_results={},
             past_diagnoses=[],
             medications=[],
-            demographics={}
+            demographics={},
         )
 
         red_flags = diagnosis_engine._detect_red_flags(context)
@@ -141,20 +149,16 @@ class TestDiagnosisEngine:
                     "icd10": "I21.9",
                     "probability": 0.75,
                     "reasoning": "Chest pain with risk factors",
-                    "urgency": "urgent"
+                    "urgency": "urgent",
                 }
             ],
             "urgent_conditions": [
-                {
-                    "diagnosis": "Acute Coronary Syndrome",
-                    "icd10": "I21.9",
-                    "urgency": "urgent"
-                }
+                {"diagnosis": "Acute Coronary Syndrome", "icd10": "I21.9", "urgency": "urgent"}
             ],
             "red_flags": ["Chest pain requires immediate attention"],
             "recommended_tests": ["EKG", "Troponin", "Chest X-ray"],
             "confidence_score": 0.75,
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
 
         report = diagnosis_engine.get_diagnosis_report(12345, mock_result)
@@ -207,11 +211,13 @@ class TestTreatmentEngine:
     def test_generate_treatment_plan_diabetes(self, treatment_engine, sample_patient_context):
         """Test treatment plan generation for Type 2 Diabetes."""
         # Mock patient context building
-        with patch.object(treatment_engine, '_build_patient_context', return_value=sample_patient_context):
+        with patch.object(
+            treatment_engine, "_build_patient_context", return_value=sample_patient_context
+        ):
             result = treatment_engine.generate_treatment_plan(
                 patient_id=12345,
                 diagnosis="Type 2 Diabetes",
-                patient_factors={"duration": "5 years", "complications": None}
+                patient_factors={"duration": "5 years", "complications": None},
             )
 
             # Verify structure
@@ -231,10 +237,11 @@ class TestTreatmentEngine:
 
     def test_generate_treatment_plan_hypertension(self, treatment_engine, sample_patient_context):
         """Test treatment plan generation for Hypertension."""
-        with patch.object(treatment_engine, '_build_patient_context', return_value=sample_patient_context):
+        with patch.object(
+            treatment_engine, "_build_patient_context", return_value=sample_patient_context
+        ):
             result = treatment_engine.generate_treatment_plan(
-                patient_id=12345,
-                diagnosis="Hypertension"
+                patient_id=12345, diagnosis="Hypertension"
             )
 
             # Should include antihypertensive medications
@@ -247,7 +254,7 @@ class TestTreatmentEngine:
             "age": 70,
             "egfr": 25,  # Severe renal impairment
             "allergies": None,
-            "current_medications": []
+            "current_medications": [],
         }
 
         treatment_result = {
@@ -255,20 +262,22 @@ class TestTreatmentEngine:
                 {
                     "drug_name": "Metformin",
                     "generic_name": "Metformin HCl",
-                    "contraindications": ["eGFR <30 mL/min"]
+                    "contraindications": ["eGFR <30 mL/min"],
                 }
             ],
             "lifestyle": [],
             "monitoring": [],
             "consultations": [],
-            "contraindications": []
+            "contraindications": [],
         }
 
         result = treatment_engine._check_contraindications(treatment_result, patient_context)
 
         # Should identify Metformin contraindication
         assert len(result["contraindications"]) > 0
-        assert any("Metformin" in str(contraindication) for contraindication in result["contraindications"])
+        assert any(
+            "Metformin" in str(contraindication) for contraindication in result["contraindications"]
+        )
 
         # Should filter out contraindicated medications
         filtered_meds = [m["drug_name"] for m in result["pharmacological"]]
@@ -289,10 +298,12 @@ class TestTreatmentEngine:
             "monitoring": ["Renal function", "B12"],
             "cost": "Low",
             "mechanism": "Decreases hepatic glucose production",
-            "pregnancy_category": "B"
+            "pregnancy_category": "B",
         }
 
-        recommendation = treatment_engine._create_medication_recommendation("Metformin", drug_info, sample_patient_context)
+        recommendation = treatment_engine._create_medication_recommendation(
+            "Metformin", drug_info, sample_patient_context
+        )
 
         assert recommendation.drug_name == "Metformin"
         assert recommendation.generic_name == "Metformin HCl"
@@ -313,7 +324,7 @@ class TestTreatmentEngine:
                     "duration": "sürekli",
                     "route": "oral",
                     "rationale": "First-line for T2DM",
-                    "priority": 1
+                    "priority": 1,
                 }
             ],
             "lifestyle": [
@@ -321,22 +332,15 @@ class TestTreatmentEngine:
                     "category": "diet",
                     "recommendation": "Weight loss",
                     "details": "5-10% weight loss",
-                    "priority": 1
+                    "priority": 1,
                 }
             ],
             "monitoring": [
-                {
-                    "test_name": "HbA1c",
-                    "frequency": "3 ayda bir",
-                    "target_range": "<7.0%"
-                }
+                {"test_name": "HbA1c", "frequency": "3 ayda bir", "target_range": "<7.0%"}
             ],
             "consultations": [],
             "contraindications": [],
-            "follow_up": {
-                "schedule": "3 months",
-                "what_to_monitor": "Symptoms, side effects"
-            }
+            "follow_up": {"schedule": "3 months", "what_to_monitor": "Symptoms, side effects"},
         }
 
         report = treatment_engine.get_treatment_report(mock_result)
@@ -375,9 +379,7 @@ class TestDrugInteractionChecker:
     def test_check_drug_interactions_warfarin_nsaid(self, interaction_checker):
         """Test checking warfarin + NSAID interaction."""
         result = interaction_checker.check_drug_interactions(
-            patient_id=12345,
-            medications=["Warfarin", "Ibuprofen"],
-            patient_allergies=[]
+            patient_id=12345, medications=["Warfarin", "Ibuprofen"], patient_allergies=[]
         )
 
         assert result.patient_id == 12345
@@ -385,31 +387,29 @@ class TestDrugInteractionChecker:
         assert result.requires_pharmacist_review
 
         # Should detect major interaction
-        warfarin_interaction = [i for i in result.interactions
-                               if "Warfarin" in i.drug1 and "Ibuprofen" in i.drug2]
+        warfarin_interaction = [
+            i for i in result.interactions if "Warfarin" in i.drug1 and "Ibuprofen" in i.drug2
+        ]
         assert len(warfarin_interaction) > 0
         assert warfarin_interaction[0].severity == DrugInteractionSeverity.MAJOR
 
     def test_check_drug_interactions_acei_potassium(self, interaction_checker):
         """Test checking ACE inhibitor + potassium interaction."""
         result = interaction_checker.check_drug_interactions(
-            patient_id=12345,
-            medications=["Lisinopril", "Potassium Chloride"],
-            patient_allergies=[]
+            patient_id=12345, medications=["Lisinopril", "Potassium Chloride"], patient_allergies=[]
         )
 
         # Should detect major interaction
-        acei_interaction = [i for i in result.interactions
-                           if "Lisinopril" in i.drug1 and "Potassium" in i.drug2]
+        acei_interaction = [
+            i for i in result.interactions if "Lisinopril" in i.drug1 and "Potassium" in i.drug2
+        ]
         assert len(acei_interaction) > 0
         assert acei_interaction[0].severity == DrugInteractionSeverity.MAJOR
 
     def test_check_allergies_penicillin(self, interaction_checker):
         """Test checking penicillin allergy."""
         result = interaction_checker.check_drug_interactions(
-            patient_id=12345,
-            medications=["Amoxicillin"],
-            patient_allergies=["Penicillin"]
+            patient_id=12345, medications=["Amoxicillin"], patient_allergies=["Penicillin"]
         )
 
         assert len(result.allergy_warnings) > 0
@@ -421,12 +421,14 @@ class TestDrugInteractionChecker:
         result = interaction_checker.check_drug_interactions(
             patient_id=12345,
             medications=["Sulfamethoxazole"],  # Bactrim
-            patient_allergies=["Sulfa drugs"]
+            patient_allergies=["Sulfa drugs"],
         )
 
         assert len(result.allergy_warnings) > 0
-        assert any("Cross-reactivity" in warning.clinical_significance
-                  for warning in result.allergy_warnings)
+        assert any(
+            "Cross-reactivity" in warning.clinical_significance
+            for warning in result.allergy_warnings
+        )
 
     def test_normalize_drug_name(self, interaction_checker):
         """Test drug name normalization."""
@@ -450,21 +452,23 @@ class TestDrugInteractionChecker:
         """Test recommendation generation."""
         interactions = [
             DrugInteraction(
-                drug1="Warfarin", drug2="Ibuprofen",
+                drug1="Warfarin",
+                drug2="Ibuprofen",
                 severity=DrugInteractionSeverity.MAJOR,
                 description="Increased bleeding risk",
                 clinical_effect="Bleeding",
                 management="Avoid combination",
-                evidence_level="High"
+                evidence_level="High",
             ),
             DrugInteraction(
-                drug1="Metformin", drug2="Contrast",
+                drug1="Metformin",
+                drug2="Contrast",
                 severity=DrugInteractionSeverity.CONTRAINDICATED,
                 description="Lactic acidosis risk",
                 clinical_effect="Lactic acidosis",
                 management="Stop before procedure",
-                evidence_level="High"
-            )
+                evidence_level="High",
+            ),
         ]
 
         recommendations = interaction_checker._generate_recommendations(interactions, [])
@@ -495,12 +499,13 @@ class TestDrugInteractionChecker:
             patient_id=12345,
             interactions=[
                 DrugInteraction(
-                    drug1="Warfarin", drug2="Ibuprofen",
+                    drug1="Warfarin",
+                    drug2="Ibuprofen",
                     severity=DrugInteractionSeverity.MAJOR,
                     description="Increased bleeding risk",
                     clinical_effect="Bleeding",
                     management="Avoid combination",
-                    evidence_level="High"
+                    evidence_level="High",
                 )
             ],
             allergy_warnings=[
@@ -508,12 +513,12 @@ class TestDrugInteractionChecker:
                     drug_name="Amoxicillin",
                     allergen="Penicillin",
                     severity="CRITICAL",
-                    clinical_significance="Direct allergy"
+                    clinical_significance="Direct allergy",
                 )
             ],
             safe_alternatives=["Acetaminophen"],
             recommendations=["Avoid warfarin + NSAID combination"],
-            requires_pharmacist_review=True
+            requires_pharmacist_review=True,
         )
 
         report = interaction_checker.get_interaction_report(mock_result)
@@ -545,9 +550,7 @@ class TestDrugInteractionChecker:
     def test_edge_case_empty_medications(self, interaction_checker):
         """Test interaction checking with empty medication list."""
         result = interaction_checker.check_drug_interactions(
-            patient_id=12345,
-            medications=[],
-            patient_allergies=[]
+            patient_id=12345, medications=[], patient_allergies=[]
         )
 
         assert result.patient_id == 12345

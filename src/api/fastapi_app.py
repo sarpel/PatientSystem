@@ -1,14 +1,15 @@
 """FastAPI application for Clinical AI Assistant REST API."""
 
+import time
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
 from loguru import logger
-import time
 
 from ..config.settings import settings
-from .routes import health, patient, diagnosis, treatment, drugs, labs
+from .routes import diagnosis, drugs, health, labs, patient, treatment
 
 
 # Lifespan context manager for startup/shutdown

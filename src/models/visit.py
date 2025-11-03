@@ -4,10 +4,10 @@ Maps to GP_MUAYENE, GP_HASTA_KABUL and related visit tables.
 """
 
 from datetime import datetime
-from typing import Optional
 from decimal import Decimal
+from typing import Optional
 
-from sqlalchemy import String, Integer, SmallInteger, Numeric, DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
@@ -30,7 +30,7 @@ class Visit(Base):
         Integer,
         primary_key=True,
         autoincrement=True,
-        comment="Examination ID (Primary Key)"
+        comment="Examination ID (Primary Key)",
     )
 
     # Foreign Key to PatientAdmission
@@ -39,177 +39,107 @@ class Visit(Base):
         Integer,
         ForeignKey("GP_HASTA_KABUL.HASTA_KABUL_ID"),
         nullable=False,
-        comment="Patient admission ID (FK)"
+        comment="Patient admission ID (FK)",
     )
 
     # Examination Type
     MUAYENE_TURU: Mapped[int] = mapped_column(
-        "MUAYENE_TURU",
-        Integer,
-        nullable=False,
-        comment="Examination type"
+        "MUAYENE_TURU", Integer, nullable=False, comment="Examination type"
     )
 
     # Primary Diagnosis
     ANA_TANI: Mapped[Optional[int]] = mapped_column(
-        "ANA_TANI",
-        SmallInteger,
-        nullable=True,
-        comment="Primary diagnosis (ICD-10 code)"
+        "ANA_TANI", SmallInteger, nullable=True, comment="Primary diagnosis (ICD-10 code)"
     )
 
     # Vital Signs - Physical Measurements
     AGIRLIK: Mapped[Optional[int]] = mapped_column(
-        "AGIRLIK",
-        Integer,
-        nullable=True,
-        comment="Weight (grams)"
+        "AGIRLIK", Integer, nullable=True, comment="Weight (grams)"
     )
 
-    BOY: Mapped[Optional[int]] = mapped_column(
-        "BOY",
-        Integer,
-        nullable=True,
-        comment="Height (cm)"
-    )
+    BOY: Mapped[Optional[int]] = mapped_column("BOY", Integer, nullable=True, comment="Height (cm)")
 
     BEL_CEVRESI: Mapped[Optional[int]] = mapped_column(
-        "BEL_CEVRESI",
-        Integer,
-        nullable=True,
-        comment="Waist circumference (cm)"
+        "BEL_CEVRESI", Integer, nullable=True, comment="Waist circumference (cm)"
     )
 
     KALCA_CEVRESI: Mapped[Optional[int]] = mapped_column(
-        "KALCA_CEVRESI",
-        Integer,
-        nullable=True,
-        comment="Hip circumference (cm)"
+        "KALCA_CEVRESI", Integer, nullable=True, comment="Hip circumference (cm)"
     )
 
     # Vital Signs - Cardiovascular
     SISTOLIK_KAN_BASINCI: Mapped[Optional[int]] = mapped_column(
-        "SISTOLIK_KAN_BASINCI",
-        Integer,
-        nullable=True,
-        comment="Systolic blood pressure (mmHg)"
+        "SISTOLIK_KAN_BASINCI", Integer, nullable=True, comment="Systolic blood pressure (mmHg)"
     )
 
     DIASTOLIK_KAN_BASINCI: Mapped[Optional[int]] = mapped_column(
-        "DIASTOLIK_KAN_BASINCI",
-        Integer,
-        nullable=True,
-        comment="Diastolic blood pressure (mmHg)"
+        "DIASTOLIK_KAN_BASINCI", Integer, nullable=True, comment="Diastolic blood pressure (mmHg)"
     )
 
     NABIZ: Mapped[Optional[int]] = mapped_column(
-        "NABIZ",
-        Integer,
-        nullable=True,
-        comment="Pulse rate (bpm)"
+        "NABIZ", Integer, nullable=True, comment="Pulse rate (bpm)"
     )
 
     # Vital Signs - Other
     VUCUT_ISISI: Mapped[Optional[Decimal]] = mapped_column(
-        "VUCUT_ISISI",
-        Numeric(3, 1),
-        nullable=True,
-        comment="Body temperature (°C)"
+        "VUCUT_ISISI", Numeric(3, 1), nullable=True, comment="Body temperature (°C)"
     )
 
     GLASGOW_KOMA_SKALASI: Mapped[Optional[int]] = mapped_column(
-        "GLASGOW_KOMA_SKALASI",
-        Integer,
-        nullable=True,
-        comment="Glasgow Coma Scale score"
+        "GLASGOW_KOMA_SKALASI", Integer, nullable=True, comment="Glasgow Coma Scale score"
     )
 
     # Clinical Notes
     SIKAYETI: Mapped[Optional[str]] = mapped_column(
-        "SIKAYETI",
-        String,
-        nullable=True,
-        comment="Patient complaint/symptoms"
+        "SIKAYETI", String, nullable=True, comment="Patient complaint/symptoms"
     )
 
     HIKAYESI: Mapped[Optional[str]] = mapped_column(
-        "HIKAYESI",
-        String,
-        nullable=True,
-        comment="Medical history"
+        "HIKAYESI", String, nullable=True, comment="Medical history"
     )
 
     BULGU: Mapped[Optional[str]] = mapped_column(
-        "BULGU",
-        String,
-        nullable=True,
-        comment="Physical examination findings"
+        "BULGU", String, nullable=True, comment="Physical examination findings"
     )
 
     MUAYENE_NOT: Mapped[Optional[str]] = mapped_column(
-        "MUAYENE_NOT",
-        String,
-        nullable=True,
-        comment="Examination notes"
+        "MUAYENE_NOT", String, nullable=True, comment="Examination notes"
     )
 
     # Additional Information
     MESLEK: Mapped[Optional[int]] = mapped_column(
-        "MESLEK",
-        SmallInteger,
-        nullable=True,
-        comment="Occupation (at time of visit)"
+        "MESLEK", SmallInteger, nullable=True, comment="Occupation (at time of visit)"
     )
 
     SIGARA_KULLANIMI: Mapped[Optional[int]] = mapped_column(
-        "SIGARA_KULLANIMI",
-        Integer,
-        nullable=True,
-        comment="Smoking status (at time of visit)"
+        "SIGARA_KULLANIMI", Integer, nullable=True, comment="Smoking status (at time of visit)"
     )
 
     # Emergency/Disaster Information
     OLAY_AFET_BILGISI: Mapped[Optional[str]] = mapped_column(
-        "OLAY_AFET_BILGISI",
-        String(100),
-        nullable=True,
-        comment="Disaster/event information"
+        "OLAY_AFET_BILGISI", String(100), nullable=True, comment="Disaster/event information"
     )
 
     AFET_OLAY_VATANDAS_TIPI: Mapped[Optional[int]] = mapped_column(
-        "AFET_OLAY_VATANDAS_TIPI",
-        Integer,
-        nullable=True,
-        comment="Disaster victim type"
+        "AFET_OLAY_VATANDAS_TIPI", Integer, nullable=True, comment="Disaster victim type"
     )
 
     HAYATI_TEHLIKE_DURUMU: Mapped[Optional[int]] = mapped_column(
-        "HAYATI_TEHLIKE_DURUMU",
-        Integer,
-        nullable=True,
-        comment="Life-threatening status"
+        "HAYATI_TEHLIKE_DURUMU", Integer, nullable=True, comment="Life-threatening status"
     )
 
     # System Fields
     ESKI_MUAYENE_ID: Mapped[Optional[int]] = mapped_column(
-        "ESKI_MUAYENE_ID",
-        Integer,
-        nullable=True,
-        comment="Old examination ID (for migration)"
+        "ESKI_MUAYENE_ID", Integer, nullable=True, comment="Old examination ID (for migration)"
     )
 
     # Relationships
-    admission: Mapped["PatientAdmission"] = relationship(
-        back_populates="visits"
-    )
+    admission: Mapped["PatientAdmission"] = relationship(back_populates="visits")
 
-    prescriptions: Mapped[list["Prescription"]] = relationship(
-        back_populates="visit"
-    )
+    prescriptions: Mapped[list["Prescription"]] = relationship(back_populates="visit")
 
     diagnoses: Mapped[list["Diagnosis"]] = relationship(
-        back_populates="visit",
-        cascade="all, delete-orphan"
+        back_populates="visit", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -225,7 +155,7 @@ class Visit(Base):
         if self.AGIRLIK and self.BOY and self.BOY > 0:
             weight_kg = self.AGIRLIK / 1000
             height_m = self.BOY / 100
-            return round(weight_kg / (height_m ** 2), 2)
+            return round(weight_kg / (height_m**2), 2)
         return None
 
     @property
@@ -260,7 +190,7 @@ class PatientAdmission(Base):
         Integer,
         primary_key=True,
         autoincrement=True,
-        comment="Patient admission ID (Primary Key)"
+        comment="Patient admission ID (Primary Key)",
     )
 
     # Foreign Key to Patient
@@ -269,65 +199,43 @@ class PatientAdmission(Base):
         Integer,
         ForeignKey("GP_HASTA_KAYIT.HASTA_KAYIT_ID"),
         nullable=False,
-        comment="Patient registration ID (FK)"
+        comment="Patient registration ID (FK)",
     )
 
     # Admission DateTime
     KABUL_TARIHI: Mapped[datetime] = mapped_column(
-        "KABUL_TARIHI",
-        DateTime,
-        nullable=False,
-        comment="Admission date and time"
+        "KABUL_TARIHI", DateTime, nullable=False, comment="Admission date and time"
     )
 
     # Admission Type and Reason
     KABUL_TURU: Mapped[int] = mapped_column(
-        "KABUL_TURU",
-        Integer,
-        nullable=False,
-        comment="Admission type"
+        "KABUL_TURU", Integer, nullable=False, comment="Admission type"
     )
 
     BASVURU_NEDENI: Mapped[Optional[int]] = mapped_column(
-        "BASVURU_NEDENI",
-        Integer,
-        nullable=True,
-        comment="Reason for visit"
+        "BASVURU_NEDENI", Integer, nullable=True, comment="Reason for visit"
     )
 
     # Provider Information
     HEKIM: Mapped[Optional[int]] = mapped_column(
-        "HEKIM",
-        Integer,
-        nullable=True,
-        comment="Physician ID"
+        "HEKIM", Integer, nullable=True, comment="Physician ID"
     )
 
     # Status
     DURUM: Mapped[int] = mapped_column(
-        "DURUM",
-        Integer,
-        nullable=False,
-        default=1,
-        comment="Status (1=Active, 2=Completed, etc.)"
+        "DURUM", Integer, nullable=False, default=1, comment="Status (1=Active, 2=Completed, etc.)"
     )
 
     # System Fields
     ESKI_HASTA_KABUL_ID: Mapped[Optional[int]] = mapped_column(
-        "ESKI_HASTA_KABUL_ID",
-        Integer,
-        nullable=True,
-        comment="Old admission ID (for migration)"
+        "ESKI_HASTA_KABUL_ID", Integer, nullable=True, comment="Old admission ID (for migration)"
     )
 
     # Relationships
-    patient: Mapped["Patient"] = relationship(
-        back_populates="admissions"
-    )
+    patient: Mapped["Patient"] = relationship(back_populates="admissions")
 
     visits: Mapped[list["Visit"]] = relationship(
-        back_populates="admission",
-        cascade="all, delete-orphan"
+        back_populates="admission", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

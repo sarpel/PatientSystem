@@ -2,15 +2,16 @@
 Tests for Patient Summarizer module.
 """
 
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 from sqlalchemy.orm import Session
 
 from src.clinical.patient_summarizer import PatientSummarizer
+from src.models.clinical import Diagnosis, Prescription
 from src.models.patient import Patient, PatientDemographics
-from src.models.visit import Visit, PatientAdmission
-from src.models.clinical import Prescription, Diagnosis
+from src.models.visit import PatientAdmission, Visit
 
 
 class TestPatientSummarizer:
@@ -133,22 +134,30 @@ class TestPatientSummarizer:
         sample_demographics,
         sample_visits,
         sample_prescriptions,
-        sample_diagnoses
+        sample_diagnoses,
     ):
         """Test successful patient summary generation."""
         # Setup mocks
         sample_patient.demographics = sample_demographics
 
         # Mock _get_patient
-        with patch.object(patient_summarizer, '_get_patient', return_value=sample_patient):
+        with patch.object(patient_summarizer, "_get_patient", return_value=sample_patient):
             # Mock other methods
-            with patch.object(patient_summarizer, '_get_demographics') as mock_demo:
-                with patch.object(patient_summarizer, '_get_recent_visits') as mock_visits:
-                    with patch.object(patient_summarizer, '_get_active_diagnoses') as mock_dx:
-                        with patch.object(patient_summarizer, '_get_active_prescriptions') as mock_rx:
-                            with patch.object(patient_summarizer, '_get_allergies') as mock_allergies:
-                                with patch.object(patient_summarizer, '_get_latest_vitals') as mock_vitals:
-                                    with patch.object(patient_summarizer, '_get_summary_stats') as mock_stats:
+            with patch.object(patient_summarizer, "_get_demographics") as mock_demo:
+                with patch.object(patient_summarizer, "_get_recent_visits") as mock_visits:
+                    with patch.object(patient_summarizer, "_get_active_diagnoses") as mock_dx:
+                        with patch.object(
+                            patient_summarizer, "_get_active_prescriptions"
+                        ) as mock_rx:
+                            with patch.object(
+                                patient_summarizer, "_get_allergies"
+                            ) as mock_allergies:
+                                with patch.object(
+                                    patient_summarizer, "_get_latest_vitals"
+                                ) as mock_vitals:
+                                    with patch.object(
+                                        patient_summarizer, "_get_summary_stats"
+                                    ) as mock_stats:
                                         # Setup return values
                                         mock_demo.return_value = {"test": "demographics"}
                                         mock_visits.return_value = [{"test": "visit"}]
@@ -165,14 +174,16 @@ class TestPatientSummarizer:
                                         assert result["demographics"] == {"test": "demographics"}
                                         assert result["recent_visits"] == [{"test": "visit"}]
                                         assert result["active_diagnoses"] == [{"test": "diagnosis"}]
-                                        assert result["active_prescriptions"] == [{"test": "prescription"}]
+                                        assert result["active_prescriptions"] == [
+                                            {"test": "prescription"}
+                                        ]
                                         assert result["allergies"] == []
                                         assert result["latest_vitals"] == {"test": "vitals"}
                                         assert result["summary_stats"] == {"test": "stats"}
 
     def test_get_patient_summary_patient_not_found(self, patient_summarizer):
         """Test patient summary when patient not found."""
-        with patch.object(patient_summarizer, '_get_patient', return_value=None):
+        with patch.object(patient_summarizer, "_get_patient", return_value=None):
             with pytest.raises(ValueError, match="Patient 12345 not found"):
                 patient_summarizer.get_patient_summary(12345)
 
@@ -229,10 +240,7 @@ class TestPatientSummarizer:
         assert "Drug allergy: Penicillin" in result
 
     def test_get_allergies_with_demographics_allergy(
-        self,
-        patient_summarizer,
-        sample_patient,
-        sample_demographics
+        self, patient_summarizer, sample_patient, sample_demographics
     ):
         """Test _get_allergies with demographics allergy."""
         sample_patient.ILAC_ALERJISI = None
@@ -286,23 +294,23 @@ class TestPatientSummarizer:
                 "age": 44,
                 "gender": 1,
                 "bmi": 24.5,
-                "bmi_category": "Normal"
+                "bmi_category": "Normal",
             },
             "allergies": ["Drug allergy: Penicillin"],
             "latest_vitals": {
                 "blood_pressure_str": "120/80",
                 "pulse": 70,
                 "temperature_celsius": 36.5,
-                "bmi": 24.5
+                "bmi": 24.5,
             },
             "summary_stats": {
                 "recent_visit_count": 3,
                 "active_diagnosis_count": 2,
-                "active_prescription_count": 3
-            }
+                "active_prescription_count": 3,
+            },
         }
 
-        with patch.object(patient_summarizer, 'get_patient_summary', return_value=mock_summary):
+        with patch.object(patient_summarizer, "get_patient_summary", return_value=mock_summary):
             # Call method
             result = patient_summarizer.get_formatted_summary(12345)
 
@@ -324,21 +332,17 @@ class TestPatientSummarizer:
     def test_get_formatted_summary_no_data(self, patient_summarizer):
         """Test formatted summary with minimal data."""
         mock_summary = {
-            "demographics": {
-                "full_name": "Test Patient",
-                "age": 44,
-                "gender": 1
-            },
+            "demographics": {"full_name": "Test Patient", "age": 44, "gender": 1},
             "allergies": [],
             "latest_vitals": None,
             "summary_stats": {
                 "recent_visit_count": 0,
                 "active_diagnosis_count": 0,
-                "active_prescription_count": 0
-            }
+                "active_prescription_count": 0,
+            },
         }
 
-        with patch.object(patient_summarizer, 'get_patient_summary', return_value=mock_summary):
+        with patch.object(patient_summarizer, "get_patient_summary", return_value=mock_summary):
             result = patient_summarizer.get_formatted_summary(12345)
 
             assert "PATIENT SUMMARY" in result
@@ -350,16 +354,24 @@ class TestPatientSummarizer:
     def test_calculate_date_threshold(self, patient_summarizer):
         """Test internal date threshold calculation."""
         # This is tested indirectly through get_patient_summary
-        with patch.object(patient_summarizer, '_get_patient') as mock_get_patient:
+        with patch.object(patient_summarizer, "_get_patient") as mock_get_patient:
             mock_get_patient.return_value = Mock(spec=Patient)
 
-            with patch.object(patient_summarizer, '_get_demographics') as mock_demo:
-                with patch.object(patient_summarizer, '_get_recent_visits') as mock_visits:
-                    with patch.object(patient_summarizer, '_get_active_diagnoses') as mock_dx:
-                        with patch.object(patient_summarizer, '_get_active_prescriptions') as mock_rx:
-                            with patch.object(patient_summarizer, '_get_allergies') as mock_allergies:
-                                with patch.object(patient_summarizer, '_get_latest_vitals') as mock_vitals:
-                                    with patch.object(patient_summarizer, '_get_summary_stats') as mock_stats:
+            with patch.object(patient_summarizer, "_get_demographics") as mock_demo:
+                with patch.object(patient_summarizer, "_get_recent_visits") as mock_visits:
+                    with patch.object(patient_summarizer, "_get_active_diagnoses") as mock_dx:
+                        with patch.object(
+                            patient_summarizer, "_get_active_prescriptions"
+                        ) as mock_rx:
+                            with patch.object(
+                                patient_summarizer, "_get_allergies"
+                            ) as mock_allergies:
+                                with patch.object(
+                                    patient_summarizer, "_get_latest_vitals"
+                                ) as mock_vitals:
+                                    with patch.object(
+                                        patient_summarizer, "_get_summary_stats"
+                                    ) as mock_stats:
                                         # Setup all mocks to return empty data
                                         mock_demo.return_value = {}
                                         mock_visits.return_value = []
@@ -387,7 +399,7 @@ class TestPatientSummarizer:
         minimal_patient.CINSIYET = None
         minimal_patient.ILAC_ALERJISI = None
 
-        with patch.object(patient_summarizer, '_get_patient', return_value=minimal_patient):
+        with patch.object(patient_summarizer, "_get_patient", return_value=minimal_patient):
             result = patient_summarizer.get_patient_summary(12345)
 
             assert "demographics" in result

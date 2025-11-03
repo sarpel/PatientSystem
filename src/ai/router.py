@@ -1,27 +1,28 @@
 """AI routing system for intelligent model selection based on task complexity."""
 
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
+
+from loguru import logger
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
 )
-from loguru import logger
 
-from .base_client import (
-    BaseAIClient,
-    AIResponse,
-    AIRequest,
-    TaskComplexity,
-    AIProviderError,
-)
-from .ollama_client import OllamaClient
-from .anthropic_client import AnthropicClient
-from .openai_client import OpenAIClient
-from .google_client import GoogleClient
+from ..utils.error_handler import error_context, handle_errors
 from ..utils.exceptions import AIServiceError, ErrorSeverity
-from ..utils.error_handler import handle_errors, error_context
+from .anthropic_client import AnthropicClient
+from .base_client import (
+    AIProviderError,
+    AIRequest,
+    AIResponse,
+    BaseAIClient,
+    TaskComplexity,
+)
+from .google_client import GoogleClient
+from .ollama_client import OllamaClient
+from .openai_client import OpenAIClient
 
 
 class AIRouter:
@@ -162,10 +163,7 @@ class AIRouter:
             operation=f"AI provider request: {provider_name}",
             category=ErrorCategory.AI_SERVICE,
             severity=ErrorSeverity.MEDIUM,
-            context={
-                "provider": provider_name,
-                "task_complexity": request.task_complexity.value
-            }
+            context={"provider": provider_name, "task_complexity": request.task_complexity.value},
         ):
             client = self.clients.get(provider_name)
 
@@ -173,10 +171,12 @@ class AIRouter:
                 raise AIServiceError(
                     message=f"Provider '{provider_name}' not configured",
                     provider=provider_name,
-                    severity=ErrorSeverity.HIGH
+                    severity=ErrorSeverity.HIGH,
                 )
 
-            logger.debug(f"Trying provider: {provider_name} for task complexity: {request.task_complexity.value}")
+            logger.debug(
+                f"Trying provider: {provider_name} for task complexity: {request.task_complexity.value}"
+            )
 
             # Handle model-specific routing for OpenAI
             if provider_name == "gpt-4o-mini" and isinstance(client, OpenAIClient):

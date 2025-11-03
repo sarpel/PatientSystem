@@ -1,21 +1,22 @@
 """AI integration module for clinical decision support."""
 
-from .base_client import (
-    BaseAIClient,
-    AIResponse,
-    AIRequest,
-    TaskComplexity,
-    AIProviderError,
-)
-from .ollama_client import OllamaClient
-from .anthropic_client import AnthropicClient
-from .openai_client import OpenAIClient
-from .google_client import GoogleClient
-from .router import AIRouter
-from .prompt_templates import TurkishMedicalPrompts
-
 from typing import Optional
+
 from loguru import logger
+
+from .anthropic_client import AnthropicClient
+from .base_client import (
+    AIProviderError,
+    AIRequest,
+    AIResponse,
+    BaseAIClient,
+    TaskComplexity,
+)
+from .google_client import GoogleClient
+from .ollama_client import OllamaClient
+from .openai_client import OpenAIClient
+from .prompt_templates import TurkishMedicalPrompts
+from .router import AIRouter
 
 
 def create_ai_router(

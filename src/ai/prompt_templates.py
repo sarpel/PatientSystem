@@ -1,7 +1,7 @@
 """Turkish medical prompt templates for clinical AI tasks."""
 
-from typing import Dict, Any, List, Optional
 import json
+from typing import Any, Dict, List, Optional
 
 
 class TurkishMedicalPrompts:

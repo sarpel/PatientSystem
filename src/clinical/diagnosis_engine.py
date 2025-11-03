@@ -9,24 +9,25 @@ Provides AI-powered differential diagnosis suggestions with:
 - ICD-10 coding integration
 """
 
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
-from datetime import datetime
 import json
 import re
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.models.patient import Patient, PatientDemographics
-from src.models.visit import Visit, PatientAdmission
-from src.models.clinical import Diagnosis
 from src.config.settings import settings
+from src.models.clinical import Diagnosis
+from src.models.patient import Patient, PatientDemographics
+from src.models.visit import PatientAdmission, Visit
 
 
 @dataclass
 class DiagnosisSuggestion:
     """Individual diagnosis suggestion with probability and evidence."""
+
     diagnosis: str
     icd10_code: str
     probability: float
@@ -40,6 +41,7 @@ class DiagnosisSuggestion:
 @dataclass
 class DiagnosisContext:
     """Clinical context for diagnosis generation."""
+
     patient_info: Dict[str, Any]
     chief_complaints: List[str]
     vital_signs: Dict[str, Any]
@@ -77,7 +79,7 @@ class DiagnosisEngine:
         chief_complaints: List[str],
         vital_signs: Optional[Dict[str, Any]] = None,
         physical_exam: Optional[Dict[str, Any]] = None,
-        lab_results: Optional[Dict[str, Any]] = None
+        lab_results: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Generate differential diagnosis suggestions.
@@ -111,9 +113,7 @@ class DiagnosisEngine:
             diagnosis_result = self._generate_rule_based_diagnosis(context)
 
         # Enhance with local analysis
-        diagnosis_result = self._enhance_with_local_analysis(
-            diagnosis_result, context
-        )
+        diagnosis_result = self._enhance_with_local_analysis(diagnosis_result, context)
 
         return diagnosis_result
 
@@ -127,46 +127,39 @@ class DiagnosisEngine:
             "COPD Exacerbation": "J44.1",
             "Asthma": "J45.9",
             "Influenza": "J11.1",
-
             # Cardiovascular
             "Hypertension": "I10",
             "Angina Pectoris": "I20.9",
             "Myocardial Infarction": "I21.9",
             "Heart Failure": "I50.9",
             "Atrial Fibrillation": "I48.91",
-
             # Gastrointestinal
             "Gastritis": "K29.70",
             "Gastroenteritis": "K52.9",
             "GERD": "K21.9",
             "Irritable Bowel Syndrome": "K58.0",
             "Gastric Ulcer": "K25.9",
-
             # Endocrine/Metabolic
             "Type 2 Diabetes": "E11.9",
             "Type 1 Diabetes": "E10.9",
             "Hypothyroidism": "E03.9",
             "Hyperthyroidism": "E05.9",
             "Metabolic Syndrome": "E88.81",
-
             # Neurological
             "Migraine": "G43.9",
             "Tension Headache": "G44.2",
             "Stroke": "I63.9",
             "TIA": "G45.9",
             "Epilepsy": "G40.9",
-
             # Musculoskeletal
             "Low Back Pain": "M54.5",
             "Osteoarthritis": "M19.9",
             "Rheumatoid Arthritis": "M06.9",
             "Fibromyalgia": "M79.7",
-
             # Infectious
             "COVID-19": "U07.1",
             "UTI": "N39.0",
             "Cellulitis": "L03.90",
-
             # Mental Health
             "Depression": "F32.9",
             "Anxiety": "F41.9",
@@ -180,31 +173,31 @@ class DiagnosisEngine:
                 "patterns": ["chest pain", "pressure", "tightness", "crushing"],
                 "context": ["radiates to arm", "jaw", "neck", "sweating", "nausea"],
                 "urgency": "immediate",
-                "suggested_conditions": ["Myocardial Infarction", "Angina", "Aortic Dissection"]
+                "suggested_conditions": ["Myocardial Infarction", "Angina", "Aortic Dissection"],
             },
             {
                 "patterns": ["shortness of breath", "difficulty breathing", "dyspnea"],
                 "context": ["chest pain", "wheezing", "cyanosis", "fast heart rate"],
                 "urgency": "immediate",
-                "suggested_conditions": ["Pulmonary Embolism", "Heart Failure", "Asthma Attack"]
+                "suggested_conditions": ["Pulmonary Embolism", "Heart Failure", "Asthma Attack"],
             },
             {
                 "patterns": ["severe headache", "worst headache", "thunderclap"],
                 "context": ["neck stiffness", "fever", "confusion", "vision changes"],
                 "urgency": "immediate",
-                "suggested_conditions": ["Subarachnoid Hemorrhage", "Meningitis"]
+                "suggested_conditions": ["Subarachnoid Hemorrhage", "Meningitis"],
             },
             {
                 "patterns": ["fever", "high temperature", "chills"],
                 "context": ["rash", "difficulty breathing", "confusion", "low blood pressure"],
                 "urgency": "urgent",
-                "suggested_conditions": ["Sepsis", "Severe Infection"]
+                "suggested_conditions": ["Sepsis", "Severe Infection"],
             },
             {
                 "patterns": ["abdominal pain", "stomach pain"],
                 "context": ["rigid abdomen", "fever", "vomiting", "shoulder pain"],
                 "urgency": "urgent",
-                "suggested_conditions": ["Appendicitis", "Pancreatitis", "Perforated Ulcer"]
+                "suggested_conditions": ["Appendicitis", "Pancreatitis", "Perforated Ulcer"],
             },
         ]
 
@@ -214,7 +207,7 @@ class DiagnosisEngine:
         chief_complaints: List[str],
         vital_signs: Optional[Dict[str, Any]],
         physical_exam: Optional[Dict[str, Any]],
-        lab_results: Optional[Dict[str, Any]]
+        lab_results: Optional[Dict[str, Any]],
     ) -> DiagnosisContext:
         """Build comprehensive diagnosis context from patient data."""
         # Get patient information with demographics in single query to prevent N+1 issues
@@ -234,9 +227,7 @@ class DiagnosisEngine:
             select(Diagnosis)
             .join(Visit)
             .join(PatientAdmission)
-            .options(
-                joinedload(Diagnosis.visit).joinedload(Visit.admission)
-            )
+            .options(joinedload(Diagnosis.visit).joinedload(Visit.admission))
             .where(PatientAdmission.HASTA_KAYIT == patient_id)
             .distinct()
         )
@@ -279,11 +270,7 @@ class DiagnosisEngine:
             ai_response = self.ai_router.process_complex_task(
                 task="diagnosis",
                 prompt=prompt,
-                context={
-                    "complexity": "high",
-                    "domain": "medical",
-                    "language": "tr"
-                }
+                context={"complexity": "high", "domain": "medical", "language": "tr"},
             )
 
             # Parse AI response
@@ -393,11 +380,11 @@ Format: JSON dizisi olarak dön.
         """Parse AI diagnosis response into structured format."""
         try:
             # Try to parse as JSON
-            if ai_response.strip().startswith('['):
+            if ai_response.strip().startswith("["):
                 suggestions = json.loads(ai_response)
             else:
                 # Extract JSON from response
-                json_match = re.search(r'\[.*\]', ai_response, re.DOTALL)
+                json_match = re.search(r"\[.*\]", ai_response, re.DOTALL)
                 if json_match:
                     suggestions = json.loads(json_match.group())
                 else:
@@ -415,7 +402,7 @@ Format: JSON dizisi olarak dön.
                     supporting_findings=item.get("supporting_findings", []),
                     red_flags=item.get("red_flags", []),
                     recommended_tests=item.get("recommended_tests", []),
-                    urgency=item.get("urgency", "routine")
+                    urgency=item.get("urgency", "routine"),
                 )
                 diagnosis_list.append(diagnosis)
 
@@ -429,7 +416,7 @@ Format: JSON dizisi olarak dön.
                 "recommended_tests": [],
                 "confidence_score": 0.0,
                 "red_flags": [],
-                "error": "AI response parsing failed"
+                "error": "AI response parsing failed",
             }
 
     def _parse_text_diagnosis_response(self, response: str) -> List[Dict[str, Any]]:
@@ -437,7 +424,7 @@ Format: JSON dizisi olarak dön.
         # Basic text parsing fallback
         suggestions = []
 
-        lines = response.split('\n')
+        lines = response.split("\n")
         current_suggestion = {}
 
         for line in lines:
@@ -446,18 +433,25 @@ Format: JSON dizisi olarak dön.
                 continue
 
             # Try to identify diagnosis line
-            if any(keyword in line.lower() for keyword in ['tanı:', 'diagnosis:', 'olasılık:', 'probability:']):
+            if any(
+                keyword in line.lower()
+                for keyword in ["tanı:", "diagnosis:", "olasılık:", "probability:"]
+            ):
                 if current_suggestion:
                     suggestions.append(current_suggestion)
                     current_suggestion = {}
 
                 # Extract diagnosis name
-                diagnosis_match = re.search(r'(?:tanı|diagnosis):\s*(.+?)(?:,|\n|$)', line, re.IGNORECASE)
+                diagnosis_match = re.search(
+                    r"(?:tanı|diagnosis):\s*(.+?)(?:,|\n|$)", line, re.IGNORECASE
+                )
                 if diagnosis_match:
                     current_suggestion["diagnosis"] = diagnosis_match.group(1).strip()
 
                 # Extract probability
-                prob_match = re.search(r'(?:olasılık|probability):\s*(\d+(?:\.\d+)?)\s*%?', line, re.IGNORECASE)
+                prob_match = re.search(
+                    r"(?:olasılık|probability):\s*(\d+(?:\.\d+)?)\s*%?", line, re.IGNORECASE
+                )
                 if prob_match:
                     current_suggestion["probability"] = float(prob_match.group(1)) / 100
 
@@ -491,90 +485,115 @@ Format: JSON dizisi olarak dön.
 
         return self._format_diagnosis_result(unique_suggestions)
 
-    def _analyze_complaint(self, complaint: str, context: DiagnosisContext) -> List[DiagnosisSuggestion]:
+    def _analyze_complaint(
+        self, complaint: str, context: DiagnosisContext
+    ) -> List[DiagnosisSuggestion]:
         """Analyze individual chief complaint for possible diagnoses."""
         suggestions = []
         complaint_lower = complaint.lower()
 
         # Respiratory complaints
-        if any(keyword in complaint_lower for keyword in ["öksür", "cough", "balgam", "sputum", "nefes darlığı", "dyspnea"]):
-            suggestions.append(DiagnosisSuggestion(
-                diagnosis="Acute Bronchitis",
-                icd10_code="J20.9",
-                probability=0.6,
-                reasoning="Akut öksürük ve balgam şikayeti bronşiti düşündürüyor",
-                supporting_findings=[complaint],
-                red_flags=[],
-                recommended_tests=["Göğüs röntgeni", "Kan sayımı"],
-                urgency="routine"
-            ))
+        if any(
+            keyword in complaint_lower
+            for keyword in ["öksür", "cough", "balgam", "sputum", "nefes darlığı", "dyspnea"]
+        ):
+            suggestions.append(
+                DiagnosisSuggestion(
+                    diagnosis="Acute Bronchitis",
+                    icd10_code="J20.9",
+                    probability=0.6,
+                    reasoning="Akut öksürük ve balgam şikayeti bronşiti düşündürüyor",
+                    supporting_findings=[complaint],
+                    red_flags=[],
+                    recommended_tests=["Göğüs röntgeni", "Kan sayımı"],
+                    urgency="routine",
+                )
+            )
 
             if "nefes darlığı" in complaint_lower or "dyspnea" in complaint_lower:
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="COPD Exacerbation",
-                    icd10_code="J44.1",
-                    probability=0.4,
-                    reasoning="Nefes darlığı KOAH alevlenmesini düşündürüyor",
-                    supporting_findings=[complaint],
-                    red_flags=["Sürekli nefes darlığı"],
-                    recommended_tests=["Pulmoner fonksiyon testi", "Arteryal kan gazı"],
-                    urgency="soon"
-                ))
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="COPD Exacerbation",
+                        icd10_code="J44.1",
+                        probability=0.4,
+                        reasoning="Nefes darlığı KOAH alevlenmesini düşündürüyor",
+                        supporting_findings=[complaint],
+                        red_flags=["Sürekli nefes darlığı"],
+                        recommended_tests=["Pulmoner fonksiyon testi", "Arteryal kan gazı"],
+                        urgency="soon",
+                    )
+                )
 
         # Chest pain complaints
-        if any(keyword in complaint_lower for keyword in ["göğüs ağrısı", "chest pain", "batma", "sıkışma"]):
-            suggestions.append(DiagnosisSuggestion(
-                diagnosis="Angina Pectoris",
-                icd10_code="I20.9",
-                probability=0.5,
-                reasoning="Göğüs ağrısı koroner iskemi düşündürüyor",
-                supporting_findings=[complaint],
-                red_flags=["Radyasyon", "terleme", "bulantı"],
-                recommended_tests=["EKG", "Troponin", "EKO"],
-                urgency="urgent"
-            ))
+        if any(
+            keyword in complaint_lower
+            for keyword in ["göğüs ağrısı", "chest pain", "batma", "sıkışma"]
+        ):
+            suggestions.append(
+                DiagnosisSuggestion(
+                    diagnosis="Angina Pectoris",
+                    icd10_code="I20.9",
+                    probability=0.5,
+                    reasoning="Göğüs ağrısı koroner iskemi düşündürüyor",
+                    supporting_findings=[complaint],
+                    red_flags=["Radyasyon", "terleme", "bulantı"],
+                    recommended_tests=["EKG", "Troponin", "EKO"],
+                    urgency="urgent",
+                )
+            )
 
         # Gastrointestinal complaints
-        if any(keyword in complaint_lower for keyword in ["karın ağrısı", "mide", "hazımsızlık", "bulantı"]):
-            suggestions.append(DiagnosisSuggestion(
-                diagnosis="Gastritis",
-                icd10_code="K29.70",
-                probability=0.5,
-                reasoning="Mide şikayetleri gastriti düşündürüyor",
-                supporting_findings=[complaint],
-                red_flags=["Şiddetli ağrı", "kanama"],
-                recommended_tests=["Üst GIS endoskopi", "Helikobakter testi"],
-                urgency="routine"
-            ))
+        if any(
+            keyword in complaint_lower
+            for keyword in ["karın ağrısı", "mide", "hazımsızlık", "bulantı"]
+        ):
+            suggestions.append(
+                DiagnosisSuggestion(
+                    diagnosis="Gastritis",
+                    icd10_code="K29.70",
+                    probability=0.5,
+                    reasoning="Mide şikayetleri gastriti düşündürüyor",
+                    supporting_findings=[complaint],
+                    red_flags=["Şiddetli ağrı", "kanama"],
+                    recommended_tests=["Üst GIS endoskopi", "Helikobakter testi"],
+                    urgency="routine",
+                )
+            )
 
         # Headache complaints
         if any(keyword in complaint_lower for keyword in ["baş ağrısı", "headache", "migren"]):
-            suggestions.append(DiagnosisSuggestion(
-                diagnosis="Tension Headache",
-                icd10_code="G44.2",
-                probability=0.6,
-                reasoning="Gerilim tipi baş ağrısı en sık görülen tiptir",
-                supporting_findings=[complaint],
-                red_flags=["Ani başlangıç", "şiddetli", "boynunda katılık"],
-                recommended_tests=["Nörolojik muayene"],
-                urgency="routine"
-            ))
+            suggestions.append(
+                DiagnosisSuggestion(
+                    diagnosis="Tension Headache",
+                    icd10_code="G44.2",
+                    probability=0.6,
+                    reasoning="Gerilim tipi baş ağrısı en sık görülen tiptir",
+                    supporting_findings=[complaint],
+                    red_flags=["Ani başlangıç", "şiddetli", "boynunda katılık"],
+                    recommended_tests=["Nörolojik muayene"],
+                    urgency="routine",
+                )
+            )
 
             if "şiddetli" in complaint_lower or "en kötü" in complaint_lower:
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="Migraine",
-                    icd10_code="G43.9",
-                    probability=0.4,
-                    reasoning="Şiddetli baş ağrısı migreni düşündürüyor",
-                    supporting_findings=[complaint],
-                    red_flags=["Ani başlangıç", "ateş", "bilinç bulanıklığı"],
-                    recommended_tests=["BT/MR"],
-                    urgency="urgent"
-                ))
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="Migraine",
+                        icd10_code="G43.9",
+                        probability=0.4,
+                        reasoning="Şiddetli baş ağrısı migreni düşündürüyor",
+                        supporting_findings=[complaint],
+                        red_flags=["Ani başlangıç", "ateş", "bilinç bulanıklığı"],
+                        recommended_tests=["BT/MR"],
+                        urgency="urgent",
+                    )
+                )
 
         return suggestions
 
-    def _analyze_vital_signs(self, vital_signs: Dict[str, Any], context: DiagnosisContext) -> List[DiagnosisSuggestion]:
+    def _analyze_vital_signs(
+        self, vital_signs: Dict[str, Any], context: DiagnosisContext
+    ) -> List[DiagnosisSuggestion]:
         """Analyze vital signs for diagnostic clues."""
         suggestions = []
 
@@ -583,51 +602,62 @@ Format: JSON dizisi olarak dön.
             sbp = vital_signs["systolic"]
             dbp = vital_signs["diastolic"]
 
-            if sbp >= settings.hypertension_systolic_threshold or dbp >= settings.hypertension_diastolic_threshold:
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="Hypertension",
-                    icd10_code="I10",
-                    probability=0.8,
-                    reasoning=f"Kan basıncı yüksek: {sbp}/{dbp} mmHg",
-                    supporting_findings=[f"BP: {sbp}/{dbp}"],
-                    red_flags=[],
-                    recommended_tests=["Kan basıncı takibi", "EKO", "Böbrek fonksiyonları"],
-                    urgency="soon"
-                ))
+            if (
+                sbp >= settings.hypertension_systolic_threshold
+                or dbp >= settings.hypertension_diastolic_threshold
+            ):
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="Hypertension",
+                        icd10_code="I10",
+                        probability=0.8,
+                        reasoning=f"Kan basıncı yüksek: {sbp}/{dbp} mmHg",
+                        supporting_findings=[f"BP: {sbp}/{dbp}"],
+                        red_flags=[],
+                        recommended_tests=["Kan basıncı takibi", "EKO", "Böbrek fonksiyonları"],
+                        urgency="soon",
+                    )
+                )
 
         # Fever analysis
         if "temperature" in vital_signs:
             temp = vital_signs["temperature"]
             if temp >= settings.fever_temperature_threshold:
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="Infection",
-                    icd10_code="A49.9",
-                    probability=0.7,
-                    reasoning=f"Ateş var: {temp}°C",
-                    supporting_findings=[f"Temperature: {temp}°C"],
-                    red_flags=[],
-                    recommended_tests=["Kan sayımı", "CRP", "Ürine bakteri"],
-                    urgency="urgent"
-                ))
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="Infection",
+                        icd10_code="A49.9",
+                        probability=0.7,
+                        reasoning=f"Ateş var: {temp}°C",
+                        supporting_findings=[f"Temperature: {temp}°C"],
+                        red_flags=[],
+                        recommended_tests=["Kan sayımı", "CRP", "Ürine bakteri"],
+                        urgency="urgent",
+                    )
+                )
 
         # Heart rate analysis
         if "heart_rate" in vital_signs:
             hr = vital_signs["heart_rate"]
             if hr > settings.tachycardia_threshold:
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="Tachycardia",
-                    icd10_code="R00.0",
-                    probability=0.6,
-                    reasoning=f"Taşikardi: {hr} bpm",
-                    supporting_findings=[f"Heart rate: {hr} bpm"],
-                    red_flags=[],
-                    recommended_tests=["EKG"],
-                    urgency="soon"
-                ))
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="Tachycardia",
+                        icd10_code="R00.0",
+                        probability=0.6,
+                        reasoning=f"Taşikardi: {hr} bpm",
+                        supporting_findings=[f"Heart rate: {hr} bpm"],
+                        red_flags=[],
+                        recommended_tests=["EKG"],
+                        urgency="soon",
+                    )
+                )
 
         return suggestions
 
-    def _analyze_lab_results(self, lab_results: Dict[str, Any], context: DiagnosisContext) -> List[DiagnosisSuggestion]:
+    def _analyze_lab_results(
+        self, lab_results: Dict[str, Any], context: DiagnosisContext
+    ) -> List[DiagnosisSuggestion]:
         """Analyze laboratory results for diagnostic clues."""
         suggestions = []
 
@@ -635,36 +665,46 @@ Format: JSON dizisi olarak dön.
         if "HbA1c" in lab_results:
             hba1c = lab_results["HbA1c"]
             if hba1c >= settings.hba1c_diabetes_threshold:
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="Type 2 Diabetes",
-                    icd10_code="E11.9",
-                    probability=0.8,
-                    reasoning=f"HbA1c yüksek: {hba1c}%",
-                    supporting_findings=[f"HbA1c: {hba1c}%"],
-                    red_flags=[],
-                    recommended_tests=["Açlık glukozu", "Lipid paneli"],
-                    urgency="soon"
-                ))
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="Type 2 Diabetes",
+                        icd10_code="E11.9",
+                        probability=0.8,
+                        reasoning=f"HbA1c yüksek: {hba1c}%",
+                        supporting_findings=[f"HbA1c: {hba1c}%"],
+                        red_flags=[],
+                        recommended_tests=["Açlık glukozu", "Lipid paneli"],
+                        urgency="soon",
+                    )
+                )
 
         # CRP analysis
         if "CRP" in lab_results:
             crp = lab_results["CRP"]
             if crp > 10.0:
-                red_flags = [f"CRP > {settings.crp_severe_threshold} mg/L"] if crp > settings.crp_severe_threshold else []
-                suggestions.append(DiagnosisSuggestion(
-                    diagnosis="Inflammation",
-                    icd10_code="R68.89",
-                    probability=0.7,
-                    reasoning=f"CRP yüksek: {crp} mg/L",
-                    supporting_findings=[f"CRP: {crp} mg/L"],
-                    red_flags=red_flags,
-                    recommended_tests=["Enfeksiyon odağı araştırması"],
-                    urgency="urgent"
-                ))
+                red_flags = (
+                    [f"CRP > {settings.crp_severe_threshold} mg/L"]
+                    if crp > settings.crp_severe_threshold
+                    else []
+                )
+                suggestions.append(
+                    DiagnosisSuggestion(
+                        diagnosis="Inflammation",
+                        icd10_code="R68.89",
+                        probability=0.7,
+                        reasoning=f"CRP yüksek: {crp} mg/L",
+                        supporting_findings=[f"CRP: {crp} mg/L"],
+                        red_flags=red_flags,
+                        recommended_tests=["Enfeksiyon odağı araştırması"],
+                        urgency="urgent",
+                    )
+                )
 
         return suggestions
 
-    def _deduplicate_suggestions(self, suggestions: List[DiagnosisSuggestion]) -> List[DiagnosisSuggestion]:
+    def _deduplicate_suggestions(
+        self, suggestions: List[DiagnosisSuggestion]
+    ) -> List[DiagnosisSuggestion]:
         """Remove duplicate diagnosis suggestions."""
         seen = set()
         unique_suggestions = []
@@ -677,9 +717,11 @@ Format: JSON dizisi olarak dön.
             else:
                 # Update existing suggestion if new one has higher probability
                 for existing in unique_suggestions:
-                    if (existing.diagnosis == suggestion.diagnosis and
-                        existing.icd10_code == suggestion.icd10_code and
-                        suggestion.probability > existing.probability):
+                    if (
+                        existing.diagnosis == suggestion.diagnosis
+                        and existing.icd10_code == suggestion.icd10_code
+                        and suggestion.probability > existing.probability
+                    ):
                         existing.probability = suggestion.probability
                         existing.reasoning = suggestion.reasoning
                         existing.supporting_findings.extend(suggestion.supporting_findings)
@@ -688,9 +730,7 @@ Format: JSON dizisi olarak dön.
         return unique_suggestions
 
     def _enhance_with_local_analysis(
-        self,
-        diagnosis_result: Dict[str, Any],
-        context: DiagnosisContext
+        self, diagnosis_result: Dict[str, Any], context: DiagnosisContext
     ) -> Dict[str, Any]:
         """Enhance diagnosis result with local analysis and red flag detection."""
         # Check for red flags
@@ -702,7 +742,8 @@ Format: JSON dizisi olarak dön.
 
         # Identify urgent conditions
         urgent_conditions = [
-            dx for dx in diagnosis_result.get("differential_diagnosis", [])
+            dx
+            for dx in diagnosis_result.get("differential_diagnosis", [])
             if dx.urgency in ["urgent", "immediate"]
         ]
 
@@ -716,9 +757,11 @@ Format: JSON dizisi olarak dön.
         """Detect red flags in patient presentation."""
         red_flags = []
 
-        all_text = " ".join(context.chief_complaints +
-                           list(context.vital_signs.values()) +
-                           list(context.physical_exam.values())).lower()
+        all_text = " ".join(
+            context.chief_complaints
+            + list(context.vital_signs.values())
+            + list(context.physical_exam.values())
+        ).lower()
 
         for red_flag_pattern in self._red_flag_patterns:
             for pattern in red_flag_pattern["patterns"]:
@@ -800,8 +843,12 @@ Format: JSON dizisi olarak dön.
         if urgent:
             lines.append("🚨 URGENT CONDITIONS 🚨")
             for condition in urgent:
-                urgency_icon = "🔴 IMMEDIATE" if condition.get("urgency") == "immediate" else "🟠 URGENT"
-                lines.append(f"  {urgency_icon}: {condition['diagnosis']} ({condition.get('icd10', '')})")
+                urgency_icon = (
+                    "🔴 IMMEDIATE" if condition.get("urgency") == "immediate" else "🟠 URGENT"
+                )
+                lines.append(
+                    f"  {urgency_icon}: {condition['diagnosis']} ({condition.get('icd10', '')})"
+                )
                 lines.append(f"    Reasoning: {condition.get('reasoning', 'N/A')}")
             lines.append("")
 
@@ -819,14 +866,18 @@ Format: JSON dizisi olarak dön.
             lines.append("DIFFERENTIAL DIAGNOSIS")
             lines.append("-" * 40)
             for i, dx in enumerate(differential[:5], 1):  # Top 5
-                prob_pct = dx.get('probability', 0) * 100
-                urgency = f" [{dx.get('urgency', 'routine').upper()}]" if dx.get('urgency') != 'routine' else ""
+                prob_pct = dx.get("probability", 0) * 100
+                urgency = (
+                    f" [{dx.get('urgency', 'routine').upper()}]"
+                    if dx.get("urgency") != "routine"
+                    else ""
+                )
                 lines.append(f"{i}. {dx['diagnosis']} ({dx.get('icd10', '')}) {urgency}")
                 lines.append(f"   Probability: {prob_pct:.1f}%")
-                if dx.get('reasoning'):
+                if dx.get("reasoning"):
                     lines.append(f"   Reasoning: {dx['reasoning']}")
-                if dx.get('supporting_findings'):
-                    findings = ", ".join(dx['supporting_findings'])
+                if dx.get("supporting_findings"):
+                    findings = ", ".join(dx["supporting_findings"])
                     lines.append(f"   Supporting: {findings}")
                 lines.append("")
 

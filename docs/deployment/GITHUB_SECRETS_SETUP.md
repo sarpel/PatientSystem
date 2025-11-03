@@ -100,6 +100,7 @@ print(secret_key)
 ### SQL Server Passwords
 
 SQL Server passwords must meet these requirements:
+
 - Minimum 8 characters (recommend 20+)
 - Contains uppercase letters (A-Z)
 - Contains lowercase letters (a-z)
@@ -111,6 +112,7 @@ SQL Server passwords must meet these requirements:
 ### Redis Passwords
 
 Redis passwords should:
+
 - Be at least 32 characters
 - Use alphanumeric and special characters
 - Not contain spaces
@@ -118,6 +120,7 @@ Redis passwords should:
 ### Secret Keys
 
 Application secret keys should:
+
 - Be at least 64 characters
 - Use cryptographically secure random generation
 - Never be reused across environments
@@ -143,6 +146,7 @@ git push origin develop
 ## Security Best Practices
 
 ### DO:
+
 - ✅ Use strong, randomly generated passwords
 - ✅ Use different passwords for each environment
 - ✅ Rotate secrets regularly (every 90 days)
@@ -150,6 +154,7 @@ git push origin develop
 - ✅ Use environment-specific secrets for staging/production
 
 ### DON'T:
+
 - ❌ Reuse passwords across environments
 - ❌ Share secrets via insecure channels (email, Slack, etc.)
 - ❌ Commit secrets to version control
@@ -159,6 +164,7 @@ git push origin develop
 ## Secret Rotation
 
 ### When to Rotate:
+
 - Every 90 days (scheduled rotation)
 - When a team member with access leaves
 - After a suspected security incident
@@ -167,6 +173,7 @@ git push origin develop
 ### How to Rotate:
 
 1. **Generate new value:**
+
    ```bash
    openssl rand -base64 32
    ```
@@ -194,6 +201,7 @@ git push origin develop
 **Problem:** Workflow fails with "secret not found" error
 
 **Solution:**
+
 1. Verify secret name matches exactly (case-sensitive)
 2. Check secret is added to the correct repository
 3. Ensure workflow has permission to access secrets
@@ -203,6 +211,7 @@ git push origin develop
 **Problem:** Tests fail with SQL Server authentication error
 
 **Solution:**
+
 1. Verify `TEST_SA_PASSWORD` meets SQL Server requirements
 2. Check for special characters that need escaping
 3. Test password locally with sqlcmd:
@@ -215,6 +224,7 @@ git push origin develop
 **Problem:** Workflow shows "variable is not set" warnings
 
 **Solution:**
+
 1. Verify all required secrets are added
 2. Check secret names in workflow file match GitHub Secrets
 3. Ensure secrets are referenced with `${{ secrets.SECRET_NAME }}`
@@ -233,6 +243,7 @@ git push origin develop
 ## Contact
 
 For questions or issues with GitHub Secrets setup:
+
 - Create an issue in the repository
 - Contact the DevOps team
 - Refer to [GitHub Secrets Documentation](https://docs.github.com/en/actions/security-guides/encrypted-secrets)

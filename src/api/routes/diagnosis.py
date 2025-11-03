@@ -1,13 +1,14 @@
 """Diagnosis analysis API endpoints."""
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any, List
-from loguru import logger
+from typing import Any, Dict, List, Optional
 
-from ...ai import create_ai_router, AIRequest, TurkishMedicalPrompts
-from ...database.connection import get_session
+from fastapi import APIRouter, HTTPException
+from loguru import logger
+from pydantic import BaseModel, Field
+
+from ...ai import AIRequest, TurkishMedicalPrompts, create_ai_router
 from ...clinical.diagnosis_engine import DiagnosisEngine
+from ...database.connection import get_session
 
 router = APIRouter()
 

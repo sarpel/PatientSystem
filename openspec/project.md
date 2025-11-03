@@ -1,9 +1,11 @@
 # OpenSpec Project Overview
 
 ## Project Context
+
 Aile hekimliği pratiği için **SQL Server 2014/2022** tabanlı, **350MB/7 yıllık/~6-7k hasta** verisi içeren AHBS veritabanını analiz eden, **tam klinik karar desteği** (tanı önerisi, tedavi önerisi, ilaç etkileşimi) sunan, **multi-AI destekli** (Local Ollama + OpenAI + Claude + Gemini), **modern hybrid** (Desktop GUI + Web GUI + CLI) Python uygulaması.
 
 ### Domain Constraints
+
 - **Platform:** Windows 11
 - **Python:** 3.11+ (stable latest)
 - **Database:** SQL Server 2014/2022 Express
@@ -14,6 +16,7 @@ Aile hekimliği pratiği için **SQL Server 2014/2022** tabanlı, **350MB/7 yıl
 - **Logging Level:** Full debug
 
 ### Current Project Status
+
 - **Version:** 0.1.0
 - **Phase:** Phase 3 Complete (Clinical Decision Support Modules)
 - **Production Code:** 3,340+ lines
@@ -26,26 +29,31 @@ Aile hekimliği pratiği için **SQL Server 2014/2022** tabanlı, **350MB/7 yıl
 ## Technology Stack
 
 ### Backend
+
 - Python 3.11
 - SQLAlchemy 2.0
 - FastAPI
 - Pydantic
 
 ### Frontend
+
 - React 18
 - Vite
 - Tailwind CSS
 
 ### Desktop
+
 - PySide6 (Qt6)
 
 ### AI
+
 - Anthropic Claude
 - OpenAI GPT-4
 - Google Gemini
 - Local Ollama (Gemma/Qwen models)
 
 ### Other Libraries & Tools
+
 - SQL Server Driver: pyodbc
 - ORM: SQLAlchemy
 - Data Processing: pandas, numpy, scipy
@@ -72,7 +80,7 @@ clinical-ai-assistant/
 ├── tests/               # Test dosyaları
 ├── docs/                # Dokümantasyon
 └── frontend/            # Web UI (React + Vite)
-````
+```
 
 ---
 
@@ -80,48 +88,46 @@ clinical-ai-assistant/
 
 ### Coding Conventions
 
-* PEP8 + Black for code formatting (line-length: 100)
-* Meaningful English identifiers
-* Consistent use of type hints (Python typing/mypy)
-* Core configs via `pydantic-settings`
-* Turkish comments and docstrings allowed for clinical context
+- PEP8 + Black for code formatting (line-length: 100)
+- Meaningful English identifiers
+- Consistent use of type hints (Python typing/mypy)
+- Core configs via `pydantic-settings`
+- Turkish comments and docstrings allowed for clinical context
 
 ### Architecture
 
-* **Pattern:** Modular + layered architecture with clear separation:
-
-  * Data layer (ORM/models)
-  * Service layer (AI, business logic)
-  * Presentation layer (GUI, API, CLI)
+- **Pattern:** Modular + layered architecture with clear separation:
+  - Data layer (ORM/models)
+  - Service layer (AI, business logic)
+  - Presentation layer (GUI, API, CLI)
 
 ### Naming Conventions
 
-* **Files:** `snake_case.py` for Python modules
-* **Classes:** `PascalCase` for class names
-* **Functions/Variables:** `snake_case` for functions and variables
-* **Constants:** `UPPER_CASE` for constants
-* **Turkish DB Tables:** Respect existing GP_, DTY_, HRC_, LST_ prefixes
+- **Files:** `snake_case.py` for Python modules
+- **Classes:** `PascalCase` for class names
+- **Functions/Variables:** `snake_case` for functions and variables
+- **Constants:** `UPPER_CASE` for constants
+- **Turkish DB Tables:** Respect existing GP*, DTY*, HRC*, LST* prefixes
 
 ---
 
 ## Error Handling
 
-* Centralized exception handlers (FastAPI)
-* Retry logic using `tenacity` for unstable integrations (AI APIs, DB)
-* Graceful fallback between AI providers (Claude → GPT → Gemini → Ollama)
+- Centralized exception handlers (FastAPI)
+- Retry logic using `tenacity` for unstable integrations (AI APIs, DB)
+- Graceful fallback between AI providers (Claude → GPT → Gemini → Ollama)
 
 ---
 
 ## Logging
 
-* Logging: `loguru` with structured logs
-* Log sinks:
+- Logging: `loguru` with structured logs
+- Log sinks:
+  - `stdout` for dev
+  - Rotating log file in production
 
-  * `stdout` for dev
-  * Rotating log file in production
-* Log Levels:
-
-  * Debug mode enabled by default (configurable)
+- Log Levels:
+  - Debug mode enabled by default (configurable)
 
 ---
 
@@ -133,13 +139,12 @@ clinical-ai-assistant/
 $ pytest tests/unit/ -v --cov=src
 ```
 
-* Target: **>80% coverage**
-* Critical modules to test:
-
-  * DB connection
-  * AI routing
-  * Clinical rule engines
-  * Drug interaction module
+- Target: **>80% coverage**
+- Critical modules to test:
+  - DB connection
+  - AI routing
+  - Clinical rule engines
+  - Drug interaction module
 
 ### Integration Tests
 
@@ -147,19 +152,17 @@ $ pytest tests/unit/ -v --cov=src
 $ pytest tests/integration/ -v
 ```
 
-* Includes:
-
-  * `test_full_patient_workflow.py`
-  * `test_diagnosis_to_treatment_pipeline.py`
-  * `test_api_endpoints.py`
+- Includes:
+  - `test_full_patient_workflow.py`
+  - `test_diagnosis_to_treatment_pipeline.py`
+  - `test_api_endpoints.py`
 
 ### Performance Testing
 
-* Benchmarks:
-
-  * Patient summary: <2s
-  * Diagnosis generation: <30s
-  * Lab analysis: <5s
+- Benchmarks:
+  - Patient summary: <2s
+  - Diagnosis generation: <30s
+  - Lab analysis: <5s
 
 ---
 
@@ -167,27 +170,27 @@ $ pytest tests/integration/ -v
 
 ### Git Strategy
 
-* `main` branch is stable
-* `dev` branch for active feature integration
-* Feature branches naming: `feat/<module>`
-* Commit style: Small, descriptive, present-tense
+- `main` branch is stable
+- `dev` branch for active feature integration
+- Feature branches naming: `feat/<module>`
+- Commit style: Small, descriptive, present-tense
 
 ### Phase Progression
 
-* **Phase 1:** ✅ Database Foundation & ORM Models
-* **Phase 2:** ✅ Domain Models & Data Layer
-* **Phase 3:** ✅ Clinical Decision Support Modules
-* **Phase 4:** 🔄 GUI Development (In Progress)
-* **Phase 5:** 📋 Planned - Web UI & API Endpoints
-* **Phase 6:** 📋 Planned - CLI & Deployment
+- **Phase 1:** ✅ Database Foundation & ORM Models
+- **Phase 2:** ✅ Domain Models & Data Layer
+- **Phase 3:** ✅ Clinical Decision Support Modules
+- **Phase 4:** 🔄 GUI Development (In Progress)
+- **Phase 5:** 📋 Planned - Web UI & API Endpoints
+- **Phase 6:** 📋 Planned - CLI & Deployment
 
 ### Tooling
 
-* Virtual environment: `poetry`
-* Linting: `ruff`
-* Static typing: `mypy`
-* Build GUI executable: `pyinstaller`
-* Frontend dev: `vite` with HMR
+- Virtual environment: `poetry`
+- Linting: `ruff`
+- Static typing: `mypy`
+- Build GUI executable: `pyinstaller`
+- Frontend dev: `vite` with HMR
 
 ---
 
@@ -198,15 +201,17 @@ $ pytest tests/integration/ -v
 **Base URL:** `http://localhost:8080`
 
 **Key Endpoints:**
-* `/api/v1/patients/{tckn}` - Patient summary
-* `/api/v1/diagnose` - Diagnosis suggestions
-* `/api/v1/treatment` - Treatment recommendations
-* `/api/v1/drugs/interactions` - Drug interaction check
-* `/api/v1/labs/analyze` - Lab result analysis
+
+- `/api/v1/patients/{tckn}` - Patient summary
+- `/api/v1/diagnose` - Diagnosis suggestions
+- `/api/v1/treatment` - Treatment recommendations
+- `/api/v1/drugs/interactions` - Drug interaction check
+- `/api/v1/labs/analyze` - Lab result analysis
 
 **Documentation:**
-* Swagger UI: `http://localhost:8080/docs`
-* ReDoc: `http://localhost:8080/redoc`
+
+- Swagger UI: `http://localhost:8080/docs`
+- ReDoc: `http://localhost:8080/redoc`
 
 ---
 
@@ -236,6 +241,7 @@ uvicorn src.api.fastapi_app:app \
 ### Environment Variables
 
 Required in `.env`:
+
 ```env
 DB_SERVER=Sarpel-PC\HIZIR
 DB_NAME=TestDB
@@ -250,18 +256,18 @@ GOOGLE_API_KEY=...
 
 ### Core Capabilities
 
-* **Patient Summarizer:** Demographics, recent visits, active diagnoses, medications, allergies
-* **Lab Analyzer:** Reference range abnormality detection, critical value alerting, trend analysis
-* **Diagnosis Engine:** AI-powered differential diagnosis with red flag detection, ICD-10 coding
-* **Treatment Engine:** Evidence-based treatment recommendations, contraindication checking
-* **Drug Interaction Checker:** Drug-drug interactions, allergy cross-reactivity, contraindications
+- **Patient Summarizer:** Demographics, recent visits, active diagnoses, medications, allergies
+- **Lab Analyzer:** Reference range abnormality detection, critical value alerting, trend analysis
+- **Diagnosis Engine:** AI-powered differential diagnosis with red flag detection, ICD-10 coding
+- **Treatment Engine:** Evidence-based treatment recommendations, contraindication checking
+- **Drug Interaction Checker:** Drug-drug interactions, allergy cross-reactivity, contraindications
 
 ### Safety Features
 
-* Red flag detection for medical emergencies
-* Critical lab value alerting (Creatinine >3.0, Potassium >6.5, CRP >50)
-* Drug allergy checking with cross-reactivity
-* Age-specific contraindication checking
-* Comprehensive drug interaction database (4 severity levels)
+- Red flag detection for medical emergencies
+- Critical lab value alerting (Creatinine >3.0, Potassium >6.5, CRP >50)
+- Drug allergy checking with cross-reactivity
+- Age-specific contraindication checking
+- Comprehensive drug interaction database (4 severity levels)
 
 ---

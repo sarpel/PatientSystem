@@ -9,6 +9,7 @@ The Clinical AI Assistant Desktop GUI is a native PySide6 application providing 
 ### Launching the Application
 
 1. **From Command Line:**
+
    ```bash
    python -m src.gui.main_window
    ```
@@ -28,6 +29,7 @@ When you first launch the application, you'll see:
 3. **Menu Bar** with File, Tools, and Help options
 
 The application will automatically:
+
 - ✅ Check database connectivity
 - ✅ Verify AI service availability
 - ✅ Load patient interface components
@@ -63,11 +65,13 @@ The application will automatically:
 ### Status Indicators
 
 **Database Status:**
+
 - 🟢 **Connected** - Database connection healthy
 - 🔴 **Disconnected** - Database connection failed
 - 🟡 **Checking** - Verifying database connectivity
 
 **AI Service Status:**
+
 - 🟢 **Ready** - AI services available
 - 🔴 **Unavailable** - No AI services accessible
 - 🟡 **Checking** - Verifying AI service status
@@ -105,9 +109,11 @@ The application will automatically:
 The clinical dashboard provides 5 main tabs:
 
 #### 1. 🧠 Diagnosis
+
 AI-powered differential diagnosis generation
 
 **Features:**
+
 - **Chief Complaint Input**: Describe symptoms and duration
 - **AI Model Selection**: Choose optimal AI provider
 - **Progress Indicators**: Real-time AI analysis progress
@@ -116,6 +122,7 @@ AI-powered differential diagnosis generation
 - **Recommended Tests**: Suggested laboratory studies
 
 **Workflow:**
+
 1. Enter chief complaint in text area
 2. Select AI model (Auto recommended)
 3. Click "Generate Diagnosis"
@@ -123,9 +130,11 @@ AI-powered differential diagnosis generation
 5. Check red flags and recommended tests
 
 #### 2. 💊 Treatment
+
 Evidence-based treatment recommendations
 
 **Features:**
+
 - **Diagnosis Input**: Confirmed diagnosis for treatment planning
 - **Medication Recommendations**: Drug, dosage, and duration
 - **Clinical Guidelines**: Evidence-based protocols
@@ -133,6 +142,7 @@ Evidence-based treatment recommendations
 - **AI Provider Selection**: Choose model for treatment suggestions
 
 **Workflow:**
+
 1. Enter confirmed diagnosis from diagnosis panel
 2. Select AI model preference
 3. Click "Generate Treatment Plan"
@@ -140,9 +150,11 @@ Evidence-based treatment recommendations
 5. Check clinical guidelines and follow-up plan
 
 #### 3. 🧪 Lab Results
+
 Laboratory test analysis and trending
 
 **Features:**
+
 - **Test Selection**: Choose from common laboratory tests
 - **Time Range Filtering**: 1 month to all available data
 - **Results Table**: All values with reference ranges
@@ -151,6 +163,7 @@ Laboratory test analysis and trending
 - **Trend Visualization**: Interactive plots (placeholder)
 
 **Workflow:**
+
 1. Select test type from dropdown
 2. Choose time range for analysis
 3. View results in table format
@@ -158,28 +171,32 @@ Laboratory test analysis and trending
 5. Export charts if needed
 
 #### 4. 💊 Medications
+
 Patient medication history and management
 
 **Features:**
+
 - **Current Medications**: Active prescriptions
 - **Medication History**: Past prescriptions
 - **Dosage Information**: Strength and frequency
 - **Duration Tracking**: Start and end dates
 - **Prescriber Information**: Healthcare provider details
 
-*Note: This tab shows patient's medication history from the database*
+_Note: This tab shows patient's medication history from the database_
 
 #### 5. 📅 History
+
 Patient visit and encounter history
 
 **Features:**
+
 - **Visit Timeline**: Chronological encounter list
 - **Encounter Types**: Visit classifications
 - **Date Filtering**: Range-based history viewing
 - **Encounter Details**: Chief complaints and diagnoses
 - **Provider Information**: Healthcare professional details
 
-*Note: This tab shows patient's complete visit history*
+_Note: This tab shows patient's complete visit history_
 
 ## ⚙️ Tools and Configuration
 
@@ -188,6 +205,7 @@ Patient visit and encounter history
 **Access:** Tools → Database Inspector
 
 **Features:**
+
 - **Schema Explorer**: Browse all database tables
 - **Table Categories**: Filter by table type (Patient, Visit, Diagnosis, etc.)
 - **Column Information**: Field names, types, and nullability
@@ -195,18 +213,20 @@ Patient visit and encounter history
 - **SQL Query Preview**: See underlying queries
 
 **Categories:**
+
 - **Patient Tables**: HASTA, GP_BC
 - **Visit Tables**: MUAYENE, KABUL
 - **Diagnosis Tables**: TANI, ICD
 - **Prescription Tables**: RECETE, ILAC
 - **Lab Tables**: TETKIK, LAB
-- **Reference Tables**: LST_* (lookup tables)
+- **Reference Tables**: LST\_\* (lookup tables)
 
 ### AI Configuration
 
 **Access:** Tools → AI Configuration
 
 **Features:**
+
 - **Model Selection**: Choose AI models for each provider
 - **Health Checks**: Test AI service connectivity
 - **Routing Strategy**: Configure smart routing behavior
@@ -214,12 +234,14 @@ Patient visit and encounter history
 - **Provider Status**: Real-time availability monitoring
 
 **Model Options:**
+
 - **Claude**: claude-3-5-sonnet, claude-3-opus, claude-3-haiku
 - **OpenAI**: gpt-4o, gpt-4o-mini, gpt-4-turbo
 - **Gemini**: gemini-pro, gemini-1.5-pro, gemini-1.5-flash
 - **Ollama**: gemma:7b, llama2:7b, mistral:7b
 
 **Health Check Process:**
+
 1. Click "Check Provider Health"
 2. Monitor progress bars
 3. Review status results (✓ Available or ✗ Unavailable)
@@ -232,6 +254,7 @@ Patient visit and encounter history
 **When triggered:** When prescribing medications that may interact
 
 **Alert Features:**
+
 - **Severity Coding:** Color-coded by interaction severity
   - 🔴 **Critical**: Life-threatening interactions
   - 🟠 **Major**: Significant clinical effects
@@ -246,12 +269,14 @@ Patient visit and encounter history
 **When triggered:** During AI diagnosis generation
 
 **Red Flag Examples:**
+
 - Chest pain with cardiac risk factors
 - Fever with neurological symptoms
 - Difficulty breathing with vital sign abnormalities
 - Trauma with potential internal injuries
 
 **Display Features:**
+
 - ⚠️ **Warning Icon:** Prominent alert indication
 - **Red Box Background:** High-visibility warning styling
 - **Specific Warnings:** Detailed description of urgent findings
@@ -262,12 +287,14 @@ Patient visit and encounter history
 ### Performance Indicators
 
 **Loading States:**
+
 - **Progress Bars:** Visual feedback for long operations
 - **Status Messages**: Real-time operation updates
 - **Cancel Options:** Stop long-running operations
 - **Timeout Handling**: Graceful failure management
 
 **Response Times:**
+
 - **Patient Search:** <1 second
 - **Diagnosis Generation:** 5-30 seconds (depending on complexity)
 - **Lab Analysis:** <2 seconds
@@ -276,6 +303,7 @@ Patient visit and encounter history
 ### Memory Management
 
 **Features:**
+
 - **Automatic Cleanup:** Release memory when not needed
 - **Data Caching:** Cache recent queries for faster access
 - **Background Processing:** Non-blocking operations
@@ -284,17 +312,20 @@ Patient visit and encounter history
 ## ⌨️ Keyboard Shortcuts
 
 ### Global Shortcuts
+
 - **Ctrl+Q**: Exit application
 - **F1**: Show help dialog
 - **Alt+F4**: Close window
 
 ### Navigation Shortcuts
+
 - **Tab**: Navigate between form fields
 - **Enter**: Confirm actions (search, generate)
 - **Escape**: Cancel operations, close dialogs
 - **Ctrl+F**: Focus search box
 
 ### Dialog Shortcuts
+
 - **Enter**: Confirm dialog action
 - **Escape**: Cancel/close dialog
 
@@ -303,6 +334,7 @@ Patient visit and encounter history
 ### Common Issues
 
 **Database Connection Issues:**
+
 ```
 Problem: Database shows "Disconnected"
 Solution:
@@ -313,6 +345,7 @@ Solution:
 ```
 
 **AI Service Unavailable:**
+
 ```
 Problem: AI status shows "Unavailable"
 Solution:
@@ -323,6 +356,7 @@ Solution:
 ```
 
 **Slow Performance:**
+
 ```
 Problem: Interface responds slowly
 Solution:
@@ -333,6 +367,7 @@ Solution:
 ```
 
 **Patient Search Fails:**
+
 ```
 Problem: No search results returned
 Solution:
@@ -345,16 +380,19 @@ Solution:
 ### Error Messages
 
 **Database Errors:**
+
 - "Failed to connect to database" → Check SQL Server connection
 - "Query execution failed" → Verify database schema
 - "Timeout occurred" → Check database performance
 
 **AI Service Errors:**
+
 - "AI service unavailable" → Check API keys and internet
 - "Request timeout" → Try again or use different model
 - "Rate limit exceeded" -> Wait and retry later
 
 **GUI Errors:**
+
 - "Widget not responding" → Restart application
 - "Failed to load data" → Check connection and permissions
 - "Invalid input format" → Follow input guidelines
@@ -364,12 +402,14 @@ Solution:
 ### Resources
 
 **Documentation:**
+
 - [Installation Guide](../deployment/installation.md)
 - [Configuration Guide](../deployment/configuration.md)
 - [Clinical Workflows](clinical-workflows.md)
 - [Troubleshooting Guide](../deployment/troubleshooting.md)
 
 **Support:**
+
 - Check status indicators in bottom status bar
 - Review error messages in dialog boxes
 - Consult logs for detailed error information
@@ -378,6 +418,7 @@ Solution:
 ### Clinical Support
 
 **Best Practices:**
+
 - Always verify critical findings with clinical judgment
 - Use AI recommendations as decision support, not replacement
 - Document reasoning for clinical decisions

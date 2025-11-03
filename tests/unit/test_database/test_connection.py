@@ -6,13 +6,13 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
 
+from src.config.settings import settings
 from src.database.connection import (
     create_db_engine,
-    test_connection,
+    get_engine,
     get_session_factory,
-    get_engine
+    test_connection,
 )
-from src.config.settings import settings
 
 
 class TestDatabaseConnection:

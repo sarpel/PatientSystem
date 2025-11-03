@@ -8,20 +8,21 @@ Analyzes laboratory results with features:
 - Z-score calculation for outliers
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
-from enum import Enum
 import statistics
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import select, desc
+from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
 
 class AlertLevel(Enum):
     """Alert severity levels for abnormal lab values."""
+
     NORMAL = "normal"
-    MILD = "mild"      # Slightly abnormal
+    MILD = "mild"  # Slightly abnormal
     MODERATE = "moderate"  # Moderately abnormal
     CRITICAL = "critical"  # Critically abnormal
 
@@ -29,6 +30,7 @@ class AlertLevel(Enum):
 @dataclass
 class LabResult:
     """Individual lab result with metadata."""
+
     test_name: str
     value: float
     unit: str
@@ -40,6 +42,7 @@ class LabResult:
 @dataclass
 class LabTrend:
     """Trend analysis for a specific lab test."""
+
     test_name: str
     values: List[float]
     dates: List[datetime]
@@ -65,11 +68,7 @@ class LabAnalyzer:
         self.session = session
         self._reference_ranges = self._load_reference_ranges()
 
-    def analyze_patient_labs(
-        self,
-        patient_id: int,
-        months_back: int = 6
-    ) -> Dict[str, Any]:
+    def analyze_patient_labs(self, patient_id: int, months_back: int = 6) -> Dict[str, Any]:
         """
         Analyze all laboratory results for a patient.
 
@@ -182,11 +181,7 @@ class LabAnalyzer:
             },
         }
 
-    def _get_sample_lab_results(
-        self,
-        patient_id: int,
-        months_back: int
-    ) -> List[LabResult]:
+    def _get_sample_lab_results(self, patient_id: int, months_back: int) -> List[LabResult]:
         """Generate sample lab results for demonstration."""
         # In real implementation, this would query actual lab tables
         base_date = datetime.now() - timedelta(days=months_back * 30)
@@ -200,14 +195,12 @@ class LabAnalyzer:
             LabResult("Potassium", 5.9, "mmol/L", "3.5-5.1", base_date + timedelta(days=150)),
             LabResult("CRP", 45, "mg/L", "0-3.0", base_date + timedelta(days=150)),
             LabResult("WBC", 14.2, "x10^9/L", "4.5-11.0", base_date + timedelta(days=150)),
-
             # Previous visit (showing trends)
             LabResult("HbA1c", 7.8, "%", "4.8-5.6", base_date + timedelta(days=120)),
             LabResult("Fasting Glucose", 145, "mg/dL", "70-99", base_date + timedelta(days=120)),
             LabResult("Creatinine", 1.8, "mg/dL", "0.6-1.3", base_date + timedelta(days=120)),
             LabResult("Potassium", 5.4, "mmol/L", "3.5-5.1", base_date + timedelta(days=120)),
             LabResult("CRP", 25, "mg/L", "0-3.0", base_date + timedelta(days=120)),
-
             # Earlier visit
             LabResult("HbA1c", 7.2, "%", "4.8-5.6", base_date + timedelta(days=90)),
             LabResult("Fasting Glucose", 125, "mg/dL", "70-99", base_date + timedelta(days=90)),
@@ -352,7 +345,11 @@ class LabAnalyzer:
         sum_x2 = sum(x * x for x in days)
 
         # Calculate slope (rate of change per day)
-        slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x) if n * sum_x2 - sum_x * sum_x != 0 else 0
+        slope = (
+            (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x)
+            if n * sum_x2 - sum_x * sum_x != 0
+            else 0
+        )
 
         # Determine trend direction
         if abs(slope) < 0.001:  # Very small slope = stable
@@ -377,7 +374,7 @@ class LabAnalyzer:
             dates=dates,
             trend=trend,
             slope=slope,
-            z_score=z_score
+            z_score=z_score,
         )
 
     def _generate_analysis_summary(self, lab_results: List[LabResult]) -> Dict[str, Any]:
@@ -387,8 +384,11 @@ class LabAnalyzer:
         critical_count = len(self._find_critical_alerts(lab_results))
 
         latest_results = self._get_latest_results(lab_results)
-        critical_tests = [test_name for test_name, result in latest_results.items()
-                         if self._assess_abnormality(result) == AlertLevel.CRITICAL]
+        critical_tests = [
+            test_name
+            for test_name, result in latest_results.items()
+            if self._assess_abnormality(result) == AlertLevel.CRITICAL
+        ]
 
         return {
             "total_unique_tests": total_tests,
@@ -400,9 +400,7 @@ class LabAnalyzer:
         }
 
     def _generate_recommendations(
-        self,
-        latest_results: Dict[str, LabResult],
-        critical_tests: List[str]
+        self, latest_results: Dict[str, LabResult], critical_tests: List[str]
     ) -> List[str]:
         """Generate clinical recommendations based on lab results."""
         recommendations = []
@@ -415,13 +413,19 @@ class LabAnalyzer:
             recommendations.append("Urgent nephrology consultation recommended")
 
         if "Potassium" in critical_tests:
-            recommendations.append("Critical potassium level - requires immediate medical attention")
+            recommendations.append(
+                "Critical potassium level - requires immediate medical attention"
+            )
 
         if "CRP" in critical_tests:
-            recommendations.append("Severe inflammation - investigate source and consider treatment")
+            recommendations.append(
+                "Severe inflammation - investigate source and consider treatment"
+            )
 
         if "WBC" in critical_tests:
-            recommendations.append("Abnormal white blood cell count - infection or hematological disorder evaluation needed")
+            recommendations.append(
+                "Abnormal white blood cell count - infection or hematological disorder evaluation needed"
+            )
 
         # Check for multiple abnormalities
         lab_count = len(latest_results)
@@ -450,16 +454,18 @@ class LabAnalyzer:
         lines.append("")
 
         # Critical Alerts
-        if analysis['critical_alerts']:
+        if analysis["critical_alerts"]:
             lines.append("🚨 CRITICAL ALERTS 🚨")
-            for alert in analysis['critical_alerts']:
-                lines.append(f"  {alert.test_name}: {alert.value} {alert.unit} (Normal: {alert.reference_range})")
+            for alert in analysis["critical_alerts"]:
+                lines.append(
+                    f"  {alert.test_name}: {alert.value} {alert.unit} (Normal: {alert.reference_range})"
+                )
             lines.append("")
 
         # Latest Results
         lines.append("LATEST LAB RESULTS")
         lines.append("-" * 40)
-        latest = analysis['latest_results']
+        latest = analysis["latest_results"]
         for test_name, result in latest.items():
             status = "✅ Normal"
             if result.alert_level == AlertLevel.MILD:
@@ -474,10 +480,10 @@ class LabAnalyzer:
         lines.append("")
 
         # Trends
-        if analysis['trends']:
+        if analysis["trends"]:
             lines.append("TREND ANALYSIS")
             lines.append("-" * 40)
-            for trend in analysis['trends']:
+            for trend in analysis["trends"]:
                 if abs(trend.z_score) > 1.96:  # Statistically significant (p < 0.05)
                     significance = " (significant)"
                 else:
@@ -488,10 +494,10 @@ class LabAnalyzer:
         lines.append("")
 
         # Recommendations
-        if analysis['summary']['recommendations']:
+        if analysis["summary"]["recommendations"]:
             lines.append("RECOMMENDATIONS")
             lines.append("-" * 40)
-            for rec in analysis['summary']['recommendations']:
+            for rec in analysis["summary"]["recommendations"]:
                 lines.append(f"  • {rec}")
 
         lines.append("")

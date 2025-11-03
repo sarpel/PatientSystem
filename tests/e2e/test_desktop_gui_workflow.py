@@ -1,15 +1,16 @@
 """End-to-end tests for desktop GUI workflow."""
 
+import sys
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtTest import QTest
-import sys
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 from src.gui.main_window import MainWindow
-from src.gui.widgets.patient_search import PatientSearchWidget
 from src.gui.widgets.diagnosis_panel import DiagnosisPanelWidget
+from src.gui.widgets.patient_search import PatientSearchWidget
 
 
 @pytest.mark.e2e
@@ -29,7 +30,7 @@ class TestDesktopGUIWorkflow:
     @pytest.fixture
     def main_window(self, qt_app, mock_session):
         """Create main window for testing."""
-        with patch('src.gui.main_window.get_engine') as mock_get_engine:
+        with patch("src.gui.main_window.get_engine") as mock_get_engine:
             mock_engine = Mock()
             mock_connection = Mock()
             mock_connection.execute.return_value.scalar.return_value = 1
@@ -48,15 +49,15 @@ class TestDesktopGUIWorkflow:
                 "ADI": "Test",
                 "SOYADI": "Patient One",
                 "DOGUM_TARIHI": "1980-01-01",
-                "CINSIYET": "E"
+                "CINSIYET": "E",
             },
             {
                 "TCKN": "12345678902",
                 "ADI": "Test",
                 "SOYADI": "Patient Two",
                 "DOGUM_TARIHI": "1975-05-15",
-                "CINSIYET": "K"
-            }
+                "CINSIYET": "K",
+            },
         ]
 
     def test_main_window_initialization(self, main_window):
@@ -67,10 +68,10 @@ class TestDesktopGUIWorkflow:
         assert main_window.minimumHeight() >= 800
 
         # Verify main components exist
-        assert hasattr(main_window, 'patient_search')
-        assert hasattr(main_window, 'dashboard')
-        assert hasattr(main_window, 'db_status_label')
-        assert hasattr(main_window, 'ai_status_label')
+        assert hasattr(main_window, "patient_search")
+        assert hasattr(main_window, "dashboard")
+        assert hasattr(main_window, "db_status_label")
+        assert hasattr(main_window, "ai_status_label")
 
         # Verify database connection status indicator
         assert main_window.db_status_label.text().startswith("Database:")
@@ -121,7 +122,7 @@ class TestDesktopGUIWorkflow:
             # Verify dashboard was updated
             assert dashboard.current_tckn == sample_patients[0]["TCKN"]
 
-    @patch('src.gui.widgets.diagnosis_panel.DiagnosisWorker')
+    @patch("src.gui.widgets.diagnosis_panel.DiagnosisWorker")
     def test_diagnosis_generation_workflow(self, mock_worker_class, main_window, mock_ai_response):
         """Test diagnosis generation workflow in GUI."""
         # Set up patient in dashboard
@@ -169,7 +170,7 @@ class TestDesktopGUIWorkflow:
         lab_charts = dashboard.lab_charts
 
         # Mock lab data retrieval
-        with patch('src.gui.widgets.lab_charts.apiClient.getLabTests', return_value=mock_lab_data):
+        with patch("src.gui.widgets.lab_charts.apiClient.getLabTests", return_value=mock_lab_data):
             lab_charts.load_patient("12345678901")
 
         # Verify lab data was loaded
@@ -205,7 +206,7 @@ class TestDesktopGUIWorkflow:
         assert tools_menu is not None
         assert len(tools_menu.actions()) >= 2  # Database Inspector and AI Config
 
-    @patch('src.gui.dialogs.ai_config_dialog.AIConfigDialog')
+    @patch("src.gui.dialogs.ai_config_dialog.AIConfigDialog")
     def test_ai_config_dialog(self, mock_dialog_class, main_window):
         """Test AI configuration dialog."""
         mock_dialog = Mock()
@@ -218,7 +219,7 @@ class TestDesktopGUIWorkflow:
         mock_dialog_class.assert_called_once()
         mock_dialog.exec.assert_called_once()
 
-    @patch('src.gui.dialogs.database_inspector_dialog.DatabaseInspectorDialog')
+    @patch("src.gui.dialogs.database_inspector_dialog.DatabaseInspectorDialog")
     def test_database_inspector_dialog(self, mock_dialog_class, main_window):
         """Test database inspector dialog."""
         mock_dialog = Mock()
@@ -246,7 +247,7 @@ class TestDesktopGUIWorkflow:
     def test_error_handling_in_gui(self, main_window):
         """Test error handling in GUI components."""
         # Test patient search with error
-        with patch('src.gui.widgets.patient_search.get_session') as mock_get_session:
+        with patch("src.gui.widgets.patient_search.get_session") as mock_get_session:
             mock_get_session.side_effect = Exception("Database connection failed")
 
             search_widget = main_window.patient_search
@@ -304,7 +305,7 @@ class TestDesktopGUIPerformance:
 
         start_time = time.time()
 
-        with patch('src.gui.main_window.get_engine') as mock_get_engine:
+        with patch("src.gui.main_window.get_engine") as mock_get_engine:
             mock_engine = Mock()
             mock_connection = Mock()
             mock_connection.execute.return_value.scalar.return_value = 1
@@ -328,21 +329,25 @@ class TestDesktopGUIPerformance:
         # Create large dataset
         large_patient_list = []
         for i in range(1000):
-            large_patient_list.append({
-                "TCKN": f"1234567890{i:04d}",
-                "ADI": f"Test",
-                "SOYADI": f"Patient {i}",
-                "DOGUM_TARIHI": "1980-01-01",
-                "CINSIYET": "E" if i % 2 == 0 else "K"
-            })
+            large_patient_list.append(
+                {
+                    "TCKN": f"1234567890{i:04d}",
+                    "ADI": f"Test",
+                    "SOYADI": f"Patient {i}",
+                    "DOGUM_TARIHI": "1980-01-01",
+                    "CINSIYET": "E" if i % 2 == 0 else "K",
+                }
+            )
 
         search_widget = main_window.patient_search
 
         # Mock large dataset return
-        with patch('src.gui.widgets.patient_search.get_session') as mock_get_session:
+        with patch("src.gui.widgets.patient_search.get_session") as mock_get_session:
             mock_session = Mock()
             mock_query = Mock()
-            mock_query.filter.return_value.limit.return_value.all.return_value = large_patient_list[:100]
+            mock_query.filter.return_value.limit.return_value.all.return_value = large_patient_list[
+                :100
+            ]
             mock_session.query.return_value = mock_query
             mock_get_session.return_value = mock_session
 
@@ -353,6 +358,8 @@ class TestDesktopGUIPerformance:
             search_time = end_time - start_time
 
             # Should handle large dataset efficiently
-            assert search_time < 2.0, f"Large dataset search took {search_time:.2f}s, should be < 2.0s"
+            assert (
+                search_time < 2.0
+            ), f"Large dataset search took {search_time:.2f}s, should be < 2.0s"
 
             print(f"Large Dataset Performance: {search_time:.2f}s for 1000+ records")

@@ -1,11 +1,12 @@
 """Performance benchmarks for Clinical AI Assistant."""
 
-import pytest
-import time
 import asyncio
 import statistics
-from typing import List, Dict
-from unittest.mock import patch, AsyncMock
+import time
+from typing import Dict, List
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from src.ai.router import AIRouter
 from src.clinical.diagnosis_engine import DiagnosisEngine
@@ -27,10 +28,12 @@ class TestAIBenchmarks:
         mock_claude.return_value = {
             "text": '{"differential_diagnosis": [{"diagnosis": "Test", "probability": 0.8}]}',
             "model": "claude-3-5-sonnet",
-            "provider": "claude"
+            "provider": "claude",
         }
 
-        with patch('src.ai.router.AIRouter.route_and_complete', return_value=mock_claude.return_value):
+        with patch(
+            "src.ai.router.AIRouter.route_and_complete", return_value=mock_claude.return_value
+        ):
             diagnosis_engine = DiagnosisEngine()
 
             # Run multiple iterations
@@ -43,7 +46,7 @@ class TestAIBenchmarks:
                 result = await diagnosis_engine.generate_differential_diagnosis_ai(
                     tckn="12345678901",
                     chief_complaint=f"Test patient complaint {i}",
-                    preferred_provider="claude"
+                    preferred_provider="claude",
                 )
 
                 end_time = time.time()
@@ -58,11 +61,13 @@ class TestAIBenchmarks:
         min_time = min(timings)
 
         # Performance assertions
-        assert avg_time < performance_thresholds["diagnosis_generation_seconds"], \
-            f"Average diagnosis time {avg_time:.2f}s exceeds threshold {performance_thresholds['diagnosis_generation_seconds']}s"
+        assert (
+            avg_time < performance_thresholds["diagnosis_generation_seconds"]
+        ), f"Average diagnosis time {avg_time:.2f}s exceeds threshold {performance_thresholds['diagnosis_generation_seconds']}s"
 
-        assert max_time < performance_thresholds["diagnosis_generation_seconds"] * 2, \
-            f"Maximum diagnosis time {max_time:.2f}s exceeds 2x threshold"
+        assert (
+            max_time < performance_thresholds["diagnosis_generation_seconds"] * 2
+        ), f"Maximum diagnosis time {max_time:.2f}s exceeds 2x threshold"
 
         print(f"Diagnosis Generation Performance:")
         print(f"  Average: {avg_time:.2f}s")
@@ -73,11 +78,11 @@ class TestAIBenchmarks:
     @pytest.mark.asyncio
     async def test_treatment_generation_performance(self, performance_thresholds):
         """Benchmark treatment generation performance."""
-        with patch('src.ai.router.AIRouter.route_and_complete') as mock_ai:
+        with patch("src.ai.router.AIRouter.route_and_complete") as mock_ai:
             mock_ai.return_value = {
                 "text": '{"medications": [{"name": "Test Medication"}]}',
                 "model": "claude-3-5-sonnet",
-                "provider": "claude"
+                "provider": "claude",
             }
 
             treatment_engine = TreatmentEngine()
@@ -90,9 +95,7 @@ class TestAIBenchmarks:
                 start_time = time.time()
 
                 result = await treatment_engine.suggest_treatment_ai(
-                    tckn="12345678901",
-                    diagnosis=f"Test Diagnosis {i}",
-                    preferred_provider="claude"
+                    tckn="12345678901", diagnosis=f"Test Diagnosis {i}", preferred_provider="claude"
                 )
 
                 end_time = time.time()
@@ -107,8 +110,9 @@ class TestAIBenchmarks:
         min_time = min(timings)
 
         # Performance assertions
-        assert avg_time < performance_thresholds["diagnosis_generation_seconds"], \
-            f"Average treatment time {avg_time:.2f}s exceeds threshold {performance_thresholds['diagnosis_generation_seconds']}s"
+        assert (
+            avg_time < performance_thresholds["diagnosis_generation_seconds"]
+        ), f"Average treatment time {avg_time:.2f}s exceeds threshold {performance_thresholds['diagnosis_generation_seconds']}s"
 
         print(f"Treatment Generation Performance:")
         print(f"  Average: {avg_time:.2f}s")
@@ -119,11 +123,11 @@ class TestAIBenchmarks:
     @pytest.mark.asyncio
     async def test_concurrent_ai_requests(self, performance_thresholds):
         """Benchmark concurrent AI request handling."""
-        with patch('src.ai.router.AIRouter.route_and_complete') as mock_ai:
+        with patch("src.ai.router.AIRouter.route_and_complete") as mock_ai:
             mock_ai.return_value = {
                 "text": '{"diagnosis": "Test"}',
                 "model": "claude-3-5-sonnet",
-                "provider": "claude"
+                "provider": "claude",
             }
 
             diagnosis_engine = DiagnosisEngine()
@@ -136,7 +140,7 @@ class TestAIBenchmarks:
                 diagnosis_engine.generate_differential_diagnosis_ai(
                     tckn=f"1234567890{i:02d}",
                     chief_complaint=f"Test complaint {i}",
-                    preferred_provider="claude"
+                    preferred_provider="claude",
                 )
                 for i in range(num_requests)
             ]
@@ -148,11 +152,13 @@ class TestAIBenchmarks:
             avg_per_request = total_time / num_requests
 
             # Performance assertions
-            assert avg_per_request < performance_thresholds["diagnosis_generation_seconds"], \
-                f"Average concurrent time {avg_per_request:.2f}s exceeds threshold"
+            assert (
+                avg_per_request < performance_thresholds["diagnosis_generation_seconds"]
+            ), f"Average concurrent time {avg_per_request:.2f}s exceeds threshold"
 
-            assert total_time < performance_thresholds["diagnosis_generation_seconds"] * 3, \
-                f"Total concurrent time {total_time:.2f}s exceeds 3x threshold"
+            assert (
+                total_time < performance_thresholds["diagnosis_generation_seconds"] * 3
+            ), f"Total concurrent time {total_time:.2f}s exceeds 3x threshold"
 
             # Verify all requests succeeded
             assert len(results) == num_requests
@@ -185,7 +191,7 @@ class TestDatabaseBenchmarks:
                 # Simulate patient search query
                 query = session.execute(
                     "SELECT COUNT(*) FROM HASTA WHERE ADI LIKE :term OR SOYADI LIKE :term",
-                    {"term": f"%{term}%"}
+                    {"term": f"%{term}%"},
                 )
 
                 end_time = time.time()
@@ -195,8 +201,9 @@ class TestDatabaseBenchmarks:
             max_time = max(timings)
 
             # Performance assertions
-            assert avg_time < performance_thresholds["database_query_ms"] / 1000, \
-                f"Average search time {avg_time:.3f}s exceeds threshold {performance_thresholds['database_query_ms']/1000}s"
+            assert (
+                avg_time < performance_thresholds["database_query_ms"] / 1000
+            ), f"Average search time {avg_time:.3f}s exceeds threshold {performance_thresholds['database_query_ms']/1000}s"
 
             print(f"Patient Search Performance:")
             print(f"  Average: {avg_time:.3f}s")
@@ -215,8 +222,7 @@ class TestDatabaseBenchmarks:
 
                 # Simulate lab data query
                 query = session.execute(
-                    "SELECT COUNT(*) FROM TETKIK WHERE TCKN = :tckn",
-                    {"tckn": tckn}
+                    "SELECT COUNT(*) FROM TETKIK WHERE TCKN = :tckn", {"tckn": tckn}
                 )
 
                 end_time = time.time()
@@ -225,8 +231,9 @@ class TestDatabaseBenchmarks:
             avg_time = statistics.mean(timings)
 
             # Performance assertions
-            assert avg_time < performance_thresholds["database_query_ms"] / 1000, \
-                f"Average lab query time {avg_time:.3f}s exceeds threshold"
+            assert (
+                avg_time < performance_thresholds["database_query_ms"] / 1000
+            ), f"Average lab query time {avg_time:.3f}s exceeds threshold"
 
             print(f"Lab Data Retrieval Performance:")
             print(f"  Average: {avg_time:.3f}s")
@@ -264,8 +271,9 @@ class TestAPIBenchmarks:
             max_time = max(timings)
 
             # Performance assertions
-            assert avg_time < performance_thresholds["api_response_ms"], \
-                f"API {endpoint} average time {avg_time:.0f}ms exceeds threshold {performance_thresholds['api_response_ms']}ms"
+            assert (
+                avg_time < performance_thresholds["api_response_ms"]
+            ), f"API {endpoint} average time {avg_time:.0f}ms exceeds threshold {performance_thresholds['api_response_ms']}ms"
 
             print(f"API Endpoint {endpoint} Performance:")
             print(f"  Average: {avg_time:.0f}ms")
@@ -313,8 +321,9 @@ class TestAPIBenchmarks:
         requests_per_second = num_requests / total_time
 
         # Performance assertions
-        assert avg_time < performance_thresholds["api_response_ms"] * 2, \
-            f"Concurrent API average time {avg_time:.0f}ms exceeds 2x threshold"
+        assert (
+            avg_time < performance_thresholds["api_response_ms"] * 2
+        ), f"Concurrent API average time {avg_time:.0f}ms exceeds 2x threshold"
 
         print(f"Concurrent API Requests Performance:")
         print(f"  Total requests: {num_requests}")
@@ -330,11 +339,11 @@ class TestSystemBenchmarks:
     @pytest.mark.asyncio
     async def test_full_workflow_performance(self, performance_thresholds):
         """Benchmark complete clinical workflow performance."""
-        with patch('src.ai.router.AIRouter.route_and_complete') as mock_ai:
+        with patch("src.ai.router.AIRouter.route_and_complete") as mock_ai:
             mock_ai.return_value = {
                 "text": '{"diagnosis": "Test", "medications": []}',
                 "model": "claude-3-5-sonnet",
-                "provider": "claude"
+                "provider": "claude",
             }
 
             # Start timing
@@ -345,23 +354,22 @@ class TestSystemBenchmarks:
             diagnosis_result = await diagnosis_engine.generate_differential_diagnosis_ai(
                 tckn="12345678901",
                 chief_complaint="Test complaint for performance testing",
-                preferred_provider="claude"
+                preferred_provider="claude",
             )
 
             # Step 2: Generate treatment
             treatment_engine = TreatmentEngine()
             treatment_result = await treatment_engine.suggest_treatment_ai(
-                tckn="12345678901",
-                diagnosis="Test Diagnosis",
-                preferred_provider="claude"
+                tckn="12345678901", diagnosis="Test Diagnosis", preferred_provider="claude"
             )
 
             end_time = time.time()
             total_time = end_time - start_time
 
             # Performance assertions
-            assert total_time < performance_thresholds["diagnosis_generation_seconds"] * 3, \
-                f"Full workflow time {total_time:.2f}s exceeds 3x threshold"
+            assert (
+                total_time < performance_thresholds["diagnosis_generation_seconds"] * 3
+            ), f"Full workflow time {total_time:.2f}s exceeds 3x threshold"
 
             print(f"Full Workflow Performance:")
             print(f"  Total time: {total_time:.2f}s")
@@ -370,8 +378,9 @@ class TestSystemBenchmarks:
 
     def test_memory_usage_simulation(self):
         """Simulate memory usage patterns."""
-        import psutil
         import os
+
+        import psutil
 
         # Get current process
         process = psutil.Process(os.getpid())
@@ -382,12 +391,14 @@ class TestSystemBenchmarks:
         # Simulate processing multiple patients
         patient_data = []
         for i in range(100):
-            patient_data.append({
-                "tckn": f"1234567890{i:03d}",
-                "name": f"Test Patient {i}",
-                "complaint": f"Test complaint {i}",
-                "data": "x" * 1000  # Simulate 1KB of data per patient
-            })
+            patient_data.append(
+                {
+                    "tckn": f"1234567890{i:03d}",
+                    "name": f"Test Patient {i}",
+                    "complaint": f"Test complaint {i}",
+                    "data": "x" * 1000,  # Simulate 1KB of data per patient
+                }
+            )
 
         # Memory after processing
         peak_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -403,8 +414,9 @@ class TestSystemBenchmarks:
         print(f"  Memory per patient: {memory_increase/100:.2f} MB")
 
         # Memory usage should be reasonable (less than 100MB for 100 patients)
-        assert memory_increase < 100, \
-            f"Memory increase {memory_increase:.1f}MB exceeds reasonable threshold"
+        assert (
+            memory_increase < 100
+        ), f"Memory increase {memory_increase:.1f}MB exceeds reasonable threshold"
 
 
 @pytest.mark.performance
@@ -414,11 +426,11 @@ class TestScalabilityBenchmarks:
     @pytest.mark.asyncio
     async def test_scalability_with_increasing_load(self):
         """Test system scalability with increasing load."""
-        with patch('src.ai.router.AIRouter.route_and_complete') as mock_ai:
+        with patch("src.ai.router.AIRouter.route_and_complete") as mock_ai:
             mock_ai.return_value = {
                 "text": '{"diagnosis": "Test"}',
                 "model": "claude-3-5-sonnet",
-                "provider": "claude"
+                "provider": "claude",
             }
 
             diagnosis_engine = DiagnosisEngine()
@@ -434,7 +446,7 @@ class TestScalabilityBenchmarks:
                     diagnosis_engine.generate_differential_diagnosis_ai(
                         tckn=f"1234567890{i:03d}",
                         chief_complaint=f"Test complaint {i}",
-                        preferred_provider="claude"
+                        preferred_provider="claude",
                     )
                     for i in range(load)
                 ]
@@ -445,10 +457,7 @@ class TestScalabilityBenchmarks:
                 total_time = end_time - start_time
                 throughput = load / total_time
 
-                results[load] = {
-                    "total_time": total_time,
-                    "throughput": throughput
-                }
+                results[load] = {"total_time": total_time, "throughput": throughput}
 
                 print(f"Load Level {load}:")
                 print(f"  Total time: {total_time:.2f}s")
@@ -460,9 +469,12 @@ class TestScalabilityBenchmarks:
                 last_throughput = list(results.values())[-1]["throughput"]
                 degradation_ratio = last_throughput / first_throughput
 
-                assert degradation_ratio > 0.5, \
-                    f"Throughput degradation too severe: {degradation_ratio:.2f}"
+                assert (
+                    degradation_ratio > 0.5
+                ), f"Throughput degradation too severe: {degradation_ratio:.2f}"
 
                 print(f"Scalability Results:")
                 print(f"  Throughput ratio (max/min): {degradation_ratio:.2f}")
-                print(f"  Scalability: {'Good' if degradation_ratio > 0.7 else 'Fair' if degradation_ratio > 0.5 else 'Poor'}")
+                print(
+                    f"  Scalability: {'Good' if degradation_ratio > 0.7 else 'Fair' if degradation_ratio > 0.5 else 'Poor'}"
+                )

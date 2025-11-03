@@ -1,12 +1,20 @@
 """Patient search widget with TCKN and name search."""
 
-from typing import Optional, List
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLineEdit,
-    QPushButton, QTableWidget, QTableWidgetItem, QLabel,
-    QHeaderView, QMessageBox
-)
+from typing import List, Optional
+
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ...database.connection import get_session
 from ...models.patient import Patient
@@ -43,9 +51,9 @@ class PatientSearchWidget(QWidget):
         # Results table
         self.results_table = QTableWidget()
         self.results_table.setColumnCount(5)
-        self.results_table.setHorizontalHeaderLabels([
-            "TCKN", "Full Name", "Birth Date", "Gender", "Last Visit"
-        ])
+        self.results_table.setHorizontalHeaderLabels(
+            ["TCKN", "Full Name", "Birth Date", "Gender", "Last Visit"]
+        )
         self.results_table.setSelectionBehavior(QTableWidget.SelectRows)
         self.results_table.setSelectionMode(QTableWidget.SingleSelection)
         self.results_table.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -78,24 +86,25 @@ class PatientSearchWidget(QWidget):
 
                 if query.isdigit():
                     # Search by TCKN (HASTA_KIMLIK_NO)
-                    patients = patients_query.filter(
-                        Patient.HASTA_KIMLIK_NO.like(f"{query}%")
-                    ).limit(20).all()
+                    patients = (
+                        patients_query.filter(Patient.HASTA_KIMLIK_NO.like(f"{query}%"))
+                        .limit(20)
+                        .all()
+                    )
                 else:
                     # Search by name
-                    patients = patients_query.filter(
-                        (Patient.AD.ilike(f"%{query}%")) |
-                        (Patient.SOYAD.ilike(f"%{query}%"))
-                    ).limit(20).all()
+                    patients = (
+                        patients_query.filter(
+                            (Patient.AD.ilike(f"%{query}%")) | (Patient.SOYAD.ilike(f"%{query}%"))
+                        )
+                        .limit(20)
+                        .all()
+                    )
 
                 self._display_results(patients)
 
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Search Error",
-                f"Failed to search patients:\n{str(e)}"
-            )
+            QMessageBox.critical(self, "Search Error", f"Failed to search patients:\n{str(e)}")
 
     def _display_results(self, patients: List[Patient]):
         """Display search results in table."""
@@ -104,9 +113,7 @@ class PatientSearchWidget(QWidget):
         for row, patient in enumerate(patients):
             # TCKN (HASTA_KIMLIK_NO)
             tckn = str(patient.HASTA_KIMLIK_NO) if patient.HASTA_KIMLIK_NO else ""
-            self.results_table.setItem(
-                row, 0, QTableWidgetItem(tckn)
-            )
+            self.results_table.setItem(row, 0, QTableWidgetItem(tckn))
 
             # Full name
             full_name = f"{patient.AD or ''} {patient.SOYAD or ''}".strip()
@@ -118,7 +125,9 @@ class PatientSearchWidget(QWidget):
 
             # Gender
             gender_map = {1: "Male", 2: "Female"}
-            gender = gender_map.get(patient.CINSIYET, str(patient.CINSIYET) if patient.CINSIYET else "")
+            gender = gender_map.get(
+                patient.CINSIYET, str(patient.CINSIYET) if patient.CINSIYET else ""
+            )
             self.results_table.setItem(row, 3, QTableWidgetItem(gender))
 
             # Last visit (placeholder - would need join with Visit table)

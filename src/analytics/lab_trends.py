@@ -1,10 +1,11 @@
 """Laboratory trend analytics for longitudinal patient monitoring."""
 
+import statistics
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-import statistics
 
 from ..database.connection import get_session
 
@@ -18,9 +19,19 @@ class LabTrendAnalyzer:
     def get_common_labs_trend_analysis(self, months: int = 12) -> Dict:
         """Analyze trends for common laboratory tests."""
         common_labs = [
-            'Hemoglobin', 'Hematocrit', 'White Blood Cell', 'Platelet Count',
-            'Glucose', 'HbA1c', 'Creatinine', 'ALT', 'AST', 'Total Cholesterol',
-            'LDL Cholesterol', 'HDL Cholesterol', 'Triglycerides'
+            "Hemoglobin",
+            "Hematocrit",
+            "White Blood Cell",
+            "Platelet Count",
+            "Glucose",
+            "HbA1c",
+            "Creatinine",
+            "ALT",
+            "AST",
+            "Total Cholesterol",
+            "LDL Cholesterol",
+            "HDL Cholesterol",
+            "Triglycerides",
         ]
 
         end_date = datetime.now()
@@ -29,7 +40,8 @@ class LabTrendAnalyzer:
         results = {}
 
         for lab_name in common_labs:
-            query = text("""
+            query = text(
+                """
                 SELECT
                     t.TEST_ADI,
                     t.SONUC,
@@ -47,13 +59,12 @@ class LabTrendAnalyzer:
                 AND t.SONUC IS NOT NULL
                 AND TRY_CAST(t.SONUC AS FLOAT) IS NOT NULL
                 ORDER BY t.TEST_TARIHI DESC
-            """)
+            """
+            )
 
-            lab_data = self.session.execute(query, {
-                "lab_name": f"%{lab_name}%",
-                "start_date": start_date,
-                "end_date": end_date
-            }).fetchall()
+            lab_data = self.session.execute(
+                query, {"lab_name": f"%{lab_name}%", "start_date": start_date, "end_date": end_date}
+            ).fetchall()
 
             if lab_data:
                 results[lab_name] = self._analyze_lab_trends(lab_data, lab_name)
@@ -61,7 +72,7 @@ class LabTrendAnalyzer:
         return {
             "analysis_period_months": months,
             "lab_trends": results,
-            "total_labs_analyzed": len(results)
+            "total_labs_analyzed": len(results),
         }
 
     def _analyze_lab_trends(self, lab_data: List, lab_name: str) -> Dict:
@@ -71,7 +82,7 @@ class LabTrendAnalyzer:
             numeric_values = []
             for row in lab_data:
                 try:
-                    value = float(str(row.SONUC).replace(',', '.'))
+                    value = float(str(row.SONUC).replace(",", "."))
                     numeric_values.append(value)
                 except (ValueError, TypeError):
                     continue
@@ -95,9 +106,11 @@ class LabTrendAnalyzer:
                 sum_xy = sum(x * y for x, y in zip(x_values, numeric_values))
                 sum_x2 = sum(x * x for x in x_values)
 
-                if (n * sum_x2 - sum_x ** 2) != 0:
-                    slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x ** 2)
-                    trend_direction = "improving" if slope < 0 else "worsening" if slope > 0 else "stable"
+                if (n * sum_x2 - sum_x**2) != 0:
+                    slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
+                    trend_direction = (
+                        "improving" if slope < 0 else "worsening" if slope > 0 else "stable"
+                    )
                 else:
                     slope = 0
                     trend_direction = "stable"
@@ -107,20 +120,30 @@ class LabTrendAnalyzer:
 
             # Abnormal value analysis
             sample_row = lab_data[0]
-            normal_min = float(str(sample_row.NORMAL_MIN).replace(',', '.')) if sample_row.NORMAL_MIN else None
-            normal_max = float(str(sample_row.NORMAL_MAX).replace(',', '.')) if sample_row.NORMAL_MAX else None
+            normal_min = (
+                float(str(sample_row.NORMAL_MIN).replace(",", "."))
+                if sample_row.NORMAL_MIN
+                else None
+            )
+            normal_max = (
+                float(str(sample_row.NORMAL_MAX).replace(",", "."))
+                if sample_row.NORMAL_MAX
+                else None
+            )
 
             abnormal_count = 0
             for i, row in enumerate(lab_data):
                 try:
-                    value = float(str(row.SONUC).replace(',', '.'))
+                    value = float(str(row.SONUC).replace(",", "."))
                     if normal_min is not None and normal_max is not None:
                         if value < normal_min or value > normal_max:
                             abnormal_count += 1
                 except (ValueError, TypeError):
                     continue
 
-            abnormal_percentage = (abnormal_count / len(numeric_values)) * 100 if numeric_values else 0
+            abnormal_percentage = (
+                (abnormal_count / len(numeric_values)) * 100 if numeric_values else 0
+            )
 
             # Patient analysis
             unique_patients = len(set(row.TCKN for row in lab_data))
@@ -134,26 +157,31 @@ class LabTrendAnalyzer:
                     "mean_value": round(mean_value, 2),
                     "median_value": round(median_value, 2),
                     "change_from_oldest": round(latest_value - oldest_value, 2),
-                    "percent_change": round(((latest_value - oldest_value) / oldest_value) * 100, 1) if oldest_value != 0 else 0
+                    "percent_change": (
+                        round(((latest_value - oldest_value) / oldest_value) * 100, 1)
+                        if oldest_value != 0
+                        else 0
+                    ),
                 },
                 "trend_analysis": {
                     "direction": trend_direction,
                     "slope": round(slope, 4),
-                    "sample_size": len(numeric_values)
+                    "sample_size": len(numeric_values),
                 },
-                "normal_range": {
-                    "min": normal_min,
-                    "max": normal_max
-                } if normal_min is not None and normal_max is not None else None,
+                "normal_range": (
+                    {"min": normal_min, "max": normal_max}
+                    if normal_min is not None and normal_max is not None
+                    else None
+                ),
                 "abnormal_rate": {
                     "abnormal_count": abnormal_count,
                     "total_tests": len(numeric_values),
-                    "abnormal_percentage": round(abnormal_percentage, 1)
+                    "abnormal_percentage": round(abnormal_percentage, 1),
                 },
                 "patient_data": {
                     "unique_patients": unique_patients,
-                    "total_measurements": len(numeric_values)
-                }
+                    "total_measurements": len(numeric_values),
+                },
             }
 
         except Exception as e:
@@ -164,7 +192,8 @@ class LabTrendAnalyzer:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=months * 30)
 
-        query = text("""
+        query = text(
+            """
             SELECT
                 t.TEST_ADI,
                 t.SONUC,
@@ -178,13 +207,12 @@ class LabTrendAnalyzer:
             AND t.SONUC IS NOT NULL
             AND TRY_CAST(t.SONUC AS FLOAT) IS NOT NULL
             ORDER BY t.TEST_ADI, t.TEST_TARIHI
-        """)
+        """
+        )
 
-        result = self.session.execute(query, {
-            "tckn": tckn,
-            "start_date": start_date,
-            "end_date": end_date
-        }).fetchall()
+        result = self.session.execute(
+            query, {"tckn": tckn, "start_date": start_date, "end_date": end_date}
+        ).fetchall()
 
         # Group by test name
         lab_tests = {}
@@ -204,7 +232,7 @@ class LabTrendAnalyzer:
             "patient_tckn": tckn,
             "analysis_period_months": months,
             "lab_trends": analysis,
-            "total_tests_analyzed": len(analysis)
+            "total_tests_analyzed": len(analysis),
         }
 
     def get_critical_lab_values_alert(self, hours: int = 24) -> Dict:
@@ -213,16 +241,17 @@ class LabTrendAnalyzer:
 
         # Define critical value thresholds (simplified)
         critical_thresholds = {
-            'Glucose': {'low': 40, 'high': 500, 'unit': 'mg/dL'},
-            'Creatinine': {'high': 3.0, 'unit': 'mg/dL'},
-            'Hemoglobin': {'low': 7.0, 'unit': 'g/dL'},
-            'Platelet Count': {'low': 20000, 'high': 1000000, 'unit': 'K/uL'},
-            'White Blood Cell': {'low': 1000, 'high': 100000, 'unit': 'K/uL'},
-            'Potassium': {'low': 2.5, 'high': 7.0, 'unit': 'mmol/L'},
-            'Sodium': {'low': 120, 'high': 160, 'unit': 'mmol/L'}
+            "Glucose": {"low": 40, "high": 500, "unit": "mg/dL"},
+            "Creatinine": {"high": 3.0, "unit": "mg/dL"},
+            "Hemoglobin": {"low": 7.0, "unit": "g/dL"},
+            "Platelet Count": {"low": 20000, "high": 1000000, "unit": "K/uL"},
+            "White Blood Cell": {"low": 1000, "high": 100000, "unit": "K/uL"},
+            "Potassium": {"low": 2.5, "high": 7.0, "unit": "mmol/L"},
+            "Sodium": {"low": 120, "high": 160, "unit": "mmol/L"},
         }
 
-        query = text("""
+        query = text(
+            """
             SELECT
                 t.TEST_ADI,
                 t.SONUC,
@@ -240,7 +269,8 @@ class LabTrendAnalyzer:
             AND t.SONUC IS NOT NULL
             AND TRY_CAST(t.SONUC AS FLOAT) IS NOT NULL
             ORDER BY t.TEST_TARIHI DESC
-        """)
+        """
+        )
 
         result = self.session.execute(query, {"cutoff_time": cutoff_time}).fetchall()
 
@@ -249,7 +279,7 @@ class LabTrendAnalyzer:
         for row in result:
             try:
                 lab_name = row.TEST_ADI
-                value = float(str(row.SONUC).replace(',', '.'))
+                value = float(str(row.SONUC).replace(",", "."))
 
                 # Check against critical thresholds
                 for critical_test, thresholds in critical_thresholds.items():
@@ -258,30 +288,34 @@ class LabTrendAnalyzer:
                         severity = "moderate"
                         reason = ""
 
-                        if 'low' in thresholds and value < thresholds['low']:
+                        if "low" in thresholds and value < thresholds["low"]:
                             is_critical = True
-                            severity = "critical" if value < thresholds['low'] * 0.5 else "high"
+                            severity = "critical" if value < thresholds["low"] * 0.5 else "high"
                             reason = f"Value {value} is below critical threshold {thresholds['low']} {thresholds['unit']}"
 
-                        elif 'high' in thresholds and value > thresholds['high']:
+                        elif "high" in thresholds and value > thresholds["high"]:
                             is_critical = True
-                            severity = "critical" if value > thresholds['high'] * 2 else "high"
+                            severity = "critical" if value > thresholds["high"] * 2 else "high"
                             reason = f"Value {value} is above critical threshold {thresholds['high']} {thresholds['unit']}"
 
                         if is_critical:
-                            critical_values.append({
-                                "patient_tckn": row.TCKN,
-                                "patient_name": f"{row.patient_name} {row.patient_surname}",
-                                "patient_phone": row.TELEFON,
-                                "test_name": lab_name,
-                                "value": value,
-                                "unit": row.BIRIM,
-                                "critical_threshold": thresholds,
-                                "severity": severity,
-                                "reason": reason,
-                                "test_date": row.TEST_TARIHI.isoformat(),
-                                "hours_ago": int((datetime.now() - row.TEST_TARIHI).total_seconds() / 3600)
-                            })
+                            critical_values.append(
+                                {
+                                    "patient_tckn": row.TCKN,
+                                    "patient_name": f"{row.patient_name} {row.patient_surname}",
+                                    "patient_phone": row.TELEFON,
+                                    "test_name": lab_name,
+                                    "value": value,
+                                    "unit": row.BIRIM,
+                                    "critical_threshold": thresholds,
+                                    "severity": severity,
+                                    "reason": reason,
+                                    "test_date": row.TEST_TARIHI.isoformat(),
+                                    "hours_ago": int(
+                                        (datetime.now() - row.TEST_TARIHI).total_seconds() / 3600
+                                    ),
+                                }
+                            )
                             break
 
             except (ValueError, TypeError):
@@ -291,12 +325,13 @@ class LabTrendAnalyzer:
             "analysis_period_hours": hours,
             "critical_values": critical_values,
             "total_critical_values": len(critical_values),
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
 
     def get_lab_utilization_patterns(self) -> Dict:
         """Analyze laboratory test utilization patterns."""
-        query = text("""
+        query = text(
+            """
             SELECT
                 t.TEST_ADI,
                 COUNT(*) as test_count,
@@ -311,26 +346,33 @@ class LabTrendAnalyzer:
             GROUP BY t.TEST_ADI
             HAVING COUNT(*) >= 10  -- Only include tests with sufficient data
             ORDER BY test_count DESC
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
         utilization_patterns = []
         for row in result:
-            utilization_patterns.append({
-                "test_name": row.TEST_ADI,
-                "total_tests": row.test_count,
-                "unique_patients": row.unique_patients,
-                "tests_per_patient": round(row.test_count / row.unique_patients, 1),
-                "average_value": round(row.avg_value or 0, 2),
-                "first_test_date": row.first_test_date.isoformat() if row.first_test_date else None,
-                "last_test_date": row.last_test_date.isoformat() if row.last_test_date else None
-            })
+            utilization_patterns.append(
+                {
+                    "test_name": row.TEST_ADI,
+                    "total_tests": row.test_count,
+                    "unique_patients": row.unique_patients,
+                    "tests_per_patient": round(row.test_count / row.unique_patients, 1),
+                    "average_value": round(row.avg_value or 0, 2),
+                    "first_test_date": (
+                        row.first_test_date.isoformat() if row.first_test_date else None
+                    ),
+                    "last_test_date": (
+                        row.last_test_date.isoformat() if row.last_test_date else None
+                    ),
+                }
+            )
 
         return {
             "analysis_period": "1 year",
             "utilization_patterns": utilization_patterns,
-            "total_different_tests": len(utilization_patterns)
+            "total_different_tests": len(utilization_patterns),
         }
 
     def generate_comprehensive_lab_report(self) -> Dict:
@@ -339,7 +381,7 @@ class LabTrendAnalyzer:
             "generated_at": datetime.now().isoformat(),
             "common_labs_trends": self.get_common_labs_trend_analysis(),
             "critical_value_alerts": self.get_critical_lab_values_alert(),
-            "lab_utilization_patterns": self.get_lab_utilization_patterns()
+            "lab_utilization_patterns": self.get_lab_utilization_patterns(),
         }
 
 

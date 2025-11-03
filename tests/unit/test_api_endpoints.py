@@ -1,9 +1,10 @@
 """Unit tests for API endpoints."""
 
+import json
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, patch, AsyncMock
-import json
 
 from src.api.fastapi_app import app
 
@@ -24,7 +25,7 @@ class TestHealthEndpoints:
 
     def test_health_check_database(self, test_client: TestClient, mock_session):
         """Test database health check endpoint."""
-        with patch('src.api.health.get_engine') as mock_get_engine:
+        with patch("src.api.health.get_engine") as mock_get_engine:
             mock_engine = Mock()
             mock_connection = Mock()
             mock_connection.execute.return_value.scalar.return_value = 1
@@ -40,7 +41,7 @@ class TestHealthEndpoints:
 
     def test_health_check_database_error(self, test_client: TestClient):
         """Test database health check with error."""
-        with patch('src.api.health.get_engine') as mock_get_engine:
+        with patch("src.api.health.get_engine") as mock_get_engine:
             mock_get_engine.side_effect = Exception("Database connection failed")
 
             response = test_client.get("/health/database")
@@ -110,12 +111,14 @@ class TestDiagnosisEndpoints:
         request_data = {
             "tckn": "12345678901",
             "chief_complaint": "Patient reports headache and fever for 3 days",
-            "model": "claude"
+            "model": "claude",
         }
 
-        with patch('src.api.diagnosis.generate_differential_diagnosis_ai',
-                  new_callable=AsyncMock,
-                  return_value=mock_ai_response):
+        with patch(
+            "src.api.diagnosis.generate_differential_diagnosis_ai",
+            new_callable=AsyncMock,
+            return_value=mock_ai_response,
+        ):
 
             response = test_client.post("/analyze/diagnosis", json=request_data)
             assert response.status_code == 200
@@ -128,10 +131,7 @@ class TestDiagnosisEndpoints:
 
     def test_generate_diagnosis_invalid_data(self, test_client: TestClient):
         """Test diagnosis generation with invalid data."""
-        request_data = {
-            "tckn": "",  # Empty TCKN
-            "chief_complaint": ""  # Empty complaint
-        }
+        request_data = {"tckn": "", "chief_complaint": ""}  # Empty TCKN  # Empty complaint
 
         response = test_client.post("/analyze/diagnosis", json=request_data)
         assert response.status_code == 422
@@ -139,14 +139,13 @@ class TestDiagnosisEndpoints:
     @pytest.mark.asyncio
     async def test_generate_diagnosis_ai_error(self, test_client: TestClient):
         """Test diagnosis generation when AI service fails."""
-        request_data = {
-            "tckn": "12345678901",
-            "chief_complaint": "Test complaint"
-        }
+        request_data = {"tckn": "12345678901", "chief_complaint": "Test complaint"}
 
-        with patch('src.api.diagnosis.generate_differential_diagnosis_ai',
-                  new_callable=AsyncMock,
-                  side_effect=Exception("AI service unavailable")):
+        with patch(
+            "src.api.diagnosis.generate_differential_diagnosis_ai",
+            new_callable=AsyncMock,
+            side_effect=Exception("AI service unavailable"),
+        ):
 
             response = test_client.post("/analyze/diagnosis", json=request_data)
             assert response.status_code == 500
@@ -158,17 +157,21 @@ class TestTreatmentEndpoints:
     """Test treatment recommendation endpoints."""
 
     @pytest.mark.asyncio
-    async def test_generate_treatment_success(self, test_client: TestClient, mock_treatment_response):
+    async def test_generate_treatment_success(
+        self, test_client: TestClient, mock_treatment_response
+    ):
         """Test successful treatment generation."""
         request_data = {
             "tckn": "12345678901",
             "diagnosis": "Essential Hypertension",
-            "model": "claude"
+            "model": "claude",
         }
 
-        with patch('src.api.treatment.suggest_treatment_ai',
-                  new_callable=AsyncMock,
-                  return_value=mock_treatment_response):
+        with patch(
+            "src.api.treatment.suggest_treatment_ai",
+            new_callable=AsyncMock,
+            return_value=mock_treatment_response,
+        ):
 
             response = test_client.post("/analyze/treatment", json=request_data)
             assert response.status_code == 200
@@ -181,10 +184,7 @@ class TestTreatmentEndpoints:
 
     def test_generate_treatment_invalid_diagnosis(self, test_client: TestClient):
         """Test treatment generation with invalid diagnosis."""
-        request_data = {
-            "tckn": "12345678901",
-            "diagnosis": ""  # Empty diagnosis
-        }
+        request_data = {"tckn": "12345678901", "diagnosis": ""}  # Empty diagnosis
 
         response = test_client.post("/analyze/treatment", json=request_data)
         assert response.status_code == 422
@@ -204,24 +204,20 @@ class TestDrugEndpoints:
                     "severity": "major",
                     "drug1": "Lisinopril",
                     "drug2": "Potassium Supplement",
-                    "effect": "Increased risk of hyperkalemia"
+                    "effect": "Increased risk of hyperkalemia",
                 }
             ],
             "safety_recommendations": [
                 "Monitor potassium levels",
-                "Consider alternative medications"
-            ]
+                "Consider alternative medications",
+            ],
         }
 
-        request_data = {
-            "tckn": "12345678901",
-            "proposed_drug": "Lisinopril",
-            "severity": "all"
-        }
+        request_data = {"tckn": "12345678901", "proposed_drug": "Lisinopril", "severity": "all"}
 
-        with patch('src.api.drugs.check_interactions',
-                  new_callable=AsyncMock,
-                  return_value=mock_response):
+        with patch(
+            "src.api.drugs.check_interactions", new_callable=AsyncMock, return_value=mock_response
+        ):
 
             response = test_client.post("/drugs/interactions", json=request_data)
             assert response.status_code == 200
@@ -248,7 +244,7 @@ class TestLabEndpoints:
 
     def test_get_lab_tests_success(self, test_client: TestClient, mock_lab_data):
         """Test successful lab test retrieval."""
-        with patch('src.api.labs.get_lab_tests', return_value=mock_lab_data):
+        with patch("src.api.labs.get_lab_tests", return_value=mock_lab_data):
             response = test_client.get("/labs/12345678901")
             assert response.status_code == 200
 
@@ -263,12 +259,12 @@ class TestLabEndpoints:
             "test_name": "Hemoglobin",
             "trend_data": [
                 {"date": "2024-01-01", "value": 14.0},
-                {"date": "2024-02-01", "value": 14.2}
+                {"date": "2024-02-01", "value": 14.2},
             ],
-            "trend_direction": "stable"
+            "trend_direction": "stable",
         }
 
-        with patch('src.api.labs.get_lab_trends', return_value=mock_trends):
+        with patch("src.api.labs.get_lab_trends", return_value=mock_trends):
             response = test_client.get("/labs/12345678901/trends?test=Hemoglobin&months=6")
             assert response.status_code == 200
 
@@ -302,9 +298,7 @@ class TestAPIErrorHandling:
     def test_invalid_json(self, test_client: TestClient):
         """Test invalid JSON in request body."""
         response = test_client.post(
-            "/analyze/diagnosis",
-            data="invalid json",
-            headers={"Content-Type": "application/json"}
+            "/analyze/diagnosis", data="invalid json", headers={"Content-Type": "application/json"}
         )
         assert response.status_code == 422
 
@@ -313,7 +307,7 @@ class TestAPIErrorHandling:
         response = test_client.post(
             "/analyze/diagnosis",
             data="{}",
-            headers={"Content-Type": "text/plain"}  # Wrong content type
+            headers={"Content-Type": "text/plain"},  # Wrong content type
         )
         # FastAPI may still handle this, but it's good to test
         assert response.status_code in [200, 422]

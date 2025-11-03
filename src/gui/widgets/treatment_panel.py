@@ -1,16 +1,26 @@
 """Treatment recommendation panel with AI-powered suggestions."""
 
 import asyncio
-from typing import Optional, Dict, Any
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit,
-    QPushButton, QLabel, QComboBox, QProgressBar,
-    QMessageBox, QGroupBox, QTableWidget, QTableWidgetItem
-)
-from PySide6.QtCore import Qt, QThread, Signal
+from typing import Any, Dict, Optional
 
-from ...database.connection import get_session
+from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
 from ...clinical.treatment_engine import TreatmentEngine
+from ...database.connection import get_session
 
 
 class TreatmentWorker(QThread):
@@ -32,9 +42,7 @@ class TreatmentWorker(QThread):
                 engine = TreatmentEngine(session)
                 result = asyncio.run(
                     engine.suggest_treatment_ai(
-                        tckn=self.tckn,
-                        diagnosis=self.diagnosis,
-                        preferred_provider=self.model
+                        tckn=self.tckn, diagnosis=self.diagnosis, preferred_provider=self.model
                     )
                 )
                 self.finished.emit(result)
@@ -97,9 +105,7 @@ class TreatmentPanelWidget(QWidget):
 
         self.recommendations_table = QTableWidget()
         self.recommendations_table.setColumnCount(3)
-        self.recommendations_table.setHorizontalHeaderLabels([
-            "Medication", "Dosage", "Duration"
-        ])
+        self.recommendations_table.setHorizontalHeaderLabels(["Medication", "Dosage", "Duration"])
         self.recommendations_table.setEditTriggers(QTableWidget.NoEditTriggers)
         recommendations_layout.addWidget(self.recommendations_table)
 
@@ -148,12 +154,7 @@ class TreatmentPanelWidget(QWidget):
 
         # Get selected model
         model_text = self.model_combo.currentText()
-        model_map = {
-            "Claude": "claude",
-            "GPT-4o": "gpt-4o",
-            "Gemini": "gemini",
-            "Ollama": "ollama"
-        }
+        model_map = {"Claude": "claude", "GPT-4o": "gpt-4o", "Gemini": "gemini", "Ollama": "ollama"}
         model = model_map.get(model_text)
 
         # Show progress
@@ -195,7 +196,5 @@ class TreatmentPanelWidget(QWidget):
         self.progress_bar.setVisible(False)
         self.generate_button.setEnabled(True)
         QMessageBox.critical(
-            self,
-            "Treatment Error",
-            f"Failed to generate treatment plan:\n{error_msg}"
+            self, "Treatment Error", f"Failed to generate treatment plan:\n{error_msg}"
         )

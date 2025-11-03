@@ -10,21 +10,22 @@ Provides comprehensive drug interaction analysis with:
 - Management recommendations
 """
 
-from typing import Dict, Any, List, Optional, Tuple, Set
-from dataclasses import dataclass
-from enum import Enum
 import json
 import re
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.models.patient import Patient
 from src.models.clinical import Prescription
+from src.models.patient import Patient
 
 
 class InteractionSeverity(Enum):
     """Interaction severity levels."""
+
     UNKNOWN = "unknown"
     MINOR = "minor"
     MODERATE = "moderate"
@@ -35,6 +36,7 @@ class InteractionSeverity(Enum):
 @dataclass
 class DrugInteraction:
     """Individual drug interaction information."""
+
     drug1: str
     drug2: str
     severity: InteractionSeverity
@@ -47,6 +49,7 @@ class DrugInteraction:
 @dataclass
 class AllergyWarning:
     """Drug allergy warning."""
+
     drug_name: str
     allergen: str
     severity: str
@@ -56,6 +59,7 @@ class AllergyWarning:
 @dataclass
 class InteractionResult:
     """Complete interaction analysis result."""
+
     patient_id: int
     interactions: List[DrugInteraction]
     allergy_warnings: List[AllergyWarning]
@@ -88,10 +92,7 @@ class DrugInteractionChecker:
         self._drug_synonyms = self._load_drug_synonyms()
 
     def check_drug_interactions(
-        self,
-        patient_id: int,
-        medications: List[str],
-        patient_allergies: Optional[List[str]] = None
+        self, patient_id: int, medications: List[str], patient_allergies: Optional[List[str]] = None
     ) -> InteractionResult:
         """
         Check for drug interactions in medication regimen.
@@ -138,7 +139,7 @@ class DrugInteractionChecker:
             allergy_warnings=allergy_warnings,
             safe_alternatives=safe_alternatives,
             recommendations=recommendations,
-            requires_pharmacist_review=self._requires_pharmacist_review(interactions)
+            requires_pharmacist_review=self._requires_pharmacist_review(interactions),
         )
 
     def _load_interaction_database(self) -> Dict[Tuple[str, str], DrugInteraction]:
@@ -148,134 +149,197 @@ class DrugInteractionChecker:
         # Major interactions (contraindicated or require monitoring)
         interaction_data = [
             # Cardiovascular interactions
-            ("Warfarin", "Ibuprofen", InteractionSeverity.MAJOR,
-             "Increased bleeding risk due to antiplatelet effect and GI ulceration",
-             "Bleeding, GI ulcer, hematoma",
-             "Avoid combination, use acetaminophen for pain",
-             "High"),
-
-            ("Warfarin", "Aspirin", InteractionSeverity.MAJOR,
-             "Additive anticoagulant effect",
-             "Major bleeding",
-             "Use with extreme caution, monitor INR closely",
-             "High"),
-
-            ("Lisinopril", "Potassium", InteractionSeverity.MAJOR,
-             "ACE inhibitors reduce potassium excretion",
-             "Hyperkalemia, cardiac arrhythmias",
-             "Avoid potassium supplements, monitor serum potassium",
-             "High"),
-
-            ("Lisinopril", "NSAIDs", InteractionSeverity.MODERATE,
-             "NSAIDs reduce ACE inhibitor effectiveness and increase renal risk",
-             "Reduced BP control, acute kidney injury",
-             "Monitor renal function, consider acetaminophen",
-             "Moderate"),
-
-            ("Digoxin", "Amiodarone", InteractionSeverity.MAJOR,
-             "Amiodarone increases digoxin levels",
-             "Digoxin toxicity (arrhythmias, vision changes)",
-             "Reduce digoxin dose by 50%, monitor levels",
-             "High"),
-
+            (
+                "Warfarin",
+                "Ibuprofen",
+                InteractionSeverity.MAJOR,
+                "Increased bleeding risk due to antiplatelet effect and GI ulceration",
+                "Bleeding, GI ulcer, hematoma",
+                "Avoid combination, use acetaminophen for pain",
+                "High",
+            ),
+            (
+                "Warfarin",
+                "Aspirin",
+                InteractionSeverity.MAJOR,
+                "Additive anticoagulant effect",
+                "Major bleeding",
+                "Use with extreme caution, monitor INR closely",
+                "High",
+            ),
+            (
+                "Lisinopril",
+                "Potassium",
+                InteractionSeverity.MAJOR,
+                "ACE inhibitors reduce potassium excretion",
+                "Hyperkalemia, cardiac arrhythmias",
+                "Avoid potassium supplements, monitor serum potassium",
+                "High",
+            ),
+            (
+                "Lisinopril",
+                "NSAIDs",
+                InteractionSeverity.MODERATE,
+                "NSAIDs reduce ACE inhibitor effectiveness and increase renal risk",
+                "Reduced BP control, acute kidney injury",
+                "Monitor renal function, consider acetaminophen",
+                "Moderate",
+            ),
+            (
+                "Digoxin",
+                "Amiodarone",
+                InteractionSeverity.MAJOR,
+                "Amiodarone increases digoxin levels",
+                "Digoxin toxicity (arrhythmias, vision changes)",
+                "Reduce digoxin dose by 50%, monitor levels",
+                "High",
+            ),
             # Diabetes interactions
-            ("Metformin", "Iodinated contrast", InteractionSeverity.CONTRAINDICATED,
-             "Increased risk of lactic acidosis",
-             "Lactic acidosis (fatal)",
-             "Stop metformin 48h before contrast, wait 48h after",
-             "High"),
-
-            ("Insulin", "Beta Blocker", InteractionSeverity.MODERATE,
-             "Beta blockers mask hypoglycemia symptoms",
-             "Unrecognized hypoglycemia",
-             "Monitor glucose closely, educate patient",
-             "Moderate"),
-
+            (
+                "Metformin",
+                "Iodinated contrast",
+                InteractionSeverity.CONTRAINDICATED,
+                "Increased risk of lactic acidosis",
+                "Lactic acidosis (fatal)",
+                "Stop metformin 48h before contrast, wait 48h after",
+                "High",
+            ),
+            (
+                "Insulin",
+                "Beta Blocker",
+                InteractionSeverity.MODERATE,
+                "Beta blockers mask hypoglycemia symptoms",
+                "Unrecognized hypoglycemia",
+                "Monitor glucose closely, educate patient",
+                "Moderate",
+            ),
             # CNS interactions
-            ("SSRIs", "MAOIs", InteractionSeverity.CONTRAINDICATED,
-             "Serotonin syndrome risk",
-             "Serotonin syndrome (hyperthermia, rigidity, seizures)",
-             "Do not combine, 2-week washout required",
-             "High"),
-
-            ("Opioids", "Benzodiazepines", InteractionSeverity.MAJOR,
-             "Additive CNS depression and respiratory depression",
-             "Respiratory depression, sedation, death",
-             "Use lowest effective doses, monitor closely",
-             "High"),
-
+            (
+                "SSRIs",
+                "MAOIs",
+                InteractionSeverity.CONTRAINDICATED,
+                "Serotonin syndrome risk",
+                "Serotonin syndrome (hyperthermia, rigidity, seizures)",
+                "Do not combine, 2-week washout required",
+                "High",
+            ),
+            (
+                "Opioids",
+                "Benzodiazepines",
+                InteractionSeverity.MAJOR,
+                "Additive CNS depression and respiratory depression",
+                "Respiratory depression, sedation, death",
+                "Use lowest effective doses, monitor closely",
+                "High",
+            ),
             # Antibiotic interactions
-            ("Warfarin", "Fluoroquinolones", InteractionSeverity.MAJOR,
-             "Fluoroquinolones potentiate warfarin effect",
-             "Elevated INR, bleeding",
-             "Monitor INR frequently, reduce warfarin dose",
-             "Moderate"),
-
-            ("Statins", "Clarithromycin", InteractionSeverity.MAJOR,
-             "Macrolides inhibit statin metabolism",
-             "Rhabdomyolysis, myopathy",
-             "Stop statin during macrolide therapy",
-             "High"),
-
+            (
+                "Warfarin",
+                "Fluoroquinolones",
+                InteractionSeverity.MAJOR,
+                "Fluoroquinolones potentiate warfarin effect",
+                "Elevated INR, bleeding",
+                "Monitor INR frequently, reduce warfarin dose",
+                "Moderate",
+            ),
+            (
+                "Statins",
+                "Clarithromycin",
+                InteractionSeverity.MAJOR,
+                "Macrolides inhibit statin metabolism",
+                "Rhabdomyolysis, myopathy",
+                "Stop statin during macrolide therapy",
+                "High",
+            ),
             # GI interactions
-            ("PPIs", "Clopidogrel", InteractionSeverity.MODERATE,
-             "PPIs may reduce clopidogrel activation",
-             "Reduced antiplatelet effect",
-             "Consider pantoprazole or H2 blocker",
-             "Moderate"),
-
+            (
+                "PPIs",
+                "Clopidogrel",
+                InteractionSeverity.MODERATE,
+                "PPIs may reduce clopidogrel activation",
+                "Reduced antiplatelet effect",
+                "Consider pantoprazole or H2 blocker",
+                "Moderate",
+            ),
             # Psychiatric interactions
-            ("TCAs", "Antihistamines", InteractionSeverity.MODERATE,
-             "Additive anticholinergic effects",
-             "Sedation, dry mouth, urinary retention",
-             "Monitor for anticholinergic side effects",
-             "Moderate"),
-
+            (
+                "TCAs",
+                "Antihistamines",
+                InteractionSeverity.MODERATE,
+                "Additive anticholinergic effects",
+                "Sedation, dry mouth, urinary retention",
+                "Monitor for anticholinergic side effects",
+                "Moderate",
+            ),
             # Hormonal interactions
-            ("Oral Contraceptives", "Antibiotics", InteractionSeverity.MODERATE,
-             "Antibiotics may reduce contraceptive efficacy",
-             "Unintended pregnancy",
-             "Use backup contraception during therapy",
-             "Moderate"),
-
+            (
+                "Oral Contraceptives",
+                "Antibiotics",
+                InteractionSeverity.MODERATE,
+                "Antibiotics may reduce contraceptive efficacy",
+                "Unintended pregnancy",
+                "Use backup contraception during therapy",
+                "Moderate",
+            ),
             # Drug-food interactions
-            ("Warfarin", "Vitamin K", InteractionSeverity.MAJOR,
-             "Vitamin K antagonizes warfarin effect",
-             "Reduced anticoagulation, thrombosis risk",
-             "Maintain consistent vitamin K intake",
-             "High"),
-
-            ("MAOIs", "Tyramine-rich foods", InteractionSeverity.CONTRAINDICATED,
-             "Hypertensive crisis",
-             "Severe hypertension, headache, stroke",
-             "Strict dietary tyramine restriction",
-             "High"),
-
+            (
+                "Warfarin",
+                "Vitamin K",
+                InteractionSeverity.MAJOR,
+                "Vitamin K antagonizes warfarin effect",
+                "Reduced anticoagulation, thrombosis risk",
+                "Maintain consistent vitamin K intake",
+                "High",
+            ),
+            (
+                "MAOIs",
+                "Tyramine-rich foods",
+                InteractionSeverity.CONTRAINDICATED,
+                "Hypertensive crisis",
+                "Severe hypertension, headache, stroke",
+                "Strict dietary tyramine restriction",
+                "High",
+            ),
             # NSAID interactions
-            ("NSAIDs", "Corticosteroids", InteractionSeverity.MAJOR,
-             "Additive GI ulcer risk",
-             "GI bleeding, ulceration",
-             "Use gastroprotection, avoid if possible",
-             "High"),
-
-            ("NSAIDs", "ACEi/ARBs", InteractionSeverity.MAJOR,
-             "Triple whammy effect - acute kidney injury",
-             "Acute kidney injury, hyperkalemia",
-             "Avoid triple therapy, monitor renal function",
-             "High"),
+            (
+                "NSAIDs",
+                "Corticosteroids",
+                InteractionSeverity.MAJOR,
+                "Additive GI ulcer risk",
+                "GI bleeding, ulceration",
+                "Use gastroprotection, avoid if possible",
+                "High",
+            ),
+            (
+                "NSAIDs",
+                "ACEi/ARBs",
+                InteractionSeverity.MAJOR,
+                "Triple whammy effect - acute kidney injury",
+                "Acute kidney injury, hyperkalemia",
+                "Avoid triple therapy, monitor renal function",
+                "High",
+            ),
         ]
 
         for drug1, drug2, severity, desc, effect, management, evidence in interaction_data:
             # Add both directions
             interactions[(drug1, drug2)] = DrugInteraction(
-                drug1=drug1, drug2=drug2, severity=severity,
-                description=desc, clinical_effect=effect,
-                management=management, evidence_level=evidence
+                drug1=drug1,
+                drug2=drug2,
+                severity=severity,
+                description=desc,
+                clinical_effect=effect,
+                management=management,
+                evidence_level=evidence,
             )
             interactions[(drug2, drug1)] = DrugInteraction(
-                drug1=drug2, drug2=drug1, severity=severity,
-                description=desc, clinical_effect=effect,
-                management=management, evidence_level=evidence
+                drug1=drug2,
+                drug2=drug1,
+                severity=severity,
+                description=desc,
+                clinical_effect=effect,
+                management=management,
+                evidence_level=evidence,
             )
 
         return interactions
@@ -284,10 +348,20 @@ class DrugInteractionChecker:
         """Load drug allergy cross-reactivity database."""
         return {
             "Penicillin": ["Amoxicillin", "Ampicillin", "Amoxicillin-clavulanate", "Piperacillin"],
-            "Sulfonamides": ["Sulfamethoxazole", "Sulfasalazine", "Furosemide", "Thiazide diuretics"],
+            "Sulfonamides": [
+                "Sulfamethoxazole",
+                "Sulfasalazine",
+                "Furosemide",
+                "Thiazide diuretics",
+            ],
             "NSAIDs": ["Ibuprofen", "Naproxen", "Diclofenac", "Ketorolac", "Aspirin"],
             "Opioids": ["Codeine", "Morphine", "Oxycodone", "Hydromorphone"],
-            "Beta Blockers": ["Propranolol", "Atenolol", "Metoprolol", "Lisinopril"],  # Note: Lisinopril is ACEi
+            "Beta Blockers": [
+                "Propranolol",
+                "Atenolol",
+                "Metoprolol",
+                "Lisinopril",
+            ],  # Note: Lisinopril is ACEi
             "ACE Inhibitors": ["Lisinopril", "Enalapril", "Ramipril", "Captopril"],
             "Statins": ["Atorvastatin", "Simvastatin", "Rosuvastatin", "Pravastatin"],
             "Quinolones": ["Ciprofloxacin", "Levofloxacin", "Moxifloxacin", "Ofloxacin"],
@@ -383,33 +457,39 @@ class DrugInteractionChecker:
         for class_name, class_drugs in drug_classes.items():
             if drug1 in class_drugs or drug2 in class_drugs:
                 # ACEi + NSAID interaction
-                if class_name == "ACEi" and any(n in drug2 for n in ["NSAIDs", "Ibuprofen", "Naproxen"]):
-                    interactions.append(DrugInteraction(
-                        drug1=drug1, drug2=drug2,
-                        severity=InteractionSeverity.MAJOR,
-                        description="ACE inhibitor + NSAID triple whammy effect",
-                        clinical_effect="Acute kidney injury, reduced BP control",
-                        management="Avoid combination, monitor renal function closely",
-                        evidence_level="High"
-                    ))
+                if class_name == "ACEi" and any(
+                    n in drug2 for n in ["NSAIDs", "Ibuprofen", "Naproxen"]
+                ):
+                    interactions.append(
+                        DrugInteraction(
+                            drug1=drug1,
+                            drug2=drug2,
+                            severity=InteractionSeverity.MAJOR,
+                            description="ACE inhibitor + NSAID triple whammy effect",
+                            clinical_effect="Acute kidney injury, reduced BP control",
+                            management="Avoid combination, monitor renal function closely",
+                            evidence_level="High",
+                        )
+                    )
 
                 # Statin + macrolide antibiotics (if we had antibiotic classes defined)
                 if class_name == "Statins" and "Clarithromycin" in drug2:
-                    interactions.append(DrugInteraction(
-                        drug1=drug1, drug2=drug2,
-                        severity=InteractionSeverity.MAJOR,
-                        description="Macrolide inhibits statin metabolism",
-                        clinical_effect="Rhabdomyolysis, myopathy",
-                        management="Stop statin during macrolide therapy",
-                        evidence_level="High"
-                    ))
+                    interactions.append(
+                        DrugInteraction(
+                            drug1=drug1,
+                            drug2=drug2,
+                            severity=InteractionSeverity.MAJOR,
+                            description="Macrolide inhibits statin metabolism",
+                            clinical_effect="Rhabdomyolysis, myopathy",
+                            management="Stop statin during macrolide therapy",
+                            evidence_level="High",
+                        )
+                    )
 
         return interactions
 
     def _check_allergies(
-        self,
-        medications: List[str],
-        patient_allergies: List[str]
+        self, medications: List[str], patient_allergies: List[str]
     ) -> List[AllergyWarning]:
         """Check for drug allergies and cross-reactivity."""
         warnings = []
@@ -421,31 +501,35 @@ class DrugInteractionChecker:
                 med_lower = med.lower()
 
                 if allergy_lower in med_lower or med_lower in allergy_lower:
-                    warnings.append(AllergyWarning(
-                        drug_name=med,
-                        allergen=allergy,
-                        severity="CRITICAL",
-                        clinical_significance="Avoid this medication - direct allergy"
-                    ))
+                    warnings.append(
+                        AllergyWarning(
+                            drug_name=med,
+                            allergen=allergy,
+                            severity="CRITICAL",
+                            clinical_significance="Avoid this medication - direct allergy",
+                        )
+                    )
 
         # Cross-reactivity checks
         for med in medications:
             for allergen, cross_reactive_drugs in self._allergy_database.items():
                 if allergen.lower() in [a.lower() for a in patient_allergies]:
-                    if med in cross_reactive_drugs or any(drug in med for drug in cross_reactive_drugs):
-                        warnings.append(AllergyWarning(
-                            drug_name=med,
-                            allergen=allergen,
-                            severity="HIGH",
-                            clinical_significance=f"Cross-reactivity with {allergen} allergy"
-                        ))
+                    if med in cross_reactive_drugs or any(
+                        drug in med for drug in cross_reactive_drugs
+                    ):
+                        warnings.append(
+                            AllergyWarning(
+                                drug_name=med,
+                                allergen=allergen,
+                                severity="HIGH",
+                                clinical_significance=f"Cross-reactivity with {allergen} allergy",
+                            )
+                        )
 
         return warnings
 
     def _get_ai_interactions(
-        self,
-        medications: List[str],
-        patient_allergies: List[str]
+        self, medications: List[str], patient_allergies: List[str]
     ) -> List[DrugInteraction]:
         """Get AI-powered interaction assessment."""
         prompt = self._create_interaction_prompt(medications, patient_allergies)
@@ -454,11 +538,7 @@ class DrugInteractionChecker:
             ai_response = self.ai_router.process_complex_task(
                 task="drug_interaction",
                 prompt=prompt,
-                context={
-                    "complexity": "high",
-                    "domain": "pharmacology",
-                    "language": "en"
-                }
+                context={"complexity": "high", "domain": "pharmacology", "language": "en"},
             )
 
             return self._parse_ai_interaction_response(ai_response, medications)
@@ -470,7 +550,11 @@ class DrugInteractionChecker:
     def _create_interaction_prompt(self, medications: List[str], allergies: List[str]) -> str:
         """Create structured prompt for AI interaction analysis."""
         med_list = "\n".join(f"- {med}" for med in medications)
-        allergy_list = "\n".join(f"- {allergy}" for allergy in allergies) if allergies else "No known allergies"
+        allergy_list = (
+            "\n".join(f"- {allergy}" for allergy in allergies)
+            if allergies
+            else "No known allergies"
+        )
 
         prompt = f"""Medications to analyze:
 {med_list}
@@ -512,9 +596,7 @@ Return as JSON with structure:
         return prompt
 
     def _parse_ai_interaction_response(
-        self,
-        ai_response: str,
-        medications: List[str]
+        self, ai_response: str, medications: List[str]
     ) -> List[DrugInteraction]:
         """Parse AI interaction response."""
         try:
@@ -533,11 +615,13 @@ Return as JSON with structure:
                 interaction = DrugInteraction(
                     drug1=item.get("drug1", ""),
                     drug2=item.get("drug2", ""),
-                    severity=severity_map.get(item.get("severity", ""), InteractionSeverity.UNKNOWN),
+                    severity=severity_map.get(
+                        item.get("severity", ""), InteractionSeverity.UNKNOWN
+                    ),
                     description=item.get("description", ""),
                     clinical_effect=item.get("clinical_effect", ""),
                     management=item.get("management", ""),
-                    evidence_level="AI-Generated"
+                    evidence_level="AI-Generated",
                 )
                 interactions.append(interaction)
 
@@ -547,7 +631,9 @@ Return as JSON with structure:
             print(f"Failed to parse AI interaction response: {e}")
             return []
 
-    def _deduplicate_interactions(self, interactions: List[DrugInteraction]) -> List[DrugInteraction]:
+    def _deduplicate_interactions(
+        self, interactions: List[DrugInteraction]
+    ) -> List[DrugInteraction]:
         """Remove duplicate interactions."""
         seen = set()
         unique_interactions = []
@@ -561,9 +647,10 @@ Return as JSON with structure:
             else:
                 # Keep the more severe interaction
                 for existing in unique_interactions:
-                    if (existing.drug1 == interaction.drug1 and
-                        existing.drug2 == interaction.drug2):
-                        if self._severity_rank(interaction.severity) > self._severity_rank(existing.severity):
+                    if existing.drug1 == interaction.drug1 and existing.drug2 == interaction.drug2:
+                        if self._severity_rank(interaction.severity) > self._severity_rank(
+                            existing.severity
+                        ):
                             unique_interactions[unique_interactions.index(existing)] = interaction
                         break
 
@@ -581,29 +668,35 @@ Return as JSON with structure:
         return ranking.get(severity, 0)
 
     def _generate_recommendations(
-        self,
-        interactions: List[DrugInteraction],
-        allergy_warnings: List[AllergyWarning]
+        self, interactions: List[DrugInteraction], allergy_warnings: List[AllergyWarning]
     ) -> List[str]:
         """Generate clinical recommendations based on analysis."""
         recommendations = []
 
         # Critical allergy warnings
         if any(w.severity == "CRITICAL" for w in allergy_warnings):
-            recommendations.append("🚨 CRITICAL: Remove medications causing direct allergic reactions")
+            recommendations.append(
+                "🚨 CRITICAL: Remove medications causing direct allergic reactions"
+            )
 
         # Major interactions
         major_interactions = [i for i in interactions if i.severity == InteractionSeverity.MAJOR]
         if major_interactions:
-            recommendations.append("⚠️ Major drug interactions detected - consider alternative therapies")
+            recommendations.append(
+                "⚠️ Major drug interactions detected - consider alternative therapies"
+            )
 
         # Contraindicated combinations
-        contraindicated = [i for i in interactions if i.severity == InteractionSeverity.CONTRAINDICATED]
+        contraindicated = [
+            i for i in interactions if i.severity == InteractionSeverity.CONTRAINDICATED
+        ]
         if contraindicated:
             recommendations.append("❌ CONTRAINDICATED: Immediate medication adjustment required")
 
         # Moderate interactions
-        moderate_interactions = [i for i in interactions if i.severity == InteractionSeverity.MODERATE]
+        moderate_interactions = [
+            i for i in interactions if i.severity == InteractionSeverity.MODERATE
+        ]
         if moderate_interactions:
             recommendations.append("⚠️ Moderate interactions - monitor patient closely")
 
@@ -618,21 +711,25 @@ Return as JSON with structure:
         return recommendations
 
     def _identify_safe_alternatives(
-        self,
-        medications: List[str],
-        interactions: List[DrugInteraction]
+        self, medications: List[str], interactions: List[DrugInteraction]
     ) -> List[str]:
         """Identify safer medication alternatives."""
         alternatives = []
 
         # Based on common problematic combinations
-        if "Ibuprofen" in medications and any("Lisinopril" in i.drug1 or "Lisinopril" in i.drug2 for i in interactions):
+        if "Ibuprofen" in medications and any(
+            "Lisinopril" in i.drug1 or "Lisinopril" in i.drug2 for i in interactions
+        ):
             alternatives.append("Acetaminophen (Paracetamol) for pain management")
 
-        if "Warfarin" in medications and any("Ibuprofen" in i.drug1 or "Ibuprofen" in i.drug2 for i in interactions):
+        if "Warfarin" in medications and any(
+            "Ibuprofen" in i.drug1 or "Ibuprofen" in i.drug2 for i in interactions
+        ):
             alternatives.append("Consider alternative analgesics or adjust warfarin monitoring")
 
-        if "Statins" in medications and any("Clarithromycin" in i.drug1 or "Clarithromycin" in i.drug2 for i in interactions):
+        if "Statins" in medications and any(
+            "Clarithromycin" in i.drug1 or "Clarithromycin" in i.drug2 for i in interactions
+        ):
             alternatives.append("Temporary statin discontinuation during antibiotic therapy")
 
         if "Metformin" in medications and interactions:
@@ -642,10 +739,14 @@ Return as JSON with structure:
 
     def _requires_pharmacist_review(self, interactions: List[DrugInteraction]) -> bool:
         """Determine if pharmacist review is required."""
-        return any(
-            interaction.severity in [InteractionSeverity.MAJOR, InteractionSeverity.CONTRAINDICATED]
-            for interaction in interactions
-        ) or len(interactions) > 3
+        return (
+            any(
+                interaction.severity
+                in [InteractionSeverity.MAJOR, InteractionSeverity.CONTRAINDICATED]
+                for interaction in interactions
+            )
+            or len(interactions) > 3
+        )
 
     def get_interaction_report(self, result: InteractionResult) -> str:
         """
@@ -666,7 +767,9 @@ Return as JSON with structure:
         lines.append("")
 
         # Critical alerts first
-        critical_interactions = [i for i in result.interactions if i.severity == InteractionSeverity.CONTRAINDICATED]
+        critical_interactions = [
+            i for i in result.interactions if i.severity == InteractionSeverity.CONTRAINDICATED
+        ]
         if critical_interactions:
             lines.append("🚨 CRITICAL - CONTRAINDICATED COMBINATIONS 🚨")
             for interaction in critical_interactions:
@@ -681,11 +784,15 @@ Return as JSON with structure:
             lines.append("⚠️ ALLERGY WARNINGS ⚠️")
             for warning in result.allergy_warnings:
                 severity_icon = "🚨" if warning.severity == "CRITICAL" else "⚠️"
-                lines.append(f"  {severity_icon} {warning.drug_name}: {warning.clinical_significance}")
+                lines.append(
+                    f"  {severity_icon} {warning.drug_name}: {warning.clinical_significance}"
+                )
             lines.append("")
 
         # Major interactions
-        major_interactions = [i for i in result.interactions if i.severity == InteractionSeverity.MAJOR]
+        major_interactions = [
+            i for i in result.interactions if i.severity == InteractionSeverity.MAJOR
+        ]
         if major_interactions:
             lines.append("🔶 MAJOR INTERACTIONS 🔶")
             for interaction in major_interactions:
@@ -696,7 +803,9 @@ Return as JSON with structure:
             lines.append("")
 
         # Moderate interactions
-        moderate_interactions = [i for i in result.interactions if i.severity == InteractionSeverity.MODERATE]
+        moderate_interactions = [
+            i for i in result.interactions if i.severity == InteractionSeverity.MODERATE
+        ]
         if moderate_interactions:
             lines.append("🟡 MODERATE INTERACTIONS 🟡")
             for interaction in moderate_interactions[:5]:  # Limit to first 5

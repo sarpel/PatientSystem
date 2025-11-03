@@ -1,19 +1,19 @@
 """Pytest configuration and shared fixtures."""
 
-import pytest
 import asyncio
 from datetime import datetime
-from unittest.mock import Mock, AsyncMock
-from typing import Generator, AsyncGenerator
+from typing import AsyncGenerator, Generator
+from unittest.mock import AsyncMock, Mock
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from src.database.connection import get_engine, get_session
 from src.api.fastapi_app import app
-from src.models.patient import Patient
 from src.config.settings import settings
+from src.database.connection import get_engine, get_session
+from src.models.patient import Patient
 
 
 @pytest.fixture(scope="session")
@@ -33,6 +33,7 @@ def mock_session() -> Generator[Session, None, None]:
 
     # Create tables
     from src.models.base import Base
+
     Base.metadata.create_all(bind=engine)
 
     session = TestingSessionLocal()
@@ -45,6 +46,7 @@ def mock_session() -> Generator[Session, None, None]:
 @pytest.fixture
 def test_client(mock_session: Session) -> Generator[TestClient, None, None]:
     """Create a test client with mocked database session."""
+
     def override_get_session():
         try:
             yield mock_session
@@ -67,7 +69,7 @@ def sample_patient() -> Patient:
         DOGUM_TARIHI=datetime(1980, 1, 1),
         CINSIYET="E",
         TELEFON="5551234567",
-        ADRES="123 Test Street"
+        ADRES="123 Test Street",
     )
 
 
@@ -80,25 +82,12 @@ def mock_ai_response():
                 "diagnosis": "Hypertension",
                 "icd10": "I10",
                 "probability": 0.75,
-                "urgency": "moderate"
+                "urgency": "moderate",
             },
-            {
-                "diagnosis": "Anxiety",
-                "icd10": "F41.1",
-                "probability": 0.45,
-                "urgency": "minor"
-            }
+            {"diagnosis": "Anxiety", "icd10": "F41.1", "probability": 0.45, "urgency": "minor"},
         ],
-        "red_flags": [
-            "Blood pressure reading above 180/120 mmHg",
-            "Chest pain reported"
-        ],
-        "recommended_tests": [
-            "CBC",
-            "Comprehensive metabolic panel",
-            "Lipid panel",
-            "Urinalysis"
-        ]
+        "red_flags": ["Blood pressure reading above 180/120 mmHg", "Chest pain reported"],
+        "recommended_tests": ["CBC", "Comprehensive metabolic panel", "Lipid panel", "Urinalysis"],
     }
 
 
@@ -107,19 +96,11 @@ def mock_treatment_response():
     """Create a mock treatment response for testing."""
     return {
         "medications": [
-            {
-                "name": "Lisinopril",
-                "dosage": "10mg daily",
-                "duration": "ongoing"
-            },
-            {
-                "name": "Hydrochlorothiazide",
-                "dosage": "25mg daily",
-                "duration": "ongoing"
-            }
+            {"name": "Lisinopril", "dosage": "10mg daily", "duration": "ongoing"},
+            {"name": "Hydrochlorothiazide", "dosage": "25mg daily", "duration": "ongoing"},
         ],
         "clinical_guidelines": "Start ACE inhibitor therapy for hypertension. Monitor blood pressure and renal function.",
-        "followup_plan": "Follow up in 4 weeks to assess blood pressure control and medication tolerance."
+        "followup_plan": "Follow up in 4 weeks to assess blood pressure control and medication tolerance.",
     }
 
 
@@ -133,7 +114,7 @@ def mock_lab_data():
             "BIRIM": "g/dL",
             "TEST_TARIHI": datetime(2024, 1, 15),
             "NORMAL_MIN": "12.0",
-            "NORMAL_MAX": "16.0"
+            "NORMAL_MAX": "16.0",
         },
         {
             "TEST_ADI": "Glucose",
@@ -141,8 +122,8 @@ def mock_lab_data():
             "BIRIM": "mg/dL",
             "TEST_TARIHI": datetime(2024, 1, 15),
             "NORMAL_MIN": "70",
-            "NORMAL_MAX": "100"
-        }
+            "NORMAL_MAX": "100",
+        },
     ]
 
 
@@ -150,11 +131,9 @@ def mock_lab_data():
 def mock_ollama_client():
     """Create a mock Ollama client for testing."""
     client = Mock()
-    client.complete = AsyncMock(return_value={
-        "text": "Mock diagnosis response",
-        "model": "gemma:7b",
-        "provider": "ollama"
-    })
+    client.complete = AsyncMock(
+        return_value={"text": "Mock diagnosis response", "model": "gemma:7b", "provider": "ollama"}
+    )
     client.health_check = AsyncMock(return_value=True)
     return client
 
@@ -163,11 +142,13 @@ def mock_ollama_client():
 def mock_claude_client():
     """Create a mock Claude client for testing."""
     client = Mock()
-    client.complete = AsyncMock(return_value={
-        "text": "Mock Claude diagnosis response",
-        "model": "claude-3-5-sonnet-20241022",
-        "provider": "claude"
-    })
+    client.complete = AsyncMock(
+        return_value={
+            "text": "Mock Claude diagnosis response",
+            "model": "claude-3-5-sonnet-20241022",
+            "provider": "claude",
+        }
+    )
     client.health_check = AsyncMock(return_value=True)
     return client
 
@@ -180,7 +161,7 @@ def performance_thresholds():
         "diagnosis_generation_seconds": 30.0,
         "lab_analysis_seconds": 5.0,
         "api_response_ms": 1000,
-        "database_query_ms": 500
+        "database_query_ms": 500,
     }
 
 

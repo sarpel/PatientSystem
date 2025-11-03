@@ -1,13 +1,14 @@
 """Health check endpoints for monitoring and status."""
 
-from fastapi import APIRouter, HTTPException
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+
+from fastapi import APIRouter, HTTPException
 from loguru import logger
 from sqlalchemy import text
 
-from ...database.connection import get_engine
 from ...ai import create_ai_router
+from ...database.connection import get_engine
 
 router = APIRouter()
 

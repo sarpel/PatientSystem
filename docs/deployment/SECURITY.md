@@ -18,6 +18,7 @@ This document provides critical security guidance for deploying the Clinical AI 
 The following environment variables **MUST** be set before deploying to production:
 
 #### Database Credentials
+
 ```bash
 DB_USER=clinicalai_user
 DB_PASSWORD=<STRONG_RANDOM_PASSWORD>
@@ -25,34 +26,41 @@ SA_PASSWORD=<STRONG_RANDOM_PASSWORD>
 ```
 
 **Requirements:**
+
 - Minimum 32 characters
 - Mix of uppercase, lowercase, numbers, and special characters
 - Generated using cryptographically secure random generator
 
 #### Application Security
+
 ```bash
 SECRET_KEY=<STRONG_RANDOM_KEY>
 ```
 
 **Requirements:**
+
 - Minimum 64 characters
 - Generate using: `openssl rand -base64 64`
 
 #### Redis Password
+
 ```bash
 REDIS_PASSWORD=<STRONG_RANDOM_PASSWORD>
 ```
 
 **Requirements:**
+
 - Minimum 32 characters
 - No dictionary words
 
 #### Monitoring Credentials
+
 ```bash
 GRAFANA_ADMIN_PASSWORD=<STRONG_RANDOM_PASSWORD>
 ```
 
 **Requirements:**
+
 - Minimum 20 characters
 - Change default immediately after first login
 
@@ -61,6 +69,7 @@ GRAFANA_ADMIN_PASSWORD=<STRONG_RANDOM_PASSWORD>
 ### Development Environment
 
 1. **Copy the example file:**
+
    ```bash
    cp .env.example .env
    ```
@@ -77,11 +86,13 @@ GRAFANA_ADMIN_PASSWORD=<STRONG_RANDOM_PASSWORD>
 ### Production Environment
 
 1. **Copy the production example:**
+
    ```bash
    cp .env.production.example .env
    ```
 
 2. **Generate secure passwords:**
+
    ```bash
    # Database passwords
    openssl rand -base64 32
@@ -101,6 +112,7 @@ GRAFANA_ADMIN_PASSWORD=<STRONG_RANDOM_PASSWORD>
    - Verify no placeholders remain: `grep -r "CHANGE_ME" .env`
 
 4. **Secure the .env file:**
+
    ```bash
    chmod 600 .env
    chown root:root .env
@@ -116,6 +128,7 @@ GRAFANA_ADMIN_PASSWORD=<STRONG_RANDOM_PASSWORD>
 For enhanced security in Docker Swarm or production environments, use Docker secrets:
 
 1. **Create secrets:**
+
    ```bash
    echo "your-strong-password" | docker secret create db_password -
    echo "your-redis-password" | docker secret create redis_password -
@@ -123,6 +136,7 @@ For enhanced security in Docker Swarm or production environments, use Docker sec
    ```
 
 2. **Update docker-compose.yml to use secrets:**
+
    ```yaml
    services:
      api:
@@ -218,6 +232,7 @@ This repository uses GitGuardian to scan for accidentally committed secrets.
 ## Contact
 
 For security concerns or questions:
+
 - Create a private security advisory in GitHub
 - Contact the security team directly
 - Never discuss security issues in public channels

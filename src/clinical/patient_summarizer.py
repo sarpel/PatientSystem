@@ -11,13 +11,14 @@ Provides comprehensive patient summaries including:
 """
 
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, List
-from sqlalchemy import select, desc
+from typing import Any, Dict, List, Optional
+
+from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
+from src.models.clinical import Diagnosis, Prescription
 from src.models.patient import Patient, PatientDemographics
-from src.models.visit import Visit, PatientAdmission
-from src.models.clinical import Prescription, Diagnosis
+from src.models.visit import PatientAdmission, Visit
 
 
 class PatientSummarizer:
@@ -37,11 +38,7 @@ class PatientSummarizer:
         """
         self.session = session
 
-    def get_patient_summary(
-        self,
-        patient_id: int,
-        months_back: int = 12
-    ) -> Dict[str, Any]:
+    def get_patient_summary(self, patient_id: int, months_back: int = 12) -> Dict[str, Any]:
         """
         Get comprehensive patient summary.
 
@@ -101,22 +98,20 @@ class PatientSummarizer:
         # Add demographics if available
         if patient.demographics:
             demo = patient.demographics
-            demographics.update({
-                "weight_kg": demo.AGIRLIK / 1000 if demo.AGIRLIK else None,
-                "height_cm": demo.BOY,
-                "bmi": demo.bmi,
-                "bmi_category": demo.bmi_category,
-                "smoking_status": demo.SIGARA,
-                "alcohol_use": demo.ALKOL_KULLANIMI,
-            })
+            demographics.update(
+                {
+                    "weight_kg": demo.AGIRLIK / 1000 if demo.AGIRLIK else None,
+                    "height_cm": demo.BOY,
+                    "bmi": demo.bmi,
+                    "bmi_category": demo.bmi_category,
+                    "smoking_status": demo.SIGARA,
+                    "alcohol_use": demo.ALKOL_KULLANIMI,
+                }
+            )
 
         return demographics
 
-    def _get_recent_visits(
-        self,
-        patient_id: int,
-        threshold_date: datetime
-    ) -> List[Dict[str, Any]]:
+    def _get_recent_visits(self, patient_id: int, threshold_date: datetime) -> List[Dict[str, Any]]:
         """Get recent patient visits."""
         # Get admissions for this patient
         stmt = (
@@ -245,11 +240,7 @@ class PatientSummarizer:
             "glasgow_coma_scale": visit.GLASGOW_KOMA_SKALASI,
         }
 
-    def _get_summary_stats(
-        self,
-        patient_id: int,
-        threshold_date: datetime
-    ) -> Dict[str, Any]:
+    def _get_summary_stats(self, patient_id: int, threshold_date: datetime) -> Dict[str, Any]:
         """Get summary statistics."""
         # Count visits
         visit_stmt = (
@@ -309,7 +300,7 @@ class PatientSummarizer:
         lines.append(f"  Name: {demo['full_name']}")
         lines.append(f"  Age: {demo['age']} years")
         lines.append(f"  Gender: {demo['gender']}")
-        if demo.get('bmi'):
+        if demo.get("bmi"):
             lines.append(f"  BMI: {demo['bmi']} ({demo.get('bmi_category', 'N/A')})")
         lines.append("")
 
@@ -324,13 +315,13 @@ class PatientSummarizer:
         if summary["latest_vitals"]:
             vitals = summary["latest_vitals"]
             lines.append("LATEST VITAL SIGNS:")
-            if vitals.get('blood_pressure_str'):
+            if vitals.get("blood_pressure_str"):
                 lines.append(f"  BP: {vitals['blood_pressure_str']} mmHg")
-            if vitals.get('pulse'):
+            if vitals.get("pulse"):
                 lines.append(f"  Pulse: {vitals['pulse']} bpm")
-            if vitals.get('temperature_celsius'):
+            if vitals.get("temperature_celsius"):
                 lines.append(f"  Temperature: {vitals['temperature_celsius']}°C")
-            if vitals.get('bmi'):
+            if vitals.get("bmi"):
                 lines.append(f"  BMI: {vitals['bmi']}")
             lines.append("")
 

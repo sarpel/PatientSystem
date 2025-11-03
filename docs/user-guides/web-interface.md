@@ -9,11 +9,13 @@ The Clinical AI Assistant Web Interface is a modern React-based application prov
 ### Accessing the Web Interface
 
 1. **Start the API Server:**
+
    ```bash
    python -m src.api.fastapi_app
    ```
 
 2. **Start the Web Frontend:**
+
    ```bash
    cd frontend
    npm run dev
@@ -32,6 +34,7 @@ When you first access the web interface, you'll see:
 4. **Feature Cards** showcasing system capabilities
 
 The application will automatically:
+
 - ✅ Initialize application state
 - ✅ Check database connectivity
 - ✅ Verify AI service availability
@@ -57,12 +60,14 @@ The application will automatically:
 ### Navigation Menu
 
 **Dashboard (Default):**
+
 - System overview and statistics
 - Quick access to common functions
 - System status monitoring
 - Feature highlights
 
 **Patient Search:**
+
 - Smart patient lookup functionality
 - Advanced search options
 - Patient selection and navigation
@@ -70,11 +75,13 @@ The application will automatically:
 ### Status Indicators
 
 **Database Connection:**
+
 - 🟢 **Connected** - Database accessible
 - 🔴 **Disconnected** - Database connection failed
 - 🟡 **Unknown** - Status checking
 
 **AI Services:**
+
 - 🟢 **Ready** - AI models available
 - 🔴 **Unavailable** - No AI services accessible
 - 🟡 **Unknown** - Status checking
@@ -84,11 +91,13 @@ The application will automatically:
 ### System Information
 
 **Key Metrics:**
+
 - **Database Years**: 7 years of patient data
 - **Total Patients**: 6,000+ patients in database
 - **Database Tables**: 641 tables available
 
 **System Features:**
+
 - **Patient Records**: Search and comprehensive profiles
 - **AI Diagnosis**: Differential diagnosis with probability scoring
 - **Treatment Plans**: Evidence-based recommendations
@@ -98,24 +107,28 @@ The application will automatically:
 ### Quick Actions
 
 **Primary Functions:**
+
 - **Search Patient**: Navigate to patient search
 - **AI Analysis**: Quick access to AI tools (when available)
 
 ### Feature Cards
 
 **Patient Management:**
+
 - Smart patient search capabilities
 - Complete medical history access
 - Laboratory result integration
 - Medication tracking
 
 **AI Intelligence:**
+
 - Differential diagnosis generation
 - Treatment recommendations
 - Clinical guideline integration
 - Evidence-based decision support
 
 **Safety Features:**
+
 - Drug interaction checking
 - Allergy alert system
 - Red flag detection
@@ -126,6 +139,7 @@ The application will automatically:
 ### Search Interface
 
 **Search Options:**
+
 - **Name Search**: Patient first or last name (partial matches supported)
 - **TCKN Search**: Turkish ID number (partial matches supported)
 - **Real-time Search**: Starts after 2 characters, 300ms debounce
@@ -153,6 +167,7 @@ The application will automatically:
 ### Search Results Display
 
 **Table Columns:**
+
 - **TCKN**: Turkish identification number
 - **Full Name**: Patient first and last name
 - **Age**: Current age in years
@@ -160,6 +175,7 @@ The application will automatically:
 - **Last Visit**: Most recent encounter date
 
 **Visual Features:**
+
 - **Hover Effects**: Row highlighting on mouse hover
 - **Loading States**: Search progress indicators
 - **Empty States**: Helpful messages when no results found
@@ -168,12 +184,14 @@ The application will automatically:
 ### Search Tips
 
 ✅ **Best Practices:**
+
 - Use partial names for flexible matching
 - Search by TCKN for exact patient identification
 - Check spelling for common variations
 - Use unique identifiers when possible
 
 ❌ **Limitations:**
+
 - Single character searches not allowed
 - Results limited to 20 patients
 - Requires 2+ characters for search initiation
@@ -183,6 +201,7 @@ The application will automatically:
 ### Patient Header
 
 **Patient Information Display:**
+
 - **Full Name**: Patient complete name
 - **TCKN**: Turkish ID number
 - **Age**: Current calculated age
@@ -194,6 +213,7 @@ The application will automatically:
 ### Tabbed Interface
 
 **Available Tabs:**
+
 1. **AI Diagnosis**: Generate differential diagnosis
 2. **Treatment Plan**: Get treatment recommendations
 3. **Lab Results**: View laboratory data and trends
@@ -203,6 +223,7 @@ The application will automatically:
 ### Tab Navigation
 
 **Active Tab Indicators:**
+
 - **Blue Border**: Currently active tab
 - **Hover Effects**: Visual feedback on tab hover
 - **Disabled State**: Grayed out for unavailable features
@@ -213,11 +234,13 @@ The application will automatically:
 ### Diagnosis Generation
 
 **Input Fields:**
+
 - **Chief Complaint & Symptoms**: Detailed symptom description
 - **AI Model Selection**: Choose AI provider for analysis
 - **Generate Button**: Start AI-powered diagnosis
 
 **Chief Complaint Guidelines:**
+
 - Be specific about symptoms
 - Include duration and severity
 - Mention aggravating/alleviating factors
@@ -226,6 +249,7 @@ The application will automatically:
 ### AI Model Selection
 
 **Available Models:**
+
 - **Auto (Smart Routing)**: System selects optimal model
 - **Claude**: Best for complex cases
 - **GPT-4o**: High-quality general analysis
@@ -233,6 +257,7 @@ The application will automatically:
 - **Ollama**: Local model (fast, private)
 
 **Model Characteristics:**
+
 - **Claude**: Best for complex clinical reasoning
 - **GPT-4o**: Fast, high-quality responses
 - **Gemini**: Alternative perspective
@@ -241,24 +266,28 @@ The application will automatically:
 ### Results Display
 
 **Differential Diagnosis Table:**
+
 - **Diagnosis**: Identified condition
 - **ICD-10 Code**: Standard diagnosis code
 - **Probability**: Likelihood percentage
 - **Urgency**: Severity level (Critical/Major/Moderate/Minor)
 
 **Urgency Color Coding:**
+
 - 🔴 **Critical**: Immediate attention required
 - 🟠 **Major**: Urgent evaluation needed
 - 🟡 **Moderate**: Timely follow-up recommended
 - 🟢 **Minor**: Routine care appropriate
 
 **Red Flags Section:**
+
 - ⚠️ **Warning Display**: Prominent red box styling
 - **Critical Findings**: Urgent condition indicators
 - **Action Recommendations**: Immediate steps to take
 - **Risk Assessment**: Danger level evaluation
 
 **Recommended Tests:**
+
 - **Lab Studies**: Suggested blood work
 - **Imaging**: Radiology recommendations
 - **Specialist Referrals**: When to refer patients
@@ -269,11 +298,13 @@ The application will automatically:
 ### Treatment Generation
 
 **Input Fields:**
+
 - **Confirmed Diagnosis**: Primary diagnosis for treatment
 - **AI Model Selection**: Choose AI provider
 - **Generate Button**: Start treatment recommendation
 
 **Diagnosis Guidelines:**
+
 - Enter confirmed or working diagnosis
 - Use specific clinical terminology
 - Include severity when relevant
@@ -282,17 +313,20 @@ The application will automatically:
 ### Treatment Results
 
 **Medication Recommendations:**
+
 - **Medication Name**: Drug name and formulation
 - **Dosage**: Strength and frequency
 - **Duration**: Treatment course length
 
 **Clinical Guidelines:**
+
 - **Evidence-Based Protocols**: Current medical standards
 - **Treatment Algorithms**: Step-by-step approaches
 - **Monitoring Requirements**: Follow-up parameters
 - **Contraindications**: When to avoid treatment
 
 **Follow-up Plan:**
+
 - **Timeline**: Recommended review schedule
 - **Monitoring**: What to watch for
 - **Adjustments**: When to modify treatment
@@ -303,11 +337,13 @@ The application will automatically:
 ### Laboratory Data
 
 **Test Selection:**
+
 - **Common Tests**: Frequently ordered studies
 - **Time Range**: Filter results by date range
 - **Refresh Button**: Update lab data
 
 **Available Tests:**
+
 - Hemoglobin, White Blood Cell, Platelet Count
 - Glucose, HbA1c, Creatinine
 - ALT, AST, Total Cholesterol
@@ -316,17 +352,20 @@ The application will automatically:
 ### Results Display
 
 **Data Table:**
+
 - **Date**: Test collection date
 - **Result**: Laboratory value
 - **Reference Range**: Normal values
 - **Status**: Normal/Abnormal indicator
 
 **Status Indicators:**
+
 - 🟢 **Normal**: Within reference range
 - 🔴 **Abnormal**: Outside reference range
 - **Gray**: Insufficient data
 
 **Visual Features:**
+
 - **Abnormal Highlighting**: Red background for out-of-range values
 - **Normal Range Display**: Reference intervals shown
 - **Unit Information**: Measurement units included
@@ -335,18 +374,20 @@ The application will automatically:
 ### Trend Analysis
 
 **Chart Visualization:**
+
 - **Interactive Plots**: Time-based value trends
 - **Reference Ranges**: Normal value shading
 - **Data Points**: Individual measurement markers
 - **Export Options**: Save charts as images
 
-*Note: Chart functionality displays placeholder for development*
+_Note: Chart functionality displays placeholder for development_
 
 ## ⚡ System Features
 
 ### Real-Time Updates
 
 **Status Monitoring:**
+
 - **Database Connection**: Live connectivity status
 - **AI Services**: Provider availability status
 - **Error Handling**: User-friendly error messages
@@ -355,11 +396,13 @@ The application will automatically:
 ### Responsive Design
 
 **Device Support:**
+
 - **Desktop**: Full feature set, optimal layout
 - **Tablet**: Adapted interface, touch-friendly
 - **Mobile**: Essential features, simplified navigation
 
 **Responsive Features:**
+
 - **Adaptive Layout**: Content reorganization
 - **Touch Gestures**: Mobile-friendly interactions
 - **Readable Text**: Optimized font sizes
@@ -368,6 +411,7 @@ The application will automatically:
 ### Performance Optimizations
 
 **Speed Enhancements:**
+
 - **Debounced Search**: Prevents excessive API calls
 - **Data Caching**: Store frequently accessed data
 - **Lazy Loading**: Load content on demand
@@ -378,6 +422,7 @@ The application will automatically:
 ### Environment Setup
 
 **Development Environment:**
+
 ```bash
 # Frontend development server
 npm run dev
@@ -390,6 +435,7 @@ VITE_API_URL=http://localhost:8000
 ```
 
 **Production Environment:**
+
 ```bash
 # Build frontend
 npm run build
@@ -404,12 +450,14 @@ uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8000
 ### Customization Options
 
 **Theme Colors:**
+
 - **Medical Blue**: Primary color scheme
 - **Status Colors**: Red/green/yellow indicators
 - **Typography**: Medical-appropriate fonts
 - **Spacing**: Clinical interface layout
 
 **Feature Flags:**
+
 - **AI Integration**: Enable/disable AI features
 - **Advanced Analytics**: Show/hide advanced features
 - **Experimental UI**: Preview new interface elements
@@ -419,24 +467,28 @@ uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8000
 ### Supported Browsers
 
 **Desktop Browsers:**
+
 - ✅ **Chrome 88+** (Recommended)
 - ✅ **Firefox 85+**
 - ✅ **Safari 14+**
 - ✅ **Edge 88+**
 
 **Mobile Browsers:**
+
 - ✅ **Chrome Mobile** (Android)
 - ✅ **Safari Mobile** (iOS)
 
 ### Required Features
 
 **JavaScript Requirements:**
+
 - ES2020 support
 - Async/await functionality
 - Modern DOM APIs
 - Local storage support
 
 **CSS Requirements:**
+
 - Flexbox layout
 - CSS Grid support
 - Modern color functions
@@ -447,12 +499,14 @@ uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8000
 ### Data Protection
 
 **Local Storage:**
+
 - No sensitive PHI stored in browser
 - Session data only
 - Automatic cleanup on logout
 - Secure cookie handling
 
 **API Security:**
+
 - HTTPS required in production
 - CORS configuration
 - Request validation
@@ -461,6 +515,7 @@ uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8000
 ### Clinical Safety
 
 **AI Recommendations:**
+
 - Decision support, not replacement
 - Clinical judgment required
 - Verification of critical findings
@@ -471,6 +526,7 @@ uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8000
 ### Common Issues
 
 **Connection Problems:**
+
 ```
 Problem: "Failed to connect to API"
 Solution:
@@ -481,6 +537,7 @@ Solution:
 ```
 
 **Search Issues:**
+
 ```
 Problem: "No patients found"
 Solution:
@@ -491,6 +548,7 @@ Solution:
 ```
 
 **AI Service Issues:**
+
 ```
 Problem: "AI services unavailable"
 Solution:
@@ -503,12 +561,14 @@ Solution:
 ### Performance Issues
 
 **Slow Loading:**
+
 - Check internet connection speed
 - Verify API server performance
 - Clear browser cache
 - Restart application
 
 **Memory Issues:**
+
 - Close unused browser tabs
 - Restart browser
 - Check system resources
@@ -517,12 +577,14 @@ Solution:
 ### Support Resources
 
 **Documentation:**
+
 - [Installation Guide](../deployment/installation.md)
 - [Configuration Guide](../deployment/configuration.md)
 - [Troubleshooting Guide](../deployment/troubleshooting.md)
 - [API Reference](../api/README.md)
 
 **Help Features:**
+
 - Tooltips on hover for all buttons
 - Contextual help in dialogs
 - Status indicators for system health

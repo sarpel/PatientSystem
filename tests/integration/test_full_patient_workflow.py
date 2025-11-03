@@ -1,9 +1,10 @@
 """Integration tests for complete patient workflow."""
 
+import asyncio
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock
-import asyncio
 
 from src.api.fastapi_app import app
 
@@ -22,28 +23,14 @@ class TestFullPatientWorkflow:
                 "ADI": "Test",
                 "SOYADI": "Patient",
                 "DOGUM_TARIHI": "1980-01-01",
-                "CINSIYET": "E"
+                "CINSIYET": "E",
             },
             "complaint": "Patient reports chest pain and shortness of breath for 2 days",
-            "vitals": {
-                "blood_pressure": "160/95",
-                "heart_rate": 92,
-                "temperature": 37.2
-            },
+            "vitals": {"blood_pressure": "160/95", "heart_rate": 92, "temperature": 37.2},
             "lab_results": [
-                {
-                    "TEST_ADI": "Troponin I",
-                    "SONUC": "0.05",
-                    "BIRIM": "ng/mL",
-                    "NORMAL_MAX": "0.04"
-                },
-                {
-                    "TEST_ADI": "CK-MB",
-                    "SONUC": "25",
-                    "BIRIM": "U/L",
-                    "NORMAL_MAX": "25"
-                }
-            ]
+                {"TEST_ADI": "Troponin I", "SONUC": "0.05", "BIRIM": "ng/mL", "NORMAL_MAX": "0.04"},
+                {"TEST_ADI": "CK-MB", "SONUC": "25", "BIRIM": "U/L", "NORMAL_MAX": "25"},
+            ],
         }
 
     def test_complete_workflow_success(self, test_client: TestClient, test_data):
@@ -68,11 +55,12 @@ class TestFullPatientWorkflow:
         diagnosis_request = {
             "tckn": patient_tckn,
             "chief_complaint": test_data["complaint"],
-            "model": "claude"
+            "model": "claude",
         }
 
-        with patch('src.api.diagnosis.generate_differential_diagnosis_ai',
-                  new_callable=AsyncMock) as mock_diagnosis:
+        with patch(
+            "src.api.diagnosis.generate_differential_diagnosis_ai", new_callable=AsyncMock
+        ) as mock_diagnosis:
 
             mock_diagnosis.return_value = {
                 "differential_diagnosis": [
@@ -80,32 +68,29 @@ class TestFullPatientWorkflow:
                         "diagnosis": "Acute Coronary Syndrome",
                         "icd10": "I21.9",
                         "probability": 0.75,
-                        "urgency": "critical"
+                        "urgency": "critical",
                     },
                     {
                         "diagnosis": "Anxiety with Hyperventilation",
                         "icd10": "F41.0",
                         "probability": 0.25,
-                        "urgency": "minor"
-                    }
+                        "urgency": "minor",
+                    },
                 ],
                 "red_flags": [
                     "Elevated troponin levels",
                     "Chest pain characteristics suggest cardiac origin",
-                    "Shortness of breath with exertion"
+                    "Shortness of breath with exertion",
                 ],
                 "recommended_tests": [
                     "Serial troponin measurements",
                     "12-lead ECG",
                     "Chest X-ray",
-                    "Complete blood count"
-                ]
+                    "Complete blood count",
+                ],
             }
 
-            diagnosis_response = test_client.post(
-                "/analyze/diagnosis",
-                json=diagnosis_request
-            )
+            diagnosis_response = test_client.post("/analyze/diagnosis", json=diagnosis_request)
             assert diagnosis_response.status_code == 200
             diagnosis_data = diagnosis_response.json()
 
@@ -113,8 +98,7 @@ class TestFullPatientWorkflow:
             assert len(diagnosis_data["differential_diagnosis"]) == 2
             assert len(diagnosis_data["red_flags"]) > 0
             critical_diagnoses = [
-                d for d in diagnosis_data["differential_diagnosis"]
-                if d["urgency"] == "critical"
+                d for d in diagnosis_data["differential_diagnosis"] if d["urgency"] == "critical"
             ]
             assert len(critical_diagnoses) > 0
 
@@ -122,24 +106,25 @@ class TestFullPatientWorkflow:
         treatment_request = {
             "tckn": patient_tckn,
             "diagnosis": "Acute Coronary Syndrome",
-            "model": "claude"
+            "model": "claude",
         }
 
-        with patch('src.api.treatment.suggest_treatment_ai',
-                  new_callable=AsyncMock) as mock_treatment:
+        with patch(
+            "src.api.treatment.suggest_treatment_ai", new_callable=AsyncMock
+        ) as mock_treatment:
 
             mock_treatment.return_value = {
                 "medications": [
                     {
                         "name": "Aspirin",
                         "dosage": "325mg immediately, then 81mg daily",
-                        "duration": "lifelong"
+                        "duration": "lifelong",
                     },
                     {
                         "name": "Nitroglycerin",
                         "dosage": "0.4mg sublingual every 5 minutes as needed",
-                        "duration": "as needed"
-                    }
+                        "duration": "as needed",
+                    },
                 ],
                 "clinical_guidelines": (
                     "Immediate antiplatelet therapy with aspirin. "
@@ -150,13 +135,10 @@ class TestFullPatientWorkflow:
                     "Admit to cardiac monitoring unit. "
                     "Serial ECGs and cardiac enzymes. "
                     "Cardiology consultation within 24 hours."
-                )
+                ),
             }
 
-            treatment_response = test_client.post(
-                "/analyze/treatment",
-                json=treatment_request
-            )
+            treatment_response = test_client.post("/analyze/treatment", json=treatment_request)
             assert treatment_response.status_code == 200
             treatment_data = treatment_response.json()
 
@@ -167,27 +149,19 @@ class TestFullPatientWorkflow:
             assert "followup_plan" in treatment_data
 
         # Step 5: Check for drug interactions
-        drug_check_request = {
-            "tckn": patient_tckn,
-            "proposed_drug": "Aspirin",
-            "severity": "all"
-        }
+        drug_check_request = {"tckn": patient_tckn, "proposed_drug": "Aspirin", "severity": "all"}
 
-        with patch('src.api.drugs.check_interactions',
-                  new_callable=AsyncMock) as mock_drug_check:
+        with patch("src.api.drugs.check_interactions", new_callable=AsyncMock) as mock_drug_check:
 
             mock_drug_check.return_value = {
                 "interactions": [],
                 "safety_recommendations": [
                     "Monitor for gastrointestinal bleeding",
-                    "Consider gastroprotection with PPI if long-term use"
-                ]
+                    "Consider gastroprotection with PPI if long-term use",
+                ],
             }
 
-            drug_check_response = test_client.post(
-                "/drugs/interactions",
-                json=drug_check_request
-            )
+            drug_check_response = test_client.post("/drugs/interactions", json=drug_check_request)
             assert drug_check_response.status_code == 200
             drug_check_data = drug_check_response.json()
 
@@ -196,8 +170,7 @@ class TestFullPatientWorkflow:
             assert "safety_recommendations" in drug_check_data
 
         # Step 6: Retrieve lab results and trends
-        with patch('src.api.labs.get_lab_tests',
-                  return_value=test_data["lab_results"]):
+        with patch("src.api.labs.get_lab_tests", return_value=test_data["lab_results"]):
 
             lab_response = test_client.get(f"/labs/{patient_tckn}")
             assert lab_response.status_code == 200
@@ -222,11 +195,12 @@ class TestFullPatientWorkflow:
         diagnosis_request = {
             "tckn": patient_tckn,
             "chief_complaint": moderate_complaint,
-            "model": "claude"
+            "model": "claude",
         }
 
-        with patch('src.api.diagnosis.generate_differential_diagnosis_ai',
-                  new_callable=AsyncMock) as mock_diagnosis:
+        with patch(
+            "src.api.diagnosis.generate_differential_diagnosis_ai", new_callable=AsyncMock
+        ) as mock_diagnosis:
 
             mock_diagnosis.return_value = {
                 "differential_diagnosis": [
@@ -234,21 +208,21 @@ class TestFullPatientWorkflow:
                         "diagnosis": "Tension Headache",
                         "icd10": "G44.2",
                         "probability": 0.65,
-                        "urgency": "minor"
+                        "urgency": "minor",
                     },
                     {
                         "diagnosis": "Anemia",
                         "icd10": "D64.9",
                         "probability": 0.35,
-                        "urgency": "moderate"
-                    }
+                        "urgency": "moderate",
+                    },
                 ],
                 "red_flags": [],
                 "recommended_tests": [
                     "Complete blood count",
                     "Thyroid function tests",
-                    "Blood pressure measurement"
-                ]
+                    "Blood pressure measurement",
+                ],
             }
 
             diagnosis_response = test_client.post("/analyze/diagnosis", json=diagnosis_request)
@@ -270,7 +244,7 @@ class TestFullPatientWorkflow:
         invalid_diagnosis = {
             "tckn": "12345678901",
             "chief_complaint": "",  # Empty complaint
-            "model": "claude"
+            "model": "claude",
         }
 
         response = test_client.post("/analyze/diagnosis", json=invalid_diagnosis)
@@ -280,7 +254,7 @@ class TestFullPatientWorkflow:
         no_diagnosis_request = {
             "tckn": "12345678901",
             "diagnosis": "",  # Empty diagnosis
-            "model": "claude"
+            "model": "claude",
         }
 
         response = test_client.post("/analyze/treatment", json=no_diagnosis_request)
@@ -308,11 +282,12 @@ class TestPatientDataConsistency:
         diagnosis_request = {
             "tckn": patient_tckn,
             "chief_complaint": "Test complaint",
-            "model": "claude"
+            "model": "claude",
         }
 
-        with patch('src.api.diagnosis.generate_differential_diagnosis_ai',
-                  new_callable=AsyncMock) as mock_diagnosis:
+        with patch(
+            "src.api.diagnosis.generate_differential_diagnosis_ai", new_callable=AsyncMock
+        ) as mock_diagnosis:
 
             mock_diagnosis.return_value = {
                 "differential_diagnosis": [
@@ -320,11 +295,11 @@ class TestPatientDataConsistency:
                         "diagnosis": "Test Condition",
                         "icd10": "Z00.0",
                         "probability": 1.0,
-                        "urgency": "minor"
+                        "urgency": "minor",
                     }
                 ],
                 "red_flags": [],
-                "recommended_tests": []
+                "recommended_tests": [],
             }
 
             diagnosis_response = test_client.post("/analyze/diagnosis", json=diagnosis_request)
@@ -343,29 +318,30 @@ class TestAIIntegrationWorkflow:
     @pytest.mark.asyncio
     async def test_ai_routing_consistency(self):
         """Test AI routing consistency across different task types."""
-        from src.ai.router import AIRouter
-        from src.ai.ollama_client import OllamaClient
         from src.ai.anthropic_client import AnthropicClient
+        from src.ai.ollama_client import OllamaClient
+        from src.ai.router import AIRouter
 
         # Mock clients
         mock_ollama = Mock()
         mock_claude = Mock()
-        mock_ollama.complete = AsyncMock(return_value={"text": "Simple response", "provider": "ollama"})
-        mock_claude.complete = AsyncMock(return_value={"text": "Complex response", "provider": "claude"})
+        mock_ollama.complete = AsyncMock(
+            return_value={"text": "Simple response", "provider": "ollama"}
+        )
+        mock_claude.complete = AsyncMock(
+            return_value={"text": "Complex response", "provider": "claude"}
+        )
 
         router = AIRouter(ollama_client=mock_ollama, claude_client=mock_claude)
 
         # Test routing for different task types
-        simple_request = {
-            "prompt": "Patient summary",
-            "task_type": "patient_summary"
-        }
+        simple_request = {"prompt": "Patient summary", "task_type": "patient_summary"}
         result = await router.route_and_complete(simple_request)
         assert result.provider == "ollama"
 
         complex_request = {
             "prompt": "Complex differential diagnosis",
-            "task_type": "differential_diagnosis"
+            "task_type": "differential_diagnosis",
         }
         result = await router.route_and_complete(complex_request)
         assert result.provider == "claude"

@@ -5,12 +5,13 @@ Provides standardized exception handling with proper categorization
 and context information for better error reporting and debugging.
 """
 
-from typing import Optional, Dict, Any
 from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class ErrorSeverity(Enum):
     """Error severity levels for categorization."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -19,6 +20,7 @@ class ErrorSeverity(Enum):
 
 class ErrorCategory(Enum):
     """Error categories for better error classification."""
+
     DATABASE = "database"
     AI_SERVICE = "ai_service"
     API = "api"
@@ -43,7 +45,7 @@ class BasePatientSystemError(Exception):
         category: ErrorCategory = ErrorCategory.SYSTEM,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         super().__init__(message)
         self.message = message
@@ -60,7 +62,7 @@ class BasePatientSystemError(Exception):
             "category": self.category.value,
             "severity": self.severity.value,
             "context": self.context,
-            "cause": str(self.cause) if self.cause else None
+            "cause": str(self.cause) if self.cause else None,
         }
 
 
@@ -72,14 +74,14 @@ class DatabaseError(BasePatientSystemError):
         message: str,
         severity: ErrorSeverity = ErrorSeverity.HIGH,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         super().__init__(
             message=message,
             category=ErrorCategory.DATABASE,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
@@ -92,7 +94,7 @@ class AIServiceError(BasePatientSystemError):
         provider: Optional[str] = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         context = context or {}
         if provider:
@@ -103,7 +105,7 @@ class AIServiceError(BasePatientSystemError):
             category=ErrorCategory.AI_SERVICE,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
@@ -117,7 +119,7 @@ class ValidationError(BasePatientSystemError):
         value: Optional[Any] = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         context = context or {}
         if field:
@@ -130,7 +132,7 @@ class ValidationError(BasePatientSystemError):
             category=ErrorCategory.VALIDATION,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
@@ -144,7 +146,7 @@ class APIError(BasePatientSystemError):
         endpoint: Optional[str] = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         context = context or {}
         if status_code:
@@ -157,7 +159,7 @@ class APIError(BasePatientSystemError):
             category=ErrorCategory.API,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
@@ -170,7 +172,7 @@ class BusinessLogicError(BasePatientSystemError):
         operation: Optional[str] = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         context = context or {}
         if operation:
@@ -181,7 +183,7 @@ class BusinessLogicError(BasePatientSystemError):
             category=ErrorCategory.BUSINESS_LOGIC,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
@@ -194,7 +196,7 @@ class ExternalServiceError(BasePatientSystemError):
         service: Optional[str] = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         context = context or {}
         if service:
@@ -205,7 +207,7 @@ class ExternalServiceError(BasePatientSystemError):
             category=ErrorCategory.EXTERNAL_SERVICE,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
@@ -218,7 +220,7 @@ class ConfigurationError(BasePatientSystemError):
         config_key: Optional[str] = None,
         severity: ErrorSeverity = ErrorSeverity.HIGH,
         context: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         context = context or {}
         if config_key:
@@ -229,5 +231,5 @@ class ConfigurationError(BasePatientSystemError):
             category=ErrorCategory.SYSTEM,
             severity=severity,
             context=context,
-            cause=cause
+            cause=cause,
         )

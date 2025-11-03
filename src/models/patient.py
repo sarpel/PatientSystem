@@ -4,13 +4,22 @@ Maps to GP_HASTA_KAYIT and related patient tables.
 """
 
 from datetime import date, datetime
-from typing import Optional, List
+from typing import List, Optional
 
-from sqlalchemy import String, Integer, BigInteger, Date, DateTime, LargeBinary, ForeignKey, SmallInteger
+from sqlalchemy import (
+    BigInteger,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    SmallInteger,
+    String,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base
 from src.config.settings import settings
+from src.models.base import Base
 
 
 class Patient(Base):
@@ -30,7 +39,7 @@ class Patient(Base):
         Integer,
         primary_key=True,
         autoincrement=True,
-        comment="Patient registration ID (Primary Key)"
+        comment="Patient registration ID (Primary Key)",
     )
 
     # Patient Type and Registration
@@ -40,7 +49,7 @@ class Patient(Base):
         ForeignKey("LST_HASTA_TIPI.KODU"),
         nullable=False,
         default=1,
-        comment="Patient type (FK to LST_HASTA_TIPI)"
+        comment="Patient type (FK to LST_HASTA_TIPI)",
     )
 
     HASTA_KAYIT_TURU: Mapped[int] = mapped_column(
@@ -49,38 +58,22 @@ class Patient(Base):
         ForeignKey("LST_HASTA_KAYIT_TURU.KODU"),
         nullable=False,
         default=1,
-        comment="Registration type (FK to LST_HASTA_KAYIT_TURU)"
+        comment="Registration type (FK to LST_HASTA_KAYIT_TURU)",
     )
 
     # Identification
     HASTA_KIMLIK_NO: Mapped[Optional[int]] = mapped_column(
-        "HASTA_KIMLIK_NO",
-        BigInteger,
-        nullable=True,
-        comment="National ID number (TC Kimlik No)"
+        "HASTA_KIMLIK_NO", BigInteger, nullable=True, comment="National ID number (TC Kimlik No)"
     )
 
     HASTA_KODU: Mapped[Optional[str]] = mapped_column(
-        "HASTA_KODU",
-        String(9),
-        nullable=True,
-        comment="Patient code (internal identifier)"
+        "HASTA_KODU", String(9), nullable=True, comment="Patient code (internal identifier)"
     )
 
     # Personal Information
-    AD: Mapped[str] = mapped_column(
-        "AD",
-        String(100),
-        nullable=False,
-        comment="First name"
-    )
+    AD: Mapped[str] = mapped_column("AD", String(100), nullable=False, comment="First name")
 
-    SOYAD: Mapped[str] = mapped_column(
-        "SOYAD",
-        String(100),
-        nullable=False,
-        comment="Last name"
-    )
+    SOYAD: Mapped[str] = mapped_column("SOYAD", String(100), nullable=False, comment="Last name")
 
     # Gender
     CINSIYET: Mapped[int] = mapped_column(
@@ -88,7 +81,7 @@ class Patient(Base):
         Integer,
         ForeignKey("LST_CINSIYET.KODU"),
         nullable=False,
-        comment="Gender (FK to LST_CINSIYET)"
+        comment="Gender (FK to LST_CINSIYET)",
     )
 
     CINSIYET_RESMI: Mapped[int] = mapped_column(
@@ -96,29 +89,20 @@ class Patient(Base):
         Integer,
         ForeignKey("LST_CINSIYET_RESMI.KODU"),
         nullable=False,
-        comment="Official gender (FK to LST_CINSIYET_RESMI)"
+        comment="Official gender (FK to LST_CINSIYET_RESMI)",
     )
 
     # Birth Information
     DOGUM_TARIHI: Mapped[Optional[date]] = mapped_column(
-        "DOGUM_TARIHI",
-        Date,
-        nullable=True,
-        comment="Date of birth"
+        "DOGUM_TARIHI", Date, nullable=True, comment="Date of birth"
     )
 
     DOGUM_TARIHI_RESMI: Mapped[Optional[date]] = mapped_column(
-        "DOGUM_TARIHI_RESMI",
-        Date,
-        nullable=True,
-        comment="Official date of birth"
+        "DOGUM_TARIHI_RESMI", Date, nullable=True, comment="Official date of birth"
     )
 
     DOGUM_YERI: Mapped[Optional[str]] = mapped_column(
-        "DOGUM_YERI",
-        String(50),
-        nullable=True,
-        comment="Place of birth"
+        "DOGUM_YERI", String(50), nullable=True, comment="Place of birth"
     )
 
     DOGUM_SIRASI: Mapped[Optional[int]] = mapped_column(
@@ -126,50 +110,32 @@ class Patient(Base):
         Integer,
         ForeignKey("LST_DOGUM_SIRASI.KODU"),
         nullable=True,
-        comment="Birth order (FK to LST_DOGUM_SIRASI)"
+        comment="Birth order (FK to LST_DOGUM_SIRASI)",
     )
 
     # Parental Information
     ANNE_ADI: Mapped[Optional[str]] = mapped_column(
-        "ANNE_ADI",
-        String(100),
-        nullable=True,
-        comment="Mother's name"
+        "ANNE_ADI", String(100), nullable=True, comment="Mother's name"
     )
 
     ANNE_KIMLIK_NO: Mapped[Optional[int]] = mapped_column(
-        "ANNE_KIMLIK_NO",
-        BigInteger,
-        nullable=True,
-        comment="Mother's national ID number"
+        "ANNE_KIMLIK_NO", BigInteger, nullable=True, comment="Mother's national ID number"
     )
 
     ANNE_PASAPORT_NO: Mapped[Optional[str]] = mapped_column(
-        "ANNE_PASAPORT_NO",
-        String(50),
-        nullable=True,
-        comment="Mother's passport number"
+        "ANNE_PASAPORT_NO", String(50), nullable=True, comment="Mother's passport number"
     )
 
     BABA_ADI: Mapped[Optional[str]] = mapped_column(
-        "BABA_ADI",
-        String(100),
-        nullable=True,
-        comment="Father's name"
+        "BABA_ADI", String(100), nullable=True, comment="Father's name"
     )
 
     BABA_KIMLIK_NO: Mapped[Optional[int]] = mapped_column(
-        "BABA_KIMLIK_NO",
-        BigInteger,
-        nullable=True,
-        comment="Father's national ID number"
+        "BABA_KIMLIK_NO", BigInteger, nullable=True, comment="Father's national ID number"
     )
 
     BABA_PASAPORT_NO: Mapped[Optional[str]] = mapped_column(
-        "BABA_PASAPORT_NO",
-        String(50),
-        nullable=True,
-        comment="Father's passport number"
+        "BABA_PASAPORT_NO", String(50), nullable=True, comment="Father's passport number"
     )
 
     # Nationality and Foreign Patient Information
@@ -178,8 +144,8 @@ class Patient(Base):
         String(10),
         ForeignKey("LST_ULKE_KODLARI.KODU"),
         nullable=True,
-        default='TR',
-        comment="Nationality (FK to LST_ULKE_KODLARI)"
+        default="TR",
+        comment="Nationality (FK to LST_ULKE_KODLARI)",
     )
 
     YABANCI_HASTA_TURU: Mapped[Optional[int]] = mapped_column(
@@ -187,43 +153,28 @@ class Patient(Base):
         Integer,
         ForeignKey("LST_YABANCI_HASTA_TURU.KODU"),
         nullable=True,
-        comment="Foreign patient type (FK to LST_YABANCI_HASTA_TURU)"
+        comment="Foreign patient type (FK to LST_YABANCI_HASTA_TURU)",
     )
 
     PASAPORT_NO: Mapped[Optional[str]] = mapped_column(
-        "PASAPORT_NO",
-        String(50),
-        nullable=True,
-        comment="Passport number"
+        "PASAPORT_NO", String(50), nullable=True, comment="Passport number"
     )
 
     YUPASS_NO: Mapped[Optional[int]] = mapped_column(
-        "YUPASS_NO",
-        Integer,
-        nullable=True,
-        comment="YUPASS number (foreign patient ID)"
+        "YUPASS_NO", Integer, nullable=True, comment="YUPASS number (foreign patient ID)"
     )
 
     # Family Doctor Information
     MEVCUT_AH: Mapped[Optional[str]] = mapped_column(
-        "MEVCUT_AH",
-        String(100),
-        nullable=True,
-        comment="Current family physician"
+        "MEVCUT_AH", String(100), nullable=True, comment="Current family physician"
     )
 
     MEVCUT_AHB: Mapped[Optional[str]] = mapped_column(
-        "MEVCUT_AHB",
-        String(100),
-        nullable=True,
-        comment="Current family health center"
+        "MEVCUT_AHB", String(100), nullable=True, comment="Current family health center"
     )
 
     AH_KAYIT_TARIHI: Mapped[Optional[datetime]] = mapped_column(
-        "AH_KAYIT_TARIHI",
-        DateTime,
-        nullable=True,
-        comment="Family physician registration date"
+        "AH_KAYIT_TARIHI", DateTime, nullable=True, comment="Family physician registration date"
     )
 
     AH_GUNCELLEME: Mapped[date] = mapped_column(
@@ -231,65 +182,45 @@ class Patient(Base):
         Date,
         nullable=False,
         default=date(2000, 1, 1),
-        comment="Family physician last update date"
+        comment="Family physician last update date",
     )
 
     # Photo and Medical Information
     KISI_FOTOGRAF: Mapped[Optional[bytes]] = mapped_column(
-        "KISI_FOTOGRAF",
-        LargeBinary,
-        nullable=True,
-        comment="Patient photograph"
+        "KISI_FOTOGRAF", LargeBinary, nullable=True, comment="Patient photograph"
     )
 
     KADIN_IZLEM_SAYISI: Mapped[Optional[int]] = mapped_column(
-        "KADIN_IZLEM_SAYISI",
-        Integer,
-        nullable=True,
-        comment="Women's health monitoring count"
+        "KADIN_IZLEM_SAYISI", Integer, nullable=True, comment="Women's health monitoring count"
     )
 
     # Death Information
     OLUM_TARIHI: Mapped[Optional[date]] = mapped_column(
-        "OLUM_TARIHI",
-        Date,
-        nullable=True,
-        comment="Date of death"
+        "OLUM_TARIHI", Date, nullable=True, comment="Date of death"
     )
 
     OLUM_BILDIRIM: Mapped[Optional[str]] = mapped_column(
-        "OLUM_BILDIRIM",
-        nullable=True,
-        comment="Death notification (SQL_VARIANT)"
+        "OLUM_BILDIRIM", nullable=True, comment="Death notification (SQL_VARIANT)"
     )
 
     # System and Integration Fields
     OZEL_NOT: Mapped[Optional[str]] = mapped_column(
-        "OZEL_NOT",
-        String,
-        nullable=True,
-        comment="Special notes"
+        "OZEL_NOT", String, nullable=True, comment="Special notes"
     )
 
     ESKI_HASTA_KAYIT_ID: Mapped[Optional[int]] = mapped_column(
         "ESKI_HASTA_KAYIT_ID",
         Integer,
         nullable=True,
-        comment="Old patient registration ID (for migration)"
+        comment="Old patient registration ID (for migration)",
     )
 
     SGK_SMS_NO: Mapped[Optional[int]] = mapped_column(
-        "SGK_SMS_NO",
-        BigInteger,
-        nullable=True,
-        comment="Social Security (SGK) SMS number"
+        "SGK_SMS_NO", BigInteger, nullable=True, comment="Social Security (SGK) SMS number"
     )
 
     ESY_HASTA_ID: Mapped[Optional[str]] = mapped_column(
-        "ESY_HASTA_ID",
-        String(40),
-        nullable=True,
-        comment="E-Health System (ESY) patient ID"
+        "ESY_HASTA_ID", String(40), nullable=True, comment="E-Health System (ESY) patient ID"
     )
 
     MERNIS_GUNCELLE: Mapped[date] = mapped_column(
@@ -297,44 +228,33 @@ class Patient(Base):
         Date,
         nullable=False,
         default=date(2000, 1, 1),
-        comment="MERNIS (civil registry) last update date"
+        comment="MERNIS (civil registry) last update date",
     )
 
     ASI_TAKVIMI_GUNCELLEME_TARIHI: Mapped[Optional[datetime]] = mapped_column(
         "ASI_TAKVIMI_GUNCELLEME_TARIHI",
         DateTime,
         nullable=True,
-        comment="Vaccination schedule last update date"
+        comment="Vaccination schedule last update date",
     )
 
     # COVID-19 Related Fields
     PLAZMA_NOTU: Mapped[Optional[str]] = mapped_column(
-        "PLAZMA_NOTU",
-        String(100),
-        nullable=True,
-        comment="Plasma donation note"
+        "PLAZMA_NOTU", String(100), nullable=True, comment="Plasma donation note"
     )
 
     GRIP_ASI_NOTU: Mapped[Optional[str]] = mapped_column(
-        "GRIP_ASI_NOTU",
-        String(100),
-        nullable=True,
-        comment="Flu vaccination note"
+        "GRIP_ASI_NOTU", String(100), nullable=True, comment="Flu vaccination note"
     )
 
     # Relationships
     demographics: Mapped[Optional["PatientDemographics"]] = relationship(
-        back_populates="patient",
-        uselist=False
+        back_populates="patient", uselist=False
     )
 
-    admissions: Mapped[list["PatientAdmission"]] = relationship(
-        back_populates="patient"
-    )
+    admissions: Mapped[list["PatientAdmission"]] = relationship(back_populates="patient")
 
-    prescriptions: Mapped[list["Prescription"]] = relationship(
-        back_populates="patient"
-    )
+    prescriptions: Mapped[list["Prescription"]] = relationship(back_populates="patient")
 
     def __repr__(self) -> str:
         return (
@@ -353,8 +273,10 @@ class Patient(Base):
         """Calculate patient's age from birth date."""
         if self.DOGUM_TARIHI:
             today = date.today()
-            return today.year - self.DOGUM_TARIHI.year - (
-                (today.month, today.day) < (self.DOGUM_TARIHI.month, self.DOGUM_TARIHI.day)
+            return (
+                today.year
+                - self.DOGUM_TARIHI.year
+                - ((today.month, today.day) < (self.DOGUM_TARIHI.month, self.DOGUM_TARIHI.day))
             )
         return None
 
@@ -381,7 +303,7 @@ class PatientDemographics(Base):
         Integer,
         primary_key=True,
         autoincrement=True,
-        comment="Patient demographics ID (Primary Key)"
+        comment="Patient demographics ID (Primary Key)",
     )
 
     # Foreign Key to Patient
@@ -390,7 +312,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("GP_HASTA_KAYIT.HASTA_KAYIT_ID"),
         nullable=False,
-        comment="Patient registration ID (FK)"
+        comment="Patient registration ID (FK)",
     )
 
     # Demographic Information
@@ -399,14 +321,11 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_MEDENI_HALI.KODU"),
         nullable=True,
-        comment="Marital status"
+        comment="Marital status",
     )
 
     EVLENME_YASI: Mapped[Optional[int]] = mapped_column(
-        "EVLENME_YASI",
-        Integer,
-        nullable=True,
-        comment="Marriage age"
+        "EVLENME_YASI", Integer, nullable=True, comment="Marriage age"
     )
 
     OGRENIM_DURUMU: Mapped[Optional[int]] = mapped_column(
@@ -414,7 +333,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_OGRENIM_DURUMU.KODU"),
         nullable=True,
-        comment="Education level"
+        comment="Education level",
     )
 
     OGRENCININ_SINIFI: Mapped[Optional[int]] = mapped_column(
@@ -422,7 +341,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_OGRENCININ_SINIFI.KODU"),
         nullable=True,
-        comment="Student's grade level"
+        comment="Student's grade level",
     )
 
     # Employment and Income
@@ -431,7 +350,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_IS_DURUMU.KODU"),
         nullable=True,
-        comment="Employment status"
+        comment="Employment status",
     )
 
     MESLEK: Mapped[Optional[int]] = mapped_column(
@@ -439,7 +358,7 @@ class PatientDemographics(Base):
         SmallInteger,
         ForeignKey("LST_MESLEKLER.KODU"),
         nullable=True,
-        comment="Occupation"
+        comment="Occupation",
     )
 
     GELIR_DURUMU: Mapped[Optional[int]] = mapped_column(
@@ -447,7 +366,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_GELIR_DURUMU.KODU"),
         nullable=True,
-        comment="Income level"
+        comment="Income level",
     )
 
     # Social Security
@@ -456,16 +375,12 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_SOSYAL_GUVENCE_DURUMU.KODU"),
         nullable=False,
-        comment="Social security status"
+        comment="Social security status",
     )
 
     # Medical Information
     KAN_GRUBU: Mapped[Optional[int]] = mapped_column(
-        "KAN_GRUBU",
-        Integer,
-        ForeignKey("LST_KAN_GRUBU.KODU"),
-        nullable=True,
-        comment="Blood type"
+        "KAN_GRUBU", Integer, ForeignKey("LST_KAN_GRUBU.KODU"), nullable=True, comment="Blood type"
     )
 
     AMELIYAT_GECMISI: Mapped[int] = mapped_column(
@@ -474,7 +389,7 @@ class PatientDemographics(Base):
         ForeignKey("LST_AMELIYAT_GECMISI.KODU"),
         nullable=False,
         default=99,
-        comment="Surgery history"
+        comment="Surgery history",
     )
 
     YARALANMA_GECMISI: Mapped[int] = mapped_column(
@@ -483,7 +398,7 @@ class PatientDemographics(Base):
         ForeignKey("LST_YARALANMA_GECMISI.KODU"),
         nullable=False,
         default=99,
-        comment="Injury history"
+        comment="Injury history",
     )
 
     OZURLULUK_DURUMU: Mapped[int] = mapped_column(
@@ -492,23 +407,15 @@ class PatientDemographics(Base):
         ForeignKey("LST_OZURLULUK_DURUMU.KODU"),
         nullable=False,
         default=99,
-        comment="Disability status"
+        comment="Disability status",
     )
 
     # Physical Measurements
     AGIRLIK: Mapped[int] = mapped_column(
-        "AGIRLIK",
-        Integer,
-        nullable=False,
-        comment="Weight (grams)"
+        "AGIRLIK", Integer, nullable=False, comment="Weight (grams)"
     )
 
-    BOY: Mapped[int] = mapped_column(
-        "BOY",
-        Integer,
-        nullable=False,
-        comment="Height (cm)"
-    )
+    BOY: Mapped[int] = mapped_column("BOY", Integer, nullable=False, comment="Height (cm)")
 
     # Lifestyle - Substance Use
     ALKOL_KULLANIMI: Mapped[Optional[int]] = mapped_column(
@@ -516,7 +423,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_ALKOL_KULLANIMI.KODU"),
         nullable=True,
-        comment="Alcohol use"
+        comment="Alcohol use",
     )
 
     MADDE_KULLANIMI: Mapped[Optional[int]] = mapped_column(
@@ -524,7 +431,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_MADDE_KULLANIMI.KODU"),
         nullable=True,
-        comment="Substance use"
+        comment="Substance use",
     )
 
     SIGARA_KULLANIMI: Mapped[Optional[int]] = mapped_column(
@@ -532,21 +439,18 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_SIGARA_KULLANIMI.KODU"),
         nullable=True,
-        comment="Smoking status"
+        comment="Smoking status",
     )
 
     SIGARA_ADEDI: Mapped[Optional[int]] = mapped_column(
-        "SIGARA_ADEDI",
-        Integer,
-        nullable=True,
-        comment="Number of cigarettes per day"
+        "SIGARA_ADEDI", Integer, nullable=True, comment="Number of cigarettes per day"
     )
 
     SIGARA_KULLANIMI_TEYIT_TARIHI: Mapped[Optional[datetime]] = mapped_column(
         "SIGARA_KULLANIMI_TEYIT_TARIHI",
         DateTime,
         nullable=True,
-        comment="Smoking status confirmation date"
+        comment="Smoking status confirmation date",
     )
 
     # Location and Living Situation
@@ -555,13 +459,11 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_KIR_KENT.KODU"),
         nullable=True,
-        comment="Rural/Urban location"
+        comment="Rural/Urban location",
     )
 
     GEZICI: Mapped[Optional[bool]] = mapped_column(
-        "GEZICI",
-        nullable=True,
-        comment="Mobile/nomadic status"
+        "GEZICI", nullable=True, comment="Mobile/nomadic status"
     )
 
     # Family and Household
@@ -570,55 +472,39 @@ class PatientDemographics(Base):
         SmallInteger,
         ForeignKey("HRC_AILE.AILE_KODU"),
         nullable=True,
-        comment="Family code"
+        comment="Family code",
     )
 
     AILE_SIRA_NO: Mapped[Optional[str]] = mapped_column(
-        "AILE_SIRA_NO",
-        String(50),
-        nullable=True,
-        comment="Family sequence number"
+        "AILE_SIRA_NO", String(50), nullable=True, comment="Family sequence number"
     )
 
     BIREY_SIRA_NO: Mapped[Optional[str]] = mapped_column(
-        "BIREY_SIRA_NO",
-        String(50),
-        nullable=True,
-        comment="Individual sequence number"
+        "BIREY_SIRA_NO", String(50), nullable=True, comment="Individual sequence number"
     )
 
     CILT_AD: Mapped[Optional[str]] = mapped_column(
-        "CILT_AD",
-        String(50),
-        nullable=True,
-        comment="Civil registry volume name"
+        "CILT_AD", String(50), nullable=True, comment="Civil registry volume name"
     )
 
     CILT_KOD: Mapped[Optional[str]] = mapped_column(
-        "CILT_KOD",
-        String(50),
-        nullable=True,
-        comment="Civil registry volume code"
+        "CILT_KOD", String(50), nullable=True, comment="Civil registry volume code"
     )
 
     # Health Services
     EVDE_SAGLIK_HIZMETI_ALMA_DURUMU: Mapped[Optional[bool]] = mapped_column(
-        "EVDE_SAGLIK_HIZMETI_ALMA_DURUMU",
-        nullable=True,
-        comment="Home health service status"
+        "EVDE_SAGLIK_HIZMETI_ALMA_DURUMU", nullable=True, comment="Home health service status"
     )
 
     YERINDE_SAGLIK_HIZMETI_ALMA_DURUMU: Mapped[Optional[bool]] = mapped_column(
         "YERINDE_SAGLIK_HIZMETI_ALMA_DURUMU",
         nullable=True,
         default=False,
-        comment="On-site health service status"
+        comment="On-site health service status",
     )
 
     HASTA_KABUL_ONCELIK: Mapped[Optional[bool]] = mapped_column(
-        "HASTA_KABUL_ONCELIK",
-        nullable=True,
-        comment="Patient admission priority flag"
+        "HASTA_KABUL_ONCELIK", nullable=True, comment="Patient admission priority flag"
     )
 
     # Prison-related Information
@@ -627,7 +513,7 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_HUKUMLULUK_DURUMU.KODU"),
         nullable=True,
-        comment="Conviction status"
+        comment="Conviction status",
     )
 
     CEZA_EVI_TIPI: Mapped[Optional[int]] = mapped_column(
@@ -635,33 +521,25 @@ class PatientDemographics(Base):
         Integer,
         ForeignKey("LST_CEZAEVI_TIPI.KODU"),
         nullable=True,
-        comment="Prison type"
+        comment="Prison type",
     )
 
     # Contact Information
     EPOSTA: Mapped[Optional[str]] = mapped_column(
-        "EPOSTA",
-        String(100),
-        nullable=True,
-        comment="Email address"
+        "EPOSTA", String(100), nullable=True, comment="Email address"
     )
 
     # System Fields
     GUNCELLEME_TARIHI: Mapped[Optional[datetime]] = mapped_column(
-        "GUNCELLEME_TARIHI",
-        nullable=True,
-        comment="Last update timestamp"
+        "GUNCELLEME_TARIHI", nullable=True, comment="Last update timestamp"
     )
 
     # Relationships
-    patient: Mapped["Patient"] = relationship(
-        back_populates="demographics"
-    )
+    patient: Mapped["Patient"] = relationship(back_populates="demographics")
 
     def __repr__(self) -> str:
         return (
-            f"PatientDemographics(id={self.HASTA_OZLUK_ID!r}, "
-            f"patient_id={self.HASTA_KAYIT!r})"
+            f"PatientDemographics(id={self.HASTA_OZLUK_ID!r}, " f"patient_id={self.HASTA_KAYIT!r})"
         )
 
     @property
@@ -671,7 +549,7 @@ class PatientDemographics(Base):
             # Convert weight from grams to kg and height from cm to meters
             weight_kg = self.AGIRLIK / 1000
             height_m = self.BOY / 100
-            return round(weight_kg / (height_m ** 2), 2)
+            return round(weight_kg / (height_m**2), 2)
         return None
 
     @property

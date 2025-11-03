@@ -4,17 +4,25 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtGui import QAction, QFont, QIcon
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QMenuBar, QMenu, QStatusBar, QLabel, QMessageBox,
-    QTabWidget, QApplication
+    QApplication,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QMessageBox,
+    QStatusBar,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt, Signal, QTimer
-from PySide6.QtGui import QAction, QIcon, QFont
 
 from ..database.connection import get_engine, get_session
-from .widgets.patient_search import PatientSearchWidget
 from .widgets.clinical_dashboard import ClinicalDashboardWidget
+from .widgets.patient_search import PatientSearchWidget
 
 
 class MainWindow(QMainWindow):
@@ -48,7 +56,8 @@ class MainWindow(QMainWindow):
                 self.setStyleSheet(f.read())
         else:
             # Fallback inline style
-            self.setStyleSheet("""
+            self.setStyleSheet(
+                """
                 QMainWindow {
                     background-color: #f5f7fa;
                 }
@@ -70,7 +79,8 @@ class MainWindow(QMainWindow):
                     background-color: #374151;
                     color: white;
                 }
-            """)
+            """
+            )
 
     def _create_menus(self):
         """Create application menu bar."""
@@ -156,18 +166,20 @@ class MainWindow(QMainWindow):
                 self,
                 "Database Connection Error",
                 f"Failed to connect to database:\n{str(e)}\n\n"
-                "Please check your database configuration."
+                "Please check your database configuration.",
             )
 
     def _show_database_inspector(self):
         """Show database inspector dialog."""
         from .dialogs.database_inspector_dialog import DatabaseInspectorDialog
+
         dialog = DatabaseInspectorDialog(self)
         dialog.exec()
 
     def _show_ai_config(self):
         """Show AI configuration dialog."""
         from .dialogs.ai_config_dialog import AIConfigDialog
+
         dialog = AIConfigDialog(self)
         dialog.exec()
 
@@ -179,7 +191,7 @@ class MainWindow(QMainWindow):
             "<h2>Clinical AI Assistant</h2>"
             "<p>Version 0.1.0</p>"
             "<p>AI-powered clinical decision support system</p>"
-            "<p>Built with PySide6, SQLAlchemy, and modern AI models</p>"
+            "<p>Built with PySide6, SQLAlchemy, and modern AI models</p>",
         )
 
 

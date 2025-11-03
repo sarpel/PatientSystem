@@ -1,13 +1,19 @@
 """Drug interaction alert dialog with severity-based styling."""
 
-from typing import List, Dict, Any
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QTableWidget, QTableWidgetItem,
-    QTextEdit
-)
+from typing import Any, Dict, List
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextEdit,
+    QVBoxLayout,
+)
 
 
 class DrugInteractionAlertDialog(QDialog):
@@ -42,9 +48,7 @@ class DrugInteractionAlertDialog(QDialog):
         # Interactions table
         self.table = QTableWidget()
         self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels([
-            "Type", "Severity", "Drugs", "Effect"
-        ])
+        self.table.setHorizontalHeaderLabels(["Type", "Severity", "Drugs", "Effect"])
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         self._populate_table()
@@ -79,9 +83,9 @@ class DrugInteractionAlertDialog(QDialog):
 
         severity_colors = {
             "critical": ("#7f1d1d", "#fee2e2"),  # dark red text, light red bg
-            "major": ("#991b1b", "#fef2f2"),     # red text, very light red bg
-            "moderate": ("#92400e", "#fef3c7"),   # amber text, light amber bg
-            "minor": ("#065f46", "#d1fae5"),     # green text, light green bg
+            "major": ("#991b1b", "#fef2f2"),  # red text, very light red bg
+            "moderate": ("#92400e", "#fef3c7"),  # amber text, light amber bg
+            "minor": ("#065f46", "#d1fae5"),  # green text, light green bg
         }
 
         for row, interaction in enumerate(self.interactions):
@@ -118,10 +122,7 @@ class DrugInteractionAlertDialog(QDialog):
 
     def _has_alternatives(self) -> bool:
         """Check if any interaction has alternatives."""
-        return any(
-            interaction.get("alternative_drugs")
-            for interaction in self.interactions
-        )
+        return any(interaction.get("alternative_drugs") for interaction in self.interactions)
 
     def _populate_alternatives(self):
         """Populate alternatives text."""

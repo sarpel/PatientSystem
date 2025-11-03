@@ -1,12 +1,13 @@
 """Drug interaction checking API endpoints."""
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
 from typing import List
-from loguru import logger
 
-from ...database.connection import get_session
+from fastapi import APIRouter, HTTPException
+from loguru import logger
+from pydantic import BaseModel, Field
+
 from ...clinical.drug_interaction import DrugInteractionChecker
+from ...database.connection import get_session
 
 router = APIRouter()
 
@@ -71,8 +72,7 @@ async def check_drug_allergy(tckn: str, drug_name: str):
             result = checker.check_allergy_cross_reactivity(tckn, drug_name)
 
             logger.info(
-                f"Allergy check: TCKN={tckn}, drug={drug_name}, "
-                f"safe={result.get('safe')}"
+                f"Allergy check: TCKN={tckn}, drug={drug_name}, " f"safe={result.get('safe')}"
             )
 
             return result

@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -19,7 +20,8 @@ class MedicationAdherenceAnalyzer:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=months * 30)
 
-        query = text("""
+        query = text(
+            """
             WITH Prescriptions AS (
                 SELECT
                     r.TCKN,
@@ -50,39 +52,46 @@ class MedicationAdherenceAnalyzer:
                 COUNT(DISTINCT ILAC_ADI) as unique_medications,
                 AVG(CAST(avg_days_between_prescriptions AS FLOAT)) as avg_refill_interval_days
             FROM RefillAnalysis
-        """)
+        """
+        )
 
-        result = self.session.execute(query, {
-            "start_date": start_date,
-            "end_date": end_date
-        }).fetchone()
+        result = self.session.execute(
+            query, {"start_date": start_date, "end_date": end_date}
+        ).fetchone()
 
         return {
             "analysis_period_months": months,
             "total_prescriptions": result.total_prescriptions or 0,
             "unique_patients": result.unique_patients or 0,
             "unique_medications": result.unique_medications or 0,
-            "average_refill_interval_days": round(result.avg_refill_interval_days or 0, 1)
+            "average_refill_interval_days": round(result.avg_refill_interval_days or 0, 1),
         }
 
     def get_chronic_medication_adherence(self) -> Dict:
         """Analyze adherence for chronic medications (antihypertensives, diabetes, etc.)."""
         # Define chronic medication categories (simplified)
         chronic_medications = [
-            'METFORMIN', 'INSULIN', 'GLICLAZIDE', 'AMLODIPINE',
-            'LISINOPRIL', 'ATENOLOL', 'SIMVASTATIN', 'ATORVASTATIN'
+            "METFORMIN",
+            "INSULIN",
+            "GLICLAZIDE",
+            "AMLODIPINE",
+            "LISINOPRIL",
+            "ATENOLOL",
+            "SIMVASTATIN",
+            "ATORVASTATIN",
         ]
 
         chronic_conditions = {
-            'Diabetes': ['METFORMIN', 'INSULIN', 'GLICLAZIDE'],
-            'Hypertension': ['AMLODIPINE', 'LISINOPRIL', 'ATENOLOL'],
-            'Hyperlipidemia': ['SIMVASTATIN', 'ATORVASTATIN']
+            "Diabetes": ["METFORMIN", "INSULIN", "GLICLAZIDE"],
+            "Hypertension": ["AMLODIPINE", "LISINOPRIL", "ATENOLOL"],
+            "Hyperlipidemia": ["SIMVASTATIN", "ATORVASTATIN"],
         }
 
         results = {}
 
         for condition, medications in chronic_conditions.items():
-            query = text("""
+            query = text(
+                """
                 SELECT
                     COUNT(DISTINCT r.TCKN) as patients_on_medication,
                     COUNT(*) as total_prescriptions,
@@ -94,22 +103,26 @@ class MedicationAdherenceAnalyzer:
                 JOIN ILACLAR i ON r.RECETE_ID = i.RECETE_ID
                 WHERE r.RECETE_TARIHI >= DATEADD(YEAR, -1, GETDATE())
                 AND UPPER(i.ILAC_ADI) IN :medications
-            """)
+            """
+            )
 
             result = self.session.execute(query, {"medications": medications}).fetchone()
 
             results[condition] = {
                 "patients_on_medication": result.patients_on_medication or 0,
                 "total_prescriptions": result.total_prescriptions or 0,
-                "average_days_between_prescriptions": round(result.avg_days_between_prescriptions or 0, 1),
-                "medications_tracked": medications
+                "average_days_between_prescriptions": round(
+                    result.avg_days_between_prescriptions or 0, 1
+                ),
+                "medications_tracked": medications,
             }
 
         return results
 
     def get_medication_persistence_analysis(self) -> Dict:
         """Analyze how long patients stay on their medications."""
-        query = text("""
+        query = text(
+            """
             WITH PatientMedicationPeriods AS (
                 SELECT
                     r.TCKN,
@@ -145,12 +158,14 @@ class MedicationAdherenceAnalyzer:
                 AVG(CAST(total_prescriptions AS FLOAT)) as avg_prescriptions_per_course,
                 AVG(CAST(persistence_days AS FLOAT)) as avg_persistence_days
             FROM MedicationCourses
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchone()
 
         # Categorize persistence duration
-        persistence_query = text("""
+        persistence_query = text(
+            """
             WITH MedicationCourses AS (
                 SELECT
                     TCKN,
@@ -195,7 +210,8 @@ class MedicationAdherenceAnalyzer:
                     WHEN persistence_days < 365 THEN 4
                     ELSE 5
                 END
-        """)
+        """
+        )
 
         persistence_result = self.session.execute(persistence_query).fetchall()
 
@@ -205,21 +221,22 @@ class MedicationAdherenceAnalyzer:
                 "unique_patients": result.unique_patients or 0,
                 "unique_medications": result.unique_medications or 0,
                 "avg_prescriptions_per_course": round(result.avg_prescriptions_per_course or 0, 1),
-                "avg_persistence_days": round(result.avg_persistence_days or 0, 1)
+                "avg_persistence_days": round(result.avg_persistence_days or 0, 1),
             },
             "persistence_distribution": [
                 {
                     "category": row.persistence_category,
                     "course_count": row.course_count,
-                    "percentage": row.percentage
+                    "percentage": row.percentage,
                 }
                 for row in persistence_result
-            ]
+            ],
         }
 
     def get_high_risk_non_adherence_patients(self) -> Dict:
         """Identify patients with potential non-adherence issues."""
-        query = text("""
+        query = text(
+            """
             WITH PatientMedicationGaps AS (
                 SELECT
                     r.TCKN,
@@ -262,21 +279,26 @@ class MedicationAdherenceAnalyzer:
             FROM RiskAnalysis
             WHERE avg_gap_days > 60 OR long_gaps_count > 0
             ORDER BY avg_gap_days DESC, long_gaps_count DESC
-        """)
+        """
+        )
 
         result = self.session.execute(query).fetchall()
 
         # Get patient names
         if result:
             tckns = [row.TCKN for row in result]
-            patient_query = text("""
+            patient_query = text(
+                """
                 SELECT TCKN, ADI, SOYADI
                 FROM HASTA
                 WHERE TCKN IN :tckns
-            """)
+            """
+            )
 
-            patients = {row.TCKN: f"{row.ADI} {row.SOYADI}"
-                       for row in self.session.execute(patient_query, {"tckns": tckns}).fetchall()}
+            patients = {
+                row.TCKN: f"{row.ADI} {row.SOYADI}"
+                for row in self.session.execute(patient_query, {"tckns": tckns}).fetchall()
+            }
         else:
             patients = {}
 
@@ -289,12 +311,12 @@ class MedicationAdherenceAnalyzer:
                     "total_prescriptions": row.total_prescriptions,
                     "average_gap_days": round(row.avg_gap_days or 0, 1),
                     "maximum_gap_days": row.max_gap_days or 0,
-                    "long_gaps_count": row.long_gaps_count or 0
+                    "long_gaps_count": row.long_gaps_count or 0,
                 }
                 for row in result
             ],
             "total_high_risk_patients": len(result),
-            "analysis_date": datetime.now().isoformat()
+            "analysis_date": datetime.now().isoformat(),
         }
 
     def generate_comprehensive_adherence_report(self) -> Dict:
@@ -304,7 +326,7 @@ class MedicationAdherenceAnalyzer:
             "prescription_adherence": self.get_prescription_adherence_rate(),
             "chronic_medication_adherence": self.get_chronic_medication_adherence(),
             "medication_persistence": self.get_medication_persistence_analysis(),
-            "high_risk_patients": self.get_high_risk_non_adherence_patients()
+            "high_risk_patients": self.get_high_risk_non_adherence_patients(),
         }
 
 

@@ -1,12 +1,20 @@
 """Database inspector dialog for viewing schema information."""
 
-from typing import List, Dict, Any
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QTableWidget, QTableWidgetItem,
-    QComboBox, QTextEdit, QSplitter
-)
+from typing import Any, Dict, List
+
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSplitter,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextEdit,
+    QVBoxLayout,
+)
 
 from ...database.connection import get_engine
 from ...database.inspector import DatabaseInspector
@@ -33,14 +41,16 @@ class DatabaseInspectorDialog(QDialog):
         # Header
         db_name = self.inspector.get_database_name()
         header = QLabel(f"Database: {db_name}")
-        header.setStyleSheet("""
+        header.setStyleSheet(
+            """
             font-size: 14px;
             font-weight: bold;
             padding: 10px;
             background-color: #3b82f6;
             color: white;
             border-radius: 4px;
-        """)
+        """
+        )
         layout.addWidget(header)
 
         # Main content - split view
@@ -82,15 +92,17 @@ class DatabaseInspectorDialog(QDialog):
         filter_layout.addWidget(QLabel("Category:"))
 
         self.category_combo = QComboBox()
-        self.category_combo.addItems([
-            "All Tables",
-            "Patient Tables",
-            "Visit Tables",
-            "Diagnosis Tables",
-            "Prescription Tables",
-            "Lab Tables",
-            "Reference Tables"
-        ])
+        self.category_combo.addItems(
+            [
+                "All Tables",
+                "Patient Tables",
+                "Visit Tables",
+                "Diagnosis Tables",
+                "Prescription Tables",
+                "Lab Tables",
+                "Reference Tables",
+            ]
+        )
         self.category_combo.currentIndexChanged.connect(self._filter_tables)
         filter_layout.addWidget(self.category_combo)
 
@@ -124,20 +136,20 @@ class DatabaseInspectorDialog(QDialog):
 
         # Selected table label
         self.selected_table_label = QLabel("Select a table to view schema")
-        self.selected_table_label.setStyleSheet("""
+        self.selected_table_label.setStyleSheet(
+            """
             font-weight: bold;
             padding: 8px;
             background-color: #f3f4f6;
             border-radius: 4px;
-        """)
+        """
+        )
         layout.addWidget(self.selected_table_label)
 
         # Schema table
         self.schema_table = QTableWidget()
         self.schema_table.setColumnCount(3)
-        self.schema_table.setHorizontalHeaderLabels([
-            "Column Name", "Type", "Nullable"
-        ])
+        self.schema_table.setHorizontalHeaderLabels(["Column Name", "Type", "Nullable"])
         self.schema_table.setEditTriggers(QTableWidget.NoEditTriggers)
         layout.addWidget(self.schema_table)
 
@@ -162,14 +174,11 @@ class DatabaseInspectorDialog(QDialog):
                 "Diagnosis Tables": ["TANI", "ICD"],
                 "Prescription Tables": ["RECETE", "ILAC"],
                 "Lab Tables": ["TETKIK", "LAB"],
-                "Reference Tables": ["LST_"]
+                "Reference Tables": ["LST_"],
             }
 
             filters = category_filters.get(category, [])
-            filtered_tables = [
-                t for t in self.all_tables
-                if any(f in t for f in filters)
-            ]
+            filtered_tables = [t for t in self.all_tables if any(f in t for f in filters)]
 
         # Populate table list
         self.table_list.setRowCount(len(filtered_tables))

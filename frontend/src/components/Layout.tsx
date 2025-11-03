@@ -1,31 +1,31 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { useSystemStatus } from '../stores/useAppStore'
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useSystemStatus } from "../stores/useAppStore";
 
 interface LayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const location = useLocation()
-  const { databaseStatus, aiStatus } = useSystemStatus()
+  const location = useLocation();
+  const { databaseStatus, aiStatus } = useSystemStatus();
 
   const isActive = (path: string) => {
-    return location.pathname === path
-  }
+    return location.pathname === path;
+  };
 
   const statusColor = (status: string) => {
     switch (status) {
-      case 'connected':
-      case 'ready':
-        return 'bg-green-500'
-      case 'disconnected':
-      case 'unavailable':
-        return 'bg-red-500'
+      case "connected":
+      case "ready":
+        return "bg-green-500";
+      case "disconnected":
+      case "unavailable":
+        return "bg-red-500";
       default:
-        return 'bg-gray-500'
+        return "bg-gray-500";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -46,7 +46,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               {/* Database status */}
               <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${statusColor(databaseStatus)}`}></div>
+                <div
+                  className={`w-2 h-2 rounded-full ${statusColor(databaseStatus)}`}
+                ></div>
                 <span className="text-sm text-gray-600">
                   Database: {databaseStatus}
                 </span>
@@ -54,10 +56,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
               {/* AI status */}
               <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${statusColor(aiStatus)}`}></div>
-                <span className="text-sm text-gray-600">
-                  AI: {aiStatus}
-                </span>
+                <div
+                  className={`w-2 h-2 rounded-full ${statusColor(aiStatus)}`}
+                ></div>
+                <span className="text-sm text-gray-600">AI: {aiStatus}</span>
               </div>
             </div>
           </div>
@@ -71,7 +73,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Link
               to="/"
               className={`px-3 py-4 text-sm font-medium hover:bg-blue-700 transition-colors ${
-                isActive('/') ? 'bg-blue-700 border-b-2 border-white' : ''
+                isActive("/") ? "bg-blue-700 border-b-2 border-white" : ""
               }`}
             >
               Dashboard
@@ -79,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Link
               to="/search"
               className={`px-3 py-4 text-sm font-medium hover:bg-blue-700 transition-colors ${
-                isActive('/search') ? 'bg-blue-700 border-b-2 border-white' : ''
+                isActive("/search") ? "bg-blue-700 border-b-2 border-white" : ""
               }`}
             >
               Patient Search
@@ -102,7 +104,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

@@ -2,16 +2,27 @@
 
 import asyncio
 from typing import Dict
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
-    QLabel, QPushButton, QComboBox, QSpinBox,
-    QDoubleSpinBox, QGroupBox, QTableWidget,
-    QTableWidgetItem, QMessageBox, QProgressBar
-)
-from PySide6.QtCore import Qt, QThread, Signal
 
-from ...config.settings import settings
+from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QDoubleSpinBox,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QSpinBox,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+)
+
 from ...ai import create_ai_router
+from ...config.settings import settings
 
 
 class HealthCheckWorker(QThread):
@@ -50,35 +61,21 @@ class AIConfigDialog(QDialog):
         model_layout = QFormLayout(model_group)
 
         self.claude_combo = QComboBox()
-        self.claude_combo.addItems([
-            "claude-3-5-sonnet-20241022",
-            "claude-3-opus-20240229",
-            "claude-3-haiku-20240307"
-        ])
+        self.claude_combo.addItems(
+            ["claude-3-5-sonnet-20241022", "claude-3-opus-20240229", "claude-3-haiku-20240307"]
+        )
         model_layout.addRow("Claude Model:", self.claude_combo)
 
         self.openai_combo = QComboBox()
-        self.openai_combo.addItems([
-            "gpt-4o",
-            "gpt-4o-mini",
-            "gpt-4-turbo"
-        ])
+        self.openai_combo.addItems(["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"])
         model_layout.addRow("OpenAI Model:", self.openai_combo)
 
         self.gemini_combo = QComboBox()
-        self.gemini_combo.addItems([
-            "gemini-pro",
-            "gemini-1.5-pro",
-            "gemini-1.5-flash"
-        ])
+        self.gemini_combo.addItems(["gemini-pro", "gemini-1.5-pro", "gemini-1.5-flash"])
         model_layout.addRow("Gemini Model:", self.gemini_combo)
 
         self.ollama_combo = QComboBox()
-        self.ollama_combo.addItems([
-            "gemma:7b",
-            "llama2:7b",
-            "mistral:7b"
-        ])
+        self.ollama_combo.addItems(["gemma:7b", "llama2:7b", "mistral:7b"])
         model_layout.addRow("Ollama Model:", self.ollama_combo)
 
         layout.addWidget(model_group)
@@ -88,12 +85,7 @@ class AIConfigDialog(QDialog):
         routing_layout = QFormLayout(routing_group)
 
         self.strategy_combo = QComboBox()
-        self.strategy_combo.addItems([
-            "smart",
-            "cost_optimized",
-            "quality_first",
-            "round_robin"
-        ])
+        self.strategy_combo.addItems(["smart", "cost_optimized", "quality_first", "round_robin"])
         routing_layout.addRow("Strategy:", self.strategy_combo)
 
         self.timeout_spin = QSpinBox()
@@ -177,7 +169,7 @@ class AIConfigDialog(QDialog):
             self,
             "Settings",
             "Settings saved. Please restart the application for changes to take effect.\n\n"
-            "Note: API keys must be configured in the .env file."
+            "Note: API keys must be configured in the .env file.",
         )
         self.accept()
 
@@ -201,12 +193,7 @@ class AIConfigDialog(QDialog):
         self.progress_bar.setVisible(False)
         self.check_button.setEnabled(True)
 
-        provider_map = {
-            "ollama": 0,
-            "claude": 1,
-            "openai": 2,
-            "gemini": 3
-        }
+        provider_map = {"ollama": 0, "claude": 1, "openai": 2, "gemini": 3}
 
         for provider, status in results.items():
             row = provider_map.get(provider.lower())
@@ -224,7 +211,5 @@ class AIConfigDialog(QDialog):
         self.check_button.setEnabled(True)
 
         QMessageBox.critical(
-            self,
-            "Health Check Error",
-            f"Failed to check provider health:\n{error_msg}"
+            self, "Health Check Error", f"Failed to check provider health:\n{error_msg}"
         )

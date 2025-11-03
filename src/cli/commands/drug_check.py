@@ -1,12 +1,13 @@
 """Drug interaction checking CLI commands."""
 
-import typer
 import asyncio
+
+import typer
 from rich.console import Console
 from rich.table import Table
 
-from ...database.connection import get_session
 from ...clinical.drug_interaction import DrugInteractionChecker
+from ...database.connection import get_session
 
 app = typer.Typer()
 console = Console()
@@ -16,16 +17,16 @@ console = Console()
 def check(
     tckn: str = typer.Option(..., "--tckn", help="Patient TCKN"),
     drug: str = typer.Option(..., "--add", help="Drug name to check"),
-    severity: str = typer.Option("all", "--severity", help="Filter by severity (all/major/critical)"),
+    severity: str = typer.Option(
+        "all", "--severity", help="Filter by severity (all/major/critical)"
+    ),
 ):
     """Check drug interactions for patient."""
     try:
         with console.status("[bold green]Checking drug interactions..."):
             with get_session() as session:
                 checker = DrugInteractionChecker(session)
-                result = asyncio.run(
-                    checker.check_interactions(tckn=tckn, proposed_drug=drug)
-                )
+                result = asyncio.run(checker.check_interactions(tckn=tckn, proposed_drug=drug))
 
         # Display results
         interactions = result.get("interactions", [])

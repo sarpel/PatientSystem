@@ -3,13 +3,14 @@ Database connection management using SQLAlchemy.
 Provides engine creation and session management for SQL Server.
 """
 
-from typing import Generator
 from contextlib import contextmanager
+from typing import Generator
+
+from loguru import logger
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
-from loguru import logger
 
 from src.config.settings import settings
 
@@ -31,10 +32,10 @@ def create_db_engine() -> Engine:
             settings.database_url,
             echo=settings.log_level == "DEBUG",
             pool_pre_ping=True,  # Enable connection health checks
-            pool_recycle=3600,   # Recycle connections after 1 hour
+            pool_recycle=3600,  # Recycle connections after 1 hour
             connect_args={
                 "timeout": settings.db_timeout,
-            }
+            },
         )
 
         # Add event listener for connection
@@ -81,12 +82,7 @@ def get_session_factory(engine: Engine) -> sessionmaker:
     Returns:
         Session factory
     """
-    return sessionmaker(
-        bind=engine,
-        autocommit=False,
-        autoflush=False,
-        expire_on_commit=False
-    )
+    return sessionmaker(bind=engine, autocommit=False, autoflush=False, expire_on_commit=False)
 
 
 def get_db_session(engine: Engine) -> Generator[Session, None, None]:

@@ -1,17 +1,15 @@
 """Clinical dashboard with tabbed interface for patient data."""
 
 from typing import Optional
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QTabWidget, QLabel,
-    QMessageBox
-)
+
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QLabel, QMessageBox, QTabWidget, QVBoxLayout, QWidget
 
 from ...database.connection import get_session
 from ...models.patient import Patient
 from .diagnosis_panel import DiagnosisPanelWidget
-from .treatment_panel import TreatmentPanelWidget
 from .lab_charts import LabChartsWidget
+from .treatment_panel import TreatmentPanelWidget
 
 
 class ClinicalDashboardWidget(QWidget):
@@ -29,14 +27,16 @@ class ClinicalDashboardWidget(QWidget):
 
         # Patient header
         self.patient_header = QLabel("No patient selected")
-        self.patient_header.setStyleSheet("""
+        self.patient_header.setStyleSheet(
+            """
             font-size: 16px;
             font-weight: bold;
             padding: 10px;
             background-color: #3b82f6;
             color: white;
             border-radius: 4px;
-        """)
+        """
+        )
         layout.addWidget(self.patient_header)
 
         # Tab widget
@@ -74,15 +74,11 @@ class ClinicalDashboardWidget(QWidget):
             with get_session() as session:
                 # Convert tckn string to integer for comparison
                 tckn_int = int(tckn) if tckn.isdigit() else None
-                patient = session.query(Patient).filter(
-                    Patient.HASTA_KIMLIK_NO == tckn_int
-                ).first()
+                patient = session.query(Patient).filter(Patient.HASTA_KIMLIK_NO == tckn_int).first()
 
                 if not patient:
                     QMessageBox.warning(
-                        self,
-                        "Patient Not Found",
-                        f"No patient found with TCKN: {tckn}"
+                        self, "Patient Not Found", f"No patient found with TCKN: {tckn}"
                     )
                     return
 
@@ -102,8 +98,4 @@ class ClinicalDashboardWidget(QWidget):
                 self.lab_charts.load_patient(tckn)
 
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Load Error",
-                f"Failed to load patient data:\n{str(e)}"
-            )
+            QMessageBox.critical(self, "Load Error", f"Failed to load patient data:\n{str(e)}")

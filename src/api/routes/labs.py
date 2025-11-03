@@ -3,8 +3,8 @@
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 
-from ...database.connection import get_session
 from ...clinical.lab_analyzer import LabAnalyzer
+from ...database.connection import get_session
 
 router = APIRouter()
 
@@ -60,8 +60,7 @@ async def get_lab_trends(
             result = analyzer.get_lab_trend(tckn, test, months)
 
             logger.info(
-                f"Lab trend: TCKN={tckn}, test={test}, "
-                f"points={len(result.get('values', []))}"
+                f"Lab trend: TCKN={tckn}, test={test}, " f"points={len(result.get('values', []))}"
             )
 
             return result

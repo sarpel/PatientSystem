@@ -1,12 +1,13 @@
 """Patient-related API endpoints."""
 
-from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
+
+from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 
+from ...clinical.patient_summarizer import PatientSummarizer
 from ...database.connection import get_session
 from ...models.patient import Patient, PatientDemographics
-from ...clinical.patient_summarizer import PatientSummarizer
 
 router = APIRouter()
 

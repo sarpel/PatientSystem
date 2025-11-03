@@ -15,17 +15,20 @@ React-based web interface for the Clinical AI Assistant system.
 ## Features
 
 ### Patient Management
+
 - 🔍 Smart patient search by name or TCKN
 - 📋 Comprehensive patient profiles
 - 🏥 Medical history and lab results
 
 ### AI-Powered Analysis
+
 - 🤖 Differential diagnosis with multiple AI models
 - 💊 Treatment recommendations and clinical guidelines
 - 🧪 Laboratory result analysis and trends
 - ⚠️ Drug interaction checking
 
 ### User Interface
+
 - 📱 Responsive design for desktop, tablet, and mobile
 - 🎨 Medical-themed color scheme
 - 📊 Interactive charts and data visualization

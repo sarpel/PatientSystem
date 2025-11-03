@@ -1,14 +1,15 @@
 """Patient analysis CLI commands."""
 
-import typer
-from rich.console import Console
-from rich.table import Table
-from rich import print as rprint
 import json
 from pathlib import Path
 
-from ...database.connection import get_session
+import typer
+from rich import print as rprint
+from rich.console import Console
+from rich.table import Table
+
 from ...clinical.patient_summarizer import PatientSummarizer
+from ...database.connection import get_session
 
 app = typer.Typer()
 console = Console()

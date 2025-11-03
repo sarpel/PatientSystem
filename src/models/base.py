@@ -15,6 +15,7 @@ class Base(DeclarativeBase):
     Declarative base class for all ORM models.
     Uses SQLAlchemy 2.0 declarative mapping style.
     """
+
     pass
 
 
@@ -28,15 +29,11 @@ class TimestampMixin:
     """
 
     created_at: Mapped[datetime] = mapped_column(
-        insert_default=func.now(),
-        nullable=False,
-        comment="Timestamp when record was created"
+        insert_default=func.now(), nullable=False, comment="Timestamp when record was created"
     )
 
     updated_at: Mapped[Optional[datetime]] = mapped_column(
-        onupdate=func.now(),
-        nullable=True,
-        comment="Timestamp when record was last updated"
+        onupdate=func.now(), nullable=True, comment="Timestamp when record was last updated"
     )
 
 
@@ -50,8 +47,7 @@ class SoftDeleteMixin:
     """
 
     deleted_at: Mapped[Optional[datetime]] = mapped_column(
-        nullable=True,
-        comment="Timestamp when record was soft-deleted"
+        nullable=True, comment="Timestamp when record was soft-deleted"
     )
 
     @property

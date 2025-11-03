@@ -15,7 +15,7 @@ ORTAM:
   Database: SQL Server 2014/2022 Express
   Auth: Windows Authentication
   User: Single user (doctor)
-  
+
 GÜVENLIK:
   KVKK: ❌ DISABLED (personal use, secure environment)
   Authentication: ❌ NOT REQUIRED
@@ -29,19 +29,19 @@ KLİNİK KAPASITE:
   İlaç Etkileşimi: ✅ ENABLED (API-based if available)
   Lab Analizi: ✅ ENABLED (abnormal detection, trends)
   Risk Stratifikasyonu: ✅ ENABLED
-  
+
 AI STACK:
   Local: Ollama (Gemma/Qwen) - Fast general tasks
   Remote Primary: Anthropic Claude 3.5 Sonnet - Critical analysis
   Remote Secondary: OpenAI GPT-4/4o - Backup
   Remote Tertiary: Google Gemini Pro - Alternative
   Strategy: Configurable (default: Senaryo A)
-  
+
 INTERFACE:
   Primary: Desktop GUI (PySide6/Qt6)
   Secondary: Web GUI (React/Vite + FastAPI backend)
   Tertiary: CLI (Typer + Rich)
-  
+
 ENTEGRASYON:
   Method: Multiple (CLI call, REST API, Database trigger)
   Existing App: Java/.NET Framework mixed
@@ -301,12 +301,14 @@ pyinstaller = "^6.3.0"             # Executable building
 Verilen **361 tablo** isimlerinden kritik tablo kategorileri:
 
 ### Hasta Demografik & Kayıt
+
 ```sql
 GP_HASTA_KAYIT, GP_HASTA_OZLUK, DTY_HASTA_OZLUK_*
 HRC_AILE, HRC_KULLANICILAR, LST_CINSIYET, LST_KAN_GRUBU
 ```
 
 ### Muayene & Vizit
+
 ```sql
 GP_MUAYENE, GP_HASTA_KABUL, GP_HASTA_CIKIS
 HRC_MUAYENE_SABLON*, DTY_MUAYENE_*
@@ -314,6 +316,7 @@ LST_MUAYENE_TURU, LST_BASVURU_TURU
 ```
 
 ### Tanı & ICD Kodları
+
 ```sql
 HRC_MUAYENE_SABLON_TANI, DTY_MUAYENE_EK_TANI
 LST_ICD10, LST_ICD10_MSVS_ILISKISI
@@ -321,6 +324,7 @@ DTY_*_KOMPLIKASYON_TANILARI
 ```
 
 ### Reçete & İlaç
+
 ```sql
 GP_RECETE, DTY_RECETE_ILAC, DTY_RECETE_EK_TANI
 HRC_ILAC_*, HRC_SGK_ILAC_LISTESI
@@ -328,6 +332,7 @@ LST_ILAC_*, HRC_BENIM_LISTEM_ILAC
 ```
 
 ### Lab & Tetkik
+
 ```sql
 GP_HASTANE_TETKIK_ISTEM, DTY_HASTANE_ISTEM
 HRC_DTY_LAB_SONUC*, GP_TETKIK_TALEP
@@ -335,12 +340,14 @@ LST_HASTANE_TETKIK, DTY_*_TETKIK_*
 ```
 
 ### Alerji & Uyarılar
+
 ```sql
 DTY_HASTA_OZLUK_ALERJI*, HRC_LST_UYARI_SABLONLARI
 LST_ASI_OZEL_DURUMU_NEDENI
 ```
 
 ### Gebe & Lohusa İzlem
+
 ```sql
 GP_GEBE_IZLEM, DTY_GEBE_IZLEM_*
 GP_LOHUSA_IZLEM, DTY_LOHUSA_IZLEM_*
@@ -348,6 +355,7 @@ GP_GEBELIK_BILDIRIM, GP_GEBELIK_SONUCU
 ```
 
 ### Bebek & Çocuk İzlem
+
 ```sql
 GP_BC_IZLEM, DTY_BC_IZLEM_*
 HRC_COCUK_ERGEN_IZLEM, GP_BC_BESLENME
@@ -355,6 +363,7 @@ LST_BEBEK_*, DTY_BC_PSIKO_SOSYAL_*
 ```
 
 ### Aşı Takibi
+
 ```sql
 GP_ASI, HRC_ASI_TAKVIMI, HRC_IZLEM_ASI_TAKVIMI
 GP_ASI_ERTELEME_IPTAL, GP_ASI_SONRASI_ISTENMEYEN_ETKI
@@ -362,6 +371,7 @@ LST_ASI*, DTY_ASI_*
 ```
 
 ### Kronik Hastalıklar
+
 ```sql
 GP_DIYABET, GP_KRONIK_HASTALIKLAR, GP_HYP_*
 GP_KANSER, GP_KANSER_IZLEM, GP_OBEZITE
@@ -369,6 +379,7 @@ DTY_DIYABET_*, DTY_OBEZITE_*
 ```
 
 ### Bulaşıcı Hastalıklar
+
 ```sql
 GP_BULASICI_HASTALIK_*, GP_VEREM, GP_SITMA
 GP_KUDUZ_*, GP_ZEHIRLENME
@@ -376,12 +387,14 @@ DTY_BULASICI_HASTALIK_*
 ```
 
 ### Vital & Ölçümler
+
 ```sql
 LST_AGRI, LST_SPIROMETRI
 DTY_*_VITAL*, GP_*_VITAL
 ```
 
-### Referans & Liste Tabloları (LST_*)
+### Referans & Liste Tabloları (LST\_\*)
+
 ```sql
 LST_TANI_YONTEMI, LST_TEDAVI_YONTEMI, LST_TEDAVI_SEKLI
 LST_TARAMA_SONUCU, LST_HASTALIK, LST_HASTALIK_TIPI
@@ -398,19 +411,19 @@ LST_MESLEKLER, LST_MESLEK_VE_KANSER
 ```python
 class AIRouter:
     """
-    Smart routing: 
+    Smart routing:
     - Basit özetleme → Ollama (hızlı)
     - Karmaşık tanı/tedavi → Claude 3.5 Sonnet (en akıllı)
     - Fallback → GPT-4o → Gemini Pro
     """
-    
+
     TASK_COMPLEXITY = {
         'simple': ['patient_summary', 'basic_stats', 'recent_visits'],
         'moderate': ['lab_trend_analysis', 'medication_adherence'],
-        'complex': ['differential_diagnosis', 'treatment_planning', 
+        'complex': ['differential_diagnosis', 'treatment_planning',
                    'drug_interactions', 'risk_stratification']
     }
-    
+
     MODEL_PRIORITY = {
         'simple': ['ollama'],
         'moderate': ['ollama', 'gpt-4o-mini', 'claude-3.5-sonnet'],
@@ -427,11 +440,11 @@ models:
   ollama:
     enabled: true
     base_url: "http://localhost:11434"
-    model_name: "gemma:7b"  # veya qwen2.5:7b
+    model_name: "gemma:7b" # veya qwen2.5:7b
     timeout: 60
     temperature: 0.3
     max_tokens: 2048
-    
+
   anthropic:
     enabled: true
     model_name: "claude-3-5-sonnet-20241022"
@@ -439,15 +452,15 @@ models:
     temperature: 0.5
     max_tokens: 4096
     timeout: 120
-    
+
   openai:
     enabled: true
-    model_name: "gpt-4o"  # fallback: gpt-4o-mini
+    model_name: "gpt-4o" # fallback: gpt-4o-mini
     api_key_env: "OPENAI_API_KEY"
     temperature: 0.5
     max_tokens: 4096
     timeout: 120
-    
+
   google:
     enabled: true
     model_name: "gemini-pro"
@@ -457,7 +470,7 @@ models:
     timeout: 120
 
 routing:
-  strategy: "smart"  # Options: smart, manual, round_robin
+  strategy: "smart" # Options: smart, manual, round_robin
   retry_on_failure: true
   max_retries: 3
   fallback_enabled: true
@@ -473,7 +486,7 @@ routing:
 class DiagnosisEngine:
     """
     Hasta bilgilerine göre diferansiyel tanı önerileri.
-    
+
     Input:
     - Şikayetler (chief complaints)
     - Vital bulgular
@@ -481,7 +494,7 @@ class DiagnosisEngine:
     - Lab sonuçları
     - Geçmiş tanılar
     - Demografik risk faktörleri
-    
+
     Output:
     {
       "differential_diagnosis": [
@@ -514,7 +527,7 @@ class DiagnosisEngine:
 class TreatmentEngine:
     """
     Tanıya ve hasta durumuna göre tedavi önerileri.
-    
+
     Output:
     {
       "pharmacological": [
@@ -573,12 +586,12 @@ class TreatmentEngine:
 class DrugInteractionChecker:
     """
     İlaç-ilaç, ilaç-alerji, ilaç-hastalık etkileşimi kontrolü.
-    
-    Kaynak: 
+
+    Kaynak:
     - Türkiye İlaç Kılavuzu (offline database)
     - RxNorm/Drugs.com API (if available)
     - Lokal referans tabloları
-    
+
     Output:
     {
       "interactions": [
@@ -612,13 +625,13 @@ class DrugInteractionChecker:
 class LabAnalyzer:
     """
     Tahlil sonuçlarını yorumlama ve trend analizi.
-    
+
     Features:
     - Referans aralığı dışı değerler
     - Kritik değer alarmları
     - Trend analizi (son 6-12 ay)
     - Klinik korelasyon
-    
+
     Output:
     {
       "critical_abnormals": [
@@ -658,7 +671,7 @@ class LabAnalyzer:
 class RiskCalculator:
     """
     Klinik risk skorlamaları.
-    
+
     Hesaplanan Skorlar:
     - Framingham/SCORE2 (KVH riski)
     - FINDRISC (Diyabet riski)
@@ -667,7 +680,7 @@ class RiskCalculator:
     - CKD-EPI eGFR
     - BMI & Obezite sınıflandırması
     - ASCVD 10-year risk
-    
+
     Output:
     {
       "cardiovascular_risk": {
@@ -741,6 +754,7 @@ Hazır | AI Model: Claude 3.5 Sonnet | DB: ✓ Bağlı | Son güncelleme: 15.01.
 ```
 
 **Tanı Paneli:**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ 🩺 DİFERANSİYEL TANI ÖNERİLERİ                         │
@@ -789,21 +803,21 @@ Hazır | AI Model: Claude 3.5 Sonnet | DB: ✓ Bağlı | Son güncelleme: 15.01.
       <AlertsPanel />
       <QuickActions />
     </TabPanel>
-    
+
     <TabPanel id="diagnosis">
       <ChiefComplaintInput />
       <VitalsInput />
       <AIAnalysisButton onClick={runDiagnosis} />
       <DiagnosisResultsPanel />
     </TabPanel>
-    
+
     <TabPanel id="treatment">
       <SelectedDiagnosisDropdown />
       <TreatmentRecommendations />
       <DrugInteractionAlerts />
       <PrescriptionGenerator />
     </TabPanel>
-    
+
     <TabPanel id="labs">
       <LabResultsTable />
       <TrendCharts />
@@ -931,7 +945,7 @@ AS
 BEGIN
     DECLARE @TCKN VARCHAR(11)
     SELECT @TCKN = TCKN FROM inserted
-    
+
     -- Harici script çağır
     EXEC xp_cmdshell 'clinical-ai.exe analyze --tckn ' + @TCKN + ' --background'
 END
@@ -956,10 +970,10 @@ while True:
     win32pipe.ConnectNamedPipe(pipe, None)
     data = win32file.ReadFile(pipe, 64*1024)
     tckn = data[1].decode()
-    
+
     # Analiz yap
     insights = analyze_patient(tckn)
-    
+
     # Geri gönder
     win32file.WriteFile(pipe, json.dumps(insights).encode())
 ```
@@ -971,6 +985,7 @@ while True:
 ### PHASE 1: Foundation (Gün 1-2)
 
 **Checkpoint 1.1: Project Setup**
+
 ```bash
 ACTIONS:
 ✅ Proje klasör yapısını oluştur
@@ -991,6 +1006,7 @@ TOOLS:
 ```
 
 **Checkpoint 1.2: Database Connection**
+
 ```python
 MODULES:
 ✅ src/config/settings.py (Pydantic settings)
@@ -1009,13 +1025,14 @@ TOOLS:
 ```
 
 **Checkpoint 1.3: Database Inspector**
+
 ```python
 MODULES:
 ✅ src/database/inspector.py
    - discover_all_tables()
    - get_table_schema(table_name)
    - export_schema_yaml()
-   
+
 TEST:
 ✅ 361 tablo keşfedildi mi?
 ✅ GP_*, DTY_*, LST_*, HRC_* kategorileri
@@ -1033,6 +1050,7 @@ TOOLS:
 ### PHASE 2: AI Integration (Gün 3-4)
 
 **Checkpoint 2.1: Ollama Client**
+
 ```python
 MODULES:
 ✅ src/ai/ollama_client.py
@@ -1054,6 +1072,7 @@ TOOLS:
 ```
 
 **Checkpoint 2.2: Remote AI Clients**
+
 ```python
 MODULES:
 ✅ src/ai/anthropic_client.py
@@ -1076,6 +1095,7 @@ TOOLS:
 ```
 
 **Checkpoint 2.3: AI Router (Senaryo A)**
+
 ```python
 MODULES:
 ✅ src/ai/router.py
@@ -1103,6 +1123,7 @@ TOOLS:
 ### PHASE 3: Clinical Modules (Gün 5-8)
 
 **Checkpoint 3.1: Patient Summarizer**
+
 ```python
 MODULE: src/clinical/patient_summarizer.py
 
@@ -1124,6 +1145,7 @@ TOOLS:
 ```
 
 **Checkpoint 3.2: Lab Analyzer**
+
 ```python
 MODULE: src/clinical/lab_analyzer.py
 
@@ -1145,6 +1167,7 @@ VERIFICATION:
 ```
 
 **Checkpoint 3.3: Diagnosis Engine**
+
 ```python
 MODULE: src/clinical/diagnosis_engine.py
 
@@ -1191,6 +1214,7 @@ TOOLS:
 ```
 
 **Checkpoint 3.4: Treatment Engine**
+
 ```python
 MODULE: src/clinical/treatment_engine.py
 
@@ -1223,6 +1247,7 @@ VERIFICATION:
 ```
 
 **Checkpoint 3.5: Drug Interaction Checker**
+
 ```python
 MODULE: src/clinical/drug_interaction.py
 
@@ -1251,6 +1276,7 @@ TOOLS:
 ### PHASE 4: GUI Development (Gün 9-12)
 
 **Checkpoint 4.1: Desktop GUI Skeleton**
+
 ```python
 MODULE: src/gui/main_window.py
 
@@ -1274,6 +1300,7 @@ TOOLS:
 ```
 
 **Checkpoint 4.2: Patient Search Widget**
+
 ```python
 MODULE: src/gui/widgets/patient_search.py
 
@@ -1292,6 +1319,7 @@ TOOLS:
 ```
 
 **Checkpoint 4.3: Clinical Dashboard**
+
 ```python
 MODULES:
 ✅ src/gui/widgets/clinical_dashboard.py
@@ -1312,6 +1340,7 @@ VERIFICATION:
 ```
 
 **Checkpoint 4.4: Web GUI Setup**
+
 ```bash
 ACTIONS:
 $ cd frontend
@@ -1344,6 +1373,7 @@ TOOLS:
 ### PHASE 5: API Layer (Gün 13-14)
 
 **Checkpoint 5.1: FastAPI Setup**
+
 ```python
 MODULE: src/api/fastapi_app.py
 
@@ -1373,6 +1403,7 @@ TOOLS:
 ```
 
 **Checkpoint 5.2: CLI Commands**
+
 ```python
 MODULE: src/cli/app.py
 
@@ -1398,6 +1429,7 @@ TOOLS:
 ### PHASE 6: Testing & Refinement (Gün 15-16)
 
 **Checkpoint 6.1: Unit Tests**
+
 ```bash
 $ pytest tests/unit/ -v --cov=src
 
@@ -1415,6 +1447,7 @@ TOOLS:
 ```
 
 **Checkpoint 6.2: Integration Tests**
+
 ```python
 TESTS:
 ✅ test_full_patient_workflow.py
@@ -1430,6 +1463,7 @@ TOOLS:
 ```
 
 **Checkpoint 6.3: Performance Testing**
+
 ```python
 TEST SCENARIOS:
 - 1000 hasta ile database query speed
@@ -1448,6 +1482,7 @@ TOOLS:
 ### PHASE 7: Documentation & Deployment (Gün 17-18)
 
 **Checkpoint 7.1: Documentation**
+
 ```markdown
 DOCS TO CREATE:
 ✅ docs/01_KURULUM.md
@@ -1461,11 +1496,13 @@ DOCS TO CREATE:
 ✅ README.md (comprehensive)
 
 TOOLS:
+
 - create_file: Her doküman
 - view: Verification
 ```
 
 **Checkpoint 7.2: Deployment Scripts**
+
 ```bash
 SCRIPTS:
 ✅ scripts/install.bat

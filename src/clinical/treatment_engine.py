@@ -9,23 +9,24 @@ Provides AI-powered treatment recommendations with:
 - Contraindication checking
 """
 
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
-from datetime import datetime
 import json
 import re
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.models.clinical import Prescription
 from src.models.patient import Patient, PatientDemographics
 from src.models.visit import Visit
-from src.models.clinical import Prescription
 
 
 @dataclass
 class MedicationRecommendation:
     """Individual medication recommendation."""
+
     drug_name: str
     generic_name: str
     dosage: str
@@ -43,6 +44,7 @@ class MedicationRecommendation:
 @dataclass
 class LifestyleRecommendation:
     """Lifestyle modification recommendation."""
+
     category: str  # "diet", "exercise", "habits", "other"
     recommendation: str
     details: str
@@ -54,6 +56,7 @@ class LifestyleRecommendation:
 @dataclass
 class MonitoringPlan:
     """Laboratory and clinical monitoring plan."""
+
     test_name: str
     frequency: str
     target_range: str
@@ -64,6 +67,7 @@ class MonitoringPlan:
 @dataclass
 class ConsultationRecommendation:
     """Specialist consultation recommendation."""
+
     specialty: str
     urgency: str  # "routine", "soon", "urgent"
     reason: str
@@ -97,7 +101,7 @@ class TreatmentEngine:
         diagnosis: str,
         diagnosis_details: Optional[Dict[str, Any]] = None,
         patient_factors: Optional[Dict[str, Any]] = None,
-        current_medications: Optional[List[str]] = None
+        current_medications: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Generate comprehensive treatment plan.
@@ -148,7 +152,11 @@ class TreatmentEngine:
                 "indications": ["Type 2 Diabetes"],
                 "dosage_forms": ["500mg", "850mg", "1000mg"],
                 "typical_dosage": "500-1000mg 2x1",
-                "contraindications": ["eGFR <30 mL/min", "lactic acidosis history", "severe liver disease"],
+                "contraindications": [
+                    "eGFR <30 mL/min",
+                    "lactic acidosis history",
+                    "severe liver disease",
+                ],
                 "monitoring": ["Renal function q3-6mo", "B12 yearly"],
                 "pregnancy_category": "B",
                 "cost": "Low",
@@ -166,7 +174,6 @@ class TreatmentEngine:
                 "cost": "High",
                 "mechanism": "Long-acting insulin analog",
             },
-
             # Hypertension medications
             "Lisinopril": {
                 "generic_name": "Lisinopril",
@@ -174,7 +181,11 @@ class TreatmentEngine:
                 "indications": ["Hypertension", "Heart Failure"],
                 "dosage_forms": ["5mg", "10mg", "20mg", "40mg"],
                 "typical_dosage": "10-40mg 1x1",
-                "contraindications": ["pregnancy", "angioedema history", "bilateral renal artery stenosis"],
+                "contraindications": [
+                    "pregnancy",
+                    "angioedema history",
+                    "bilateral renal artery stenosis",
+                ],
                 "monitoring": ["Blood pressure", "Renal function", "Potassium"],
                 "pregnancy_category": "D",
                 "cost": "Low",
@@ -192,7 +203,6 @@ class TreatmentEngine:
                 "cost": "Low",
                 "mechanism": "L-type calcium channel blocker",
             },
-
             # Lipid-lowering medications
             "Atorvastatin": {
                 "generic_name": "Atorvastatin Calcium",
@@ -206,7 +216,6 @@ class TreatmentEngine:
                 "cost": "Low",
                 "mechanism": "HMG-CoA reductase inhibitor",
             },
-
             # NSAIDs
             "Ibuprofen": {
                 "generic_name": "Ibuprofen",
@@ -214,13 +223,16 @@ class TreatmentEngine:
                 "indications": ["Pain", "Inflammation", "Fever"],
                 "dosage_forms": ["200mg", "400mg", "600mg", "800mg"],
                 "typical_dosage": "200-800mg 3-4x1",
-                "contraindications": ["active ulcer disease", "severe renal impairment", "late pregnancy"],
+                "contraindications": [
+                    "active ulcer disease",
+                    "severe renal impairment",
+                    "late pregnancy",
+                ],
                 "monitoring": ["Renal function if long-term", "GI symptoms"],
                 "pregnancy_category": "D (3rd trimester)",
                 "cost": "Low",
                 "mechanism": "COX inhibition",
             },
-
             # Antibiotics
             "Amoxicillin": {
                 "generic_name": "Amoxicillin",
@@ -234,7 +246,6 @@ class TreatmentEngine:
                 "cost": "Low",
                 "mechanism": "Beta-lactam antibiotic, cell wall synthesis inhibitor",
             },
-
             # Proton pump inhibitors
             "Omeprazole": {
                 "generic_name": "Omeprazole",
@@ -257,18 +268,34 @@ class TreatmentEngine:
                 "first_line": ["Metformin"],
                 "second_line": ["SGLT2i", "GLP-1 RA", "DPP-4i", "Sulfonylurea", "Insulin"],
                 "lifestyle": ["Weight loss", "Regular exercise", "Diet modification"],
-                "monitoring": ["HbA1c q3mo", "Renal function q6mo", "Lipids yearly", "Eye exam yearly"],
+                "monitoring": [
+                    "HbA1c q3mo",
+                    "Renal function q6mo",
+                    "Lipids yearly",
+                    "Eye exam yearly",
+                ],
                 "targets": {
                     "HbA1c": "<7.0%",
                     "BP": "<130/80 mmHg",
                     "LDL": "<100 mg/dL",
                 },
-                "consultations": ["Endocrinology if complex", "Ophthalmology yearly", "Podiatry yearly", "Nephrology if eGFR <60"],
+                "consultations": [
+                    "Endocrinology if complex",
+                    "Ophthalmology yearly",
+                    "Podiatry yearly",
+                    "Nephrology if eGFR <60",
+                ],
             },
             "Hypertension": {
                 "first_line": ["ACEi/ARB", "CCB", "Thiazide diuretic"],
                 "second_line": ["Beta blocker", "Mineralocorticoid receptor antagonist"],
-                "lifestyle": ["DASH diet", "Sodium restriction", "Exercise", "Weight loss", "Limit alcohol"],
+                "lifestyle": [
+                    "DASH diet",
+                    "Sodium restriction",
+                    "Exercise",
+                    "Weight loss",
+                    "Limit alcohol",
+                ],
                 "monitoring": ["BP q1-3mo", "Renal function", "Electrolytes", "Lipids"],
                 "targets": {
                     "BP": "<130/80 mmHg",
@@ -278,7 +305,12 @@ class TreatmentEngine:
             "Hyperlipidemia": {
                 "first_line": ["High-intensity statin"],
                 "second_line": ["Ezetimibe", "PCSK9 inhibitor", "Bempedoic acid"],
-                "lifestyle": ["Heart-healthy diet", "Exercise", "Weight management", "Smoking cessation"],
+                "lifestyle": [
+                    "Heart-healthy diet",
+                    "Exercise",
+                    "Weight management",
+                    "Smoking cessation",
+                ],
                 "monitoring": ["Lipids q3-12mo", "Liver enzymes", "CK if symptoms"],
                 "targets": {
                     "LDL": "Individualized based on risk",
@@ -288,7 +320,12 @@ class TreatmentEngine:
             "Depression": {
                 "first_line": ["SSRI", "SNRI", "Bupropion"],
                 "second_line": ["TCA", "MAOI", "Augmentation strategies"],
-                "lifestyle": ["Regular exercise", "Sleep hygiene", "Stress management", "Social support"],
+                "lifestyle": [
+                    "Regular exercise",
+                    "Sleep hygiene",
+                    "Stress management",
+                    "Social support",
+                ],
                 "monitoring": ["PHQ-9 regularly", "Suicide risk assessment", "Side effects"],
                 "targets": {
                     "PHQ-9": "<5 remission",
@@ -307,7 +344,9 @@ class TreatmentEngine:
             },
         }
 
-    def _build_patient_context(self, patient_id: int, current_medications: List[str]) -> Dict[str, Any]:
+    def _build_patient_context(
+        self, patient_id: int, current_medications: List[str]
+    ) -> Dict[str, Any]:
         """Build patient context for treatment planning."""
         patient = self.session.execute(
             select(Patient).where(Patient.HASTA_KAYIT_ID == patient_id)
@@ -318,11 +357,15 @@ class TreatmentEngine:
 
         # Get current prescriptions if not provided
         if current_medications is None:
-            prescriptions = self.session.execute(
-                select(Prescription)
-                .where(Prescription.HASTA_KAYIT == patient_id)
-                .where(Prescription.DURUM == 1)  # Active
-            ).scalars().all()
+            prescriptions = (
+                self.session.execute(
+                    select(Prescription)
+                    .where(Prescription.HASTA_KAYIT == patient_id)
+                    .where(Prescription.DURUM == 1)  # Active
+                )
+                .scalars()
+                .all()
+            )
             current_medications = [rx.ACIKLAMA for rx in prescriptions if rx.ACIKLAMA]
 
         return {
@@ -345,7 +388,7 @@ class TreatmentEngine:
         diagnosis: str,
         diagnosis_details: Optional[Dict[str, Any]],
         patient_context: Dict[str, Any],
-        patient_factors: Optional[Dict[str, Any]]
+        patient_factors: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Generate treatment plan using AI."""
         prompt = self._create_treatment_prompt(
@@ -356,11 +399,7 @@ class TreatmentEngine:
             ai_response = self.ai_router.process_complex_task(
                 task="treatment",
                 prompt=prompt,
-                context={
-                    "complexity": "high",
-                    "domain": "medical",
-                    "language": "tr"
-                }
+                context={"complexity": "high", "domain": "medical", "language": "tr"},
             )
 
             return self._parse_ai_treatment_response(ai_response)
@@ -376,7 +415,7 @@ class TreatmentEngine:
         diagnosis: str,
         diagnosis_details: Optional[Dict[str, Any]],
         patient_context: Dict[str, Any],
-        patient_factors: Optional[Dict[str, Any]]
+        patient_factors: Optional[Dict[str, Any]],
     ) -> str:
         """Create structured prompt for AI treatment generation."""
         prompt = """Tanı: {diagnosis}
@@ -424,7 +463,7 @@ Format: JSON olarak dön.
             smoking=patient_context.get("smoking_status", "Bilinmiyor"),
             medications=", ".join(patient_context.get("current_medications", [])) or "Yok",
             allergies=patient_context.get("allergies", "Yok"),
-            diagnosis_details=str(diagnosis_details) if diagnosis_details else "Ek detay yok"
+            diagnosis_details=str(diagnosis_details) if diagnosis_details else "Ek detay yok",
         )
 
         return prompt
@@ -433,11 +472,11 @@ Format: JSON olarak dön.
         """Parse AI treatment response into structured format."""
         try:
             # Try to parse as JSON
-            if ai_response.strip().startswith('{'):
+            if ai_response.strip().startswith("{"):
                 result = json.loads(ai_response)
             else:
                 # Extract JSON from response
-                json_match = re.search(r'\{.*\}', ai_response, re.DOTALL)
+                json_match = re.search(r"\{.*\}", ai_response, re.DOTALL)
                 if json_match:
                     result = json.loads(json_match.group())
                 else:
@@ -467,7 +506,7 @@ Format: JSON olarak dön.
             "consultations": [],
             "contraindications": [],
             "follow_up": {},
-            "error": "Treatment parsing failed"
+            "error": "Treatment parsing failed",
         }
 
     def _generate_rule_based_treatment(
@@ -475,7 +514,7 @@ Format: JSON olarak dön.
         diagnosis: str,
         diagnosis_details: Optional[Dict[str, Any]],
         patient_context: Dict[str, Any],
-        patient_factors: Optional[Dict[str, Any]]
+        patient_factors: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Generate treatment plan using rule-based approach."""
         guidelines = self._treatment_guidelines.get(diagnosis, {})
@@ -485,19 +524,23 @@ Format: JSON olarak dön.
         for drug_name in guidelines.get("first_line", []):
             if drug_name in self._drug_database:
                 drug_info = self._drug_database[drug_name]
-                meds.append(self._create_medication_recommendation(drug_name, drug_info, patient_context))
+                meds.append(
+                    self._create_medication_recommendation(drug_name, drug_info, patient_context)
+                )
 
         # Lifestyle recommendations
         lifestyle = []
         for rec in guidelines.get("lifestyle", []):
-            lifestyle.append(LifestyleRecommendation(
-                category=self._categorize_lifestyle_recommendation(rec),
-                recommendation=rec,
-                details=self._get_lifestyle_details(rec),
-                priority=1,
-                rationale="Evidence-based lifestyle intervention",
-                expected_outcome="Improved disease control"
-            ))
+            lifestyle.append(
+                LifestyleRecommendation(
+                    category=self._categorize_lifestyle_recommendation(rec),
+                    recommendation=rec,
+                    details=self._get_lifestyle_details(rec),
+                    priority=1,
+                    rationale="Evidence-based lifestyle intervention",
+                    expected_outcome="Improved disease control",
+                )
+            )
 
         # Monitoring plan
         monitoring = []
@@ -565,17 +608,18 @@ Format: JSON olarak dön.
         }
 
     def _create_medication_recommendation(
-        self,
-        drug_name: str,
-        drug_info: Dict[str, Any],
-        patient_context: Dict[str, Any]
+        self, drug_name: str, drug_info: Dict[str, Any], patient_context: Dict[str, Any]
     ) -> MedicationRecommendation:
         """Create medication recommendation object."""
         return MedicationRecommendation(
             drug_name=drug_name,
             generic_name=drug_info["generic_name"],
             dosage=drug_info["typical_dosage"],
-            frequency=drug_info["typical_dosage"].split()[-1] if " " in drug_info["typical_dosage"] else "1x1",
+            frequency=(
+                drug_info["typical_dosage"].split()[-1]
+                if " " in drug_info["typical_dosage"]
+                else "1x1"
+            ),
             duration="sürekli",
             route="oral",
             rationale=drug_info["mechanism"],
@@ -627,10 +671,12 @@ Format: JSON olarak dön.
             frequency=frequency,
             target_range="Hedef aralık referans değerlerde",
             action_threshold="Hedef dışı değerlerde doktora başvur",
-            rationale="Tedavi yanıtını izlemek ve yan etkileri tespit etmek"
+            rationale="Tedavi yanıtını izlemek ve yan etkileri tespit etmek",
         )
 
-    def _create_consultation_recommendation(self, consult_description: str) -> ConsultationRecommendation:
+    def _create_consultation_recommendation(
+        self, consult_description: str
+    ) -> ConsultationRecommendation:
         """Create consultation recommendation object."""
         specialties = {
             "endocrinology": "Endocrinology",
@@ -647,20 +693,18 @@ Format: JSON olarak dön.
                     specialty=specialty,
                     urgency="routine",
                     reason=consult_description,
-                    specific_questions=["Treatment optimization", "Management recommendations"]
+                    specific_questions=["Treatment optimization", "Management recommendations"],
                 )
 
         return ConsultationRecommendation(
             specialty="Specialist",
             urgency="routine",
             reason=consult_description,
-            specific_questions=["Management recommendations"]
+            specific_questions=["Management recommendations"],
         )
 
     def _check_contraindications(
-        self,
-        treatment_result: Dict[str, Any],
-        patient_context: Dict[str, Any]
+        self, treatment_result: Dict[str, Any], patient_context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Check for contraindications and adjust treatment plan."""
         contraindications = []
@@ -685,7 +729,9 @@ Format: JSON olarak dön.
             for current_med in patient_meds:
                 interaction = self._check_drug_interaction(drug_name, current_med)
                 if interaction:
-                    contraindications.append(f"Drug interaction: {drug_name} + {current_med}: {interaction}")
+                    contraindications.append(
+                        f"Drug interaction: {drug_name} + {current_med}: {interaction}"
+                    )
 
             # Check age-related contraindications
             if patient_age > 65 and drug_info.get("caution_elderly"):
@@ -710,8 +756,9 @@ Format: JSON olarak dön.
         }
 
         for (d1, d2), interaction in interaction_map.items():
-            if (d1.lower() in drug1.lower() and d2.lower() in drug2.lower()) or \
-               (d1.lower() in drug2.lower() and d2.lower() in drug1.lower()):
+            if (d1.lower() in drug1.lower() and d2.lower() in drug2.lower()) or (
+                d1.lower() in drug2.lower() and d2.lower() in drug1.lower()
+            ):
                 return interaction
 
         return None
@@ -738,12 +785,14 @@ Format: JSON olarak dön.
             lines.append("PHARMACOLOGICAL TREATMENT")
             lines.append("-" * 40)
             for med in sorted(medications, key=lambda x: x.get("priority", 999)):
-                lines.append(f"🔹 {med.get('drug_name', 'Unknown')} ({med.get('generic_name', '')})")
+                lines.append(
+                    f"🔹 {med.get('drug_name', 'Unknown')} ({med.get('generic_name', '')})"
+                )
                 lines.append(f"   Dosage: {med.get('dosage', '')} {med.get('frequency', '')}")
                 lines.append(f"   Duration: {med.get('duration', '')}")
-                if med.get('rationale'):
+                if med.get("rationale"):
                     lines.append(f"   Rationale: {med['rationale']}")
-                if med.get('contraindications'):
+                if med.get("contraindications"):
                     lines.append(f"   Contraindications: {', '.join(med['contraindications'])}")
                 lines.append("")
 

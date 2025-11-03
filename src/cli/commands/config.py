@@ -1,12 +1,13 @@
 """Configuration management CLI commands."""
 
-import typer
 import asyncio
+
+import typer
 from rich.console import Console
 from rich.table import Table
 
-from ...config.settings import settings
 from ...ai import create_ai_router
+from ...config.settings import settings
 
 app = typer.Typer()
 console = Console()
@@ -71,5 +72,7 @@ def test_ai():
 @app.command()
 def set_model(model: str = typer.Argument(..., help="Model name (claude/gpt-4o/gemini)")):
     """Set preferred AI model (requires env var update)."""
-    console.print(f"[yellow]To set model preference, update CLAUDE_MODEL, OPENAI_MODEL, or GEMINI_MODEL in .env file[/yellow]")
+    console.print(
+        f"[yellow]To set model preference, update CLAUDE_MODEL, OPENAI_MODEL, or GEMINI_MODEL in .env file[/yellow]"
+    )
     console.print(f"Example: OPENAI_MODEL={model}")

@@ -1,11 +1,12 @@
 """Ollama local AI client implementation."""
 
 import time
-from typing import Optional, List
+from typing import List, Optional
+
 import httpx
 from loguru import logger
 
-from .base_client import BaseAIClient, AIResponse, AIProviderError
+from .base_client import AIProviderError, AIResponse, BaseAIClient
 
 
 class OllamaClient(BaseAIClient):
@@ -59,9 +60,7 @@ class OllamaClient(BaseAIClient):
                 payload["system"] = system_prompt
 
             # Send request to Ollama
-            response = await self.client.post(
-                f"{self.base_url}/api/generate", json=payload
-            )
+            response = await self.client.post(f"{self.base_url}/api/generate", json=payload)
 
             if response.status_code != 200:
                 raise AIProviderError(
@@ -93,9 +92,7 @@ class OllamaClient(BaseAIClient):
             )
 
         except httpx.TimeoutException as e:
-            raise TimeoutError(
-                f"Ollama request timeout after {self.timeout}s"
-            ) from e
+            raise TimeoutError(f"Ollama request timeout after {self.timeout}s") from e
         except httpx.RequestError as e:
             raise AIProviderError(
                 message=f"Ollama connection error: {str(e)}",

@@ -5,17 +5,20 @@
 ### Minimum Requirements
 
 **Hardware:**
+
 - **Processor**: Intel i5 or equivalent
 - **Memory**: 4GB RAM minimum
 - **Storage**: 10GB free disk space
 - **Network**: Internet connection for AI services (optional)
 
 **Software:**
+
 - **Operating System**: Windows 10/11, Ubuntu 20.04+, macOS 10.15+
 - **Python**: 3.11+ (includes pip)
 - **SQL Server**: 2014 or 2022 (for patient data)
 
 **Optional (for full functionality):**
+
 - **Node.js 18+** (for web interface)
 - **PySide6** (for desktop GUI)
 - **Docker** (for containerized deployment)
@@ -26,11 +29,13 @@
 ### Option 1: Using Installation Script (Recommended)
 
 1. **Download Installation Script:**
+
    ```bash
    curl -fsSL https://raw.githubusercontent.com/your-org/PatientSystem/main/install.sh | bash
    ```
 
 2. **Run Interactive Installation:**
+
    ```bash
    chmod +x install.sh
    ./install.sh
@@ -50,12 +55,14 @@ cd PatientSystem
 #### Step 2: Create Virtual Environment
 
 **Windows:**
+
 ```powershell
 python -m venv venv
 venv\Scripts\activate
 ```
 
 **macOS/Linux:**
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -86,6 +93,7 @@ nano .env
 ```
 
 **Example .env Configuration:**
+
 ```bash
 # Database Configuration
 # Windows with named instance and Windows Authentication (RECOMMENDED)
@@ -140,17 +148,20 @@ python -m src.cli.app --help
 #### Windows
 
 **Option 1: Microsoft Store**
+
 1. Open Microsoft Store
 2. Search for "Python 3.11"
 3. Click "Install"
 
 **Option 2: Python.org**
+
 1. Visit https://www.python.org/downloads/
 2. Download Python 3.11 Windows installer
 3. Run installer
 4. Add Python to PATH
 
 **Option 3: Chocolatey**
+
 ```bash
 # Install Chocolatey
 powershell -Command "Set-ExecutionPolicy Bypass -Scope Process"
@@ -161,11 +172,13 @@ choco install python
 #### macOS
 
 **Option 1: Homebrew**
+
 ```bash
 brew install python@3.11
 ```
 
 **Option 2: Install from Source**
+
 ```bash
 # Install Xcode Command Line Tools
 xcode-select --install
@@ -176,6 +189,7 @@ brew install python@3.11
 ```
 
 **Option 3: Pyenv**
+
 ```bash
 # Install pyenv
 brew install pyenv
@@ -185,18 +199,21 @@ pyenv install 3.11.2
 #### Linux (Ubuntu/Debian)
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt update
 sudo apt install python3.11 python3.11-dev python3.11-venv
 ```
 
 **CentOS/RHEL:**
+
 ```bash
 sudo yum install python3 python3-pip
 sudo yum install python3.11
 ```
 
 **Arch Linux:**
+
 ```bash
 sudo pacman -S python
 # Choose Python 3.11 when prompted
@@ -207,16 +224,19 @@ sudo pacman -S python
 #### Windows
 
 **Option 1: SQL Server Express**
+
 1. Download from Microsoft website
 2. Run installer with default settings
 3. Use Windows Authentication
 
 **Option 2: SQL Server Developer Edition**
+
 1. Download from Microsoft website
 2. Run installer with custom settings
 3. Configure during installation
 
 **Option 3: SQL Server Evaluation**
+
 1. Download evaluation version (180 days)
 2. Use for development and testing
 
@@ -247,6 +267,7 @@ sudo yum install -y mssql-server
 #### macOS
 
 **Option 1: Docker**
+
 ```bash
 docker run -e "ACCEPT_EULA=Y" \
   -p 1433:1433 \
@@ -256,6 +277,7 @@ docker run -e "ACCEPT_EULA=Y" \
 ```
 
 **Option 2: Use Virtual Machine**
+
 - Install SQL Server in Windows VM
 - Configure port forwarding
 - Connect from host machine
@@ -265,16 +287,19 @@ docker run -e "ACCEPT_EULA=Y" \
 #### Windows
 
 **Option 1: Official Installer**
+
 1. Download Node.js from https://nodejs.org/
 2. Run installer with default settings
 3. Verify installation with `node --version`
 
 **Option 2: Chocolatey**
+
 ```bash
 choco install nodejs
 ```
 
 **Option 3: fnm (Recommended)**
+
 ```bash
 # Install fnm
 curl -fsSL https://fnm.vercel.app/install | bash
@@ -282,17 +307,20 @@ fnm install 18
 ```
 
 #### macOS
+
 ```bash
 brew install node
 ```
 
-#### Linux (Ubuntu/Debian)**
+#### Linux (Ubuntu/Debian)\*\*
+
 ```bash
 sudo apt update
 sudo apt install -y nodejs npm
 ```
 
-#### Linux (CentOS/RHEL)**
+#### Linux (CentOS/RHEL)\*\*
+
 ```bash
 curl -fsSL https://rpm.nodesource.com/setup_nvm.sh | bash
 nvm install 18
@@ -303,21 +331,25 @@ nvm install 18
 #### Windows
 
 **Option 1: pip**
+
 ```bash
 pip install PySide6
 ```
 
 **Option 2: conda-forge**
+
 ```bash
 conda install pyside6
 ```
 
 #### macOS
+
 ```bash
 brew install pyside6
 ```
 
-#### Linux (Ubuntu/Debian)**
+#### Linux (Ubuntu/Debian)\*\*
+
 ```bash
 sudo apt update
 sudo apt install -y python3-pyside6
@@ -338,6 +370,7 @@ nano .env
 ```
 
 #### Required Variables
+
 ```bash
 # Database (Required)
 # Windows Authentication with named instance (RECOMMENDED for development)
@@ -391,12 +424,14 @@ for provider, status in results.items():
 ### Installation Verification
 
 #### Step 1: Check Python Installation
+
 ```bash
 python --version
 # Should show: Python 3.11.x
 ```
 
 #### Step 2: Check Dependencies
+
 ```bash
 pip list
 pip show fastapi
@@ -404,23 +439,27 @@ pip show pydantic
 ```
 
 #### Step 3: Test Database Connection
+
 ```bash
 python -m "from src.database.connection import get_engine; print('Database connection OK')"
 ```
 
 #### Step 4: Test API Server
+
 ```bash
 curl http://localhost:8000/health
 # Should return: {"status": "healthy"}
 ```
 
 #### Step 5: Test CLI
+
 ```bash
 python -m src.cli.app --help
 # Should show available commands
 ```
 
 #### Step 6: Test Web Interface
+
 ```bash
 cd frontend
 npm run dev
@@ -434,6 +473,7 @@ npm run dev
 #### Python Installation Errors
 
 **Issue:** `python: command not found`
+
 ```bash
 # Solutions:
 # 1. Check Python installation
@@ -448,6 +488,7 @@ set PATH=%PATH%;%USERPROFILE%\python
 ```
 
 **Issue:** Module not found errors
+
 ```bash
 # Solutions:
 # 1. Verify virtual environment is active
@@ -464,6 +505,7 @@ python -c "import sys; print(sys.version)"
 #### Database Connection Issues
 
 **Issue:** Database connection failed
+
 ```bash
 # Check SQL Server service status
 # Windows: Services > SQL Server
@@ -477,7 +519,8 @@ print(f'Database type: {parsed.scheme}')
 print(f'Server: {parsed.netloc}')
 ```
 
-**Issue: PyODBC driver errors
+\*\*Issue: PyODBC driver errors
+
 ```bash
 # Install ODBC drivers
 # Windows: Install SQL Server Native Client
@@ -496,6 +539,7 @@ except Exception as e:
 #### Port Conflicts
 
 **Issue:** Port 8000 already in use
+
 ```bash
 # Check what's using port 8000
 netstat -ano | findstr :8000
@@ -512,6 +556,7 @@ python -m src.api.fastapi_app
 #### Frontend Build Issues
 
 **Issue:** npm install fails
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -524,6 +569,7 @@ npm install
 ```
 
 **Issue:** npm run dev fails
+
 ```bash
 # Check Node.js version
 node --version
@@ -540,6 +586,7 @@ npm run build
 #### Dependency Version Conflicts
 
 **Issue:** Version conflicts between packages
+
 ```bash
 # Check for conflicting packages
 pip list --outdated
@@ -554,6 +601,7 @@ pip install fastapi==0.104.0
 ### Performance Issues
 
 #### Slow Database Queries
+
 ```bash
 # Check database query performance
 python -c "
@@ -568,6 +616,7 @@ with get_session() as session:
 ```
 
 #### Slow AI Responses
+
 ```bash
 # Test AI model performance
 python -c "
@@ -584,6 +633,7 @@ end_time = time.time()
 ### Memory Issues
 
 #### High Memory Usage
+
 ```bash
 # Check memory usage
 free -h
@@ -636,7 +686,7 @@ AI_MAX_TOKENS=1000  # Shorter responses
 - [ ] Python 3.11+ installed and accessible
 - [ ] All required packages installed successfully
 - [ ] Database connection working
--1] Environment variables configured correctly
+      -1] Environment variables configured correctly
 - [1] API server starts without errors
 - [1] Frontend builds and runs locally
 - [1] CLI commands work properly
@@ -647,16 +697,19 @@ AI_MAX_TOKENS=1000  # Shorter responses
 ### 🎯 Next Steps
 
 1. **Load Test Data:**
+
    ```bash
    python -m src.database.migrations.load_sample_data
    ```
 
 2. **Run Tests:**
+
    ```bash
    pytest tests/
    ```
 
 3. **Explore Features:**
+
    ```bash
    python -m src.cli.app analyze patient 12345678901
    python -m src.gui.main_window
@@ -677,12 +730,14 @@ AI_MAX_TOKENS=1000  # Shorter responses
 **Installation Complete!** 🎉
 
 Your Clinical AI Assistant system is now ready for use. The system includes:
+
 - ✅ Multi-interface access (Desktop, Web, CLI)
 - ✅ AI-powered clinical analysis
 - ✅ Database integration
 - ✅ Comprehensive documentation
 
 **Access Points:**
+
 - **API Server**: http://localhost:8000
 - **Web Interface**: http://localhost:5173
 - **Desktop GUI**: `python -m src.gui.main_window`

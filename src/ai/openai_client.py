@@ -2,11 +2,12 @@
 
 import os
 import time
-from typing import Optional, List
-from openai import AsyncOpenAI, APIError, APITimeoutError
-from loguru import logger
+from typing import List, Optional
 
-from .base_client import BaseAIClient, AIResponse, AIProviderError
+from loguru import logger
+from openai import APIError, APITimeoutError, AsyncOpenAI
+
+from .base_client import AIProviderError, AIResponse, BaseAIClient
 
 
 class OpenAIClient(BaseAIClient):
@@ -84,21 +85,17 @@ class OpenAIClient(BaseAIClient):
                 tokens_used=response.usage.total_tokens if response.usage else None,
                 latency_ms=latency_ms,
                 metadata={
-                    "prompt_tokens": response.usage.prompt_tokens
-                    if response.usage
-                    else None,
-                    "completion_tokens": response.usage.completion_tokens
-                    if response.usage
-                    else None,
+                    "prompt_tokens": response.usage.prompt_tokens if response.usage else None,
+                    "completion_tokens": (
+                        response.usage.completion_tokens if response.usage else None
+                    ),
                     "finish_reason": response.choices[0].finish_reason,
                     "id": response.id,
                 },
             )
 
         except APITimeoutError as e:
-            raise TimeoutError(
-                f"OpenAI request timeout after {self.timeout}s"
-            ) from e
+            raise TimeoutError(f"OpenAI request timeout after {self.timeout}s") from e
         except APIError as e:
             raise AIProviderError(
                 message=f"OpenAI API error: {str(e)}",

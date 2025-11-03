@@ -1,0 +1,35 @@
+version = 1
+
+[[analyzers]]
+name = "test-coverage"
+
+[[analyzers]]
+name = "shell"
+
+[[analyzers]]
+name = "sql"
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  plugins = ["react"]
+  environment = [
+    "nodejs",
+    "browser"
+  ]
+
+[[analyzers]]
+name = "python"
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"
+
+[[transformers]]
+name = "isort"
+
+[[transformers]]
+name = "black"
+
+[[transformers]]
+name = "prettier"

@@ -105,12 +105,12 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: StrongPassword123!
+          SA_PASSWORD: ${{ secrets.TEST_SA_PASSWORD }}
           MSSQL_PID: Express
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P StrongPassword123! -Q 'SELECT 1'"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{ secrets.TEST_SA_PASSWORD }} -Q 'SELECT 1'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -143,7 +143,7 @@ jobs:
     - name: Wait for services
       run: |
         echo "Waiting for SQL Server..."
-        timeout 60 bash -c 'until docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P StrongPassword123! -Q "SELECT 1"; do sleep 1; done'
+        timeout 60 bash -c 'until docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${{ secrets.TEST_SA_PASSWORD }}" -Q "SELECT 1"; do sleep 1; done'
 
         echo "Waiting for Redis..."
         timeout 30 bash -c 'until docker exec ${{ job.services.redis.id }} redis-cli ping; do sleep 1; done'
@@ -152,14 +152,13 @@ jobs:
       run: |
         # Wait a bit more for SQL Server to be fully ready
         sleep 10
-        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P StrongPassword123! -i /tmp/init-database.sql
         # Copy init script to container and execute
         docker cp scripts/init-database.sql ${{ job.services.mssql.id }}:/tmp/
-        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P StrongPassword123! -i /tmp/init-database.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${{ secrets.TEST_SA_PASSWORD }}" -i /tmp/init-database.sql
 
     - name: Run unit tests
       env:
-        DATABASE_URL: mssql+pyodbc://localhost:1433/ClinicalAI_TEST;UID=sa;PWD=StrongPassword123!;TrustServerCertificate=yes
+        DATABASE_URL: mssql+pyodbc://localhost:1433/ClinicalAI_TEST;UID=sa;PWD=${{ secrets.TEST_SA_PASSWORD }};TrustServerCertificate=yes
         REDIS_URL: redis://localhost:6379/0
         TEST_AI_RESPONSE_MOCK: true
       run: |
@@ -167,7 +166,7 @@ jobs:
 
     - name: Run integration tests
       env:
-        DATABASE_URL: mssql+pyodbc://localhost:1433/ClinicalAI_TEST;UID=sa;PWD=StrongPassword123!;TrustServerCertificate=yes
+        DATABASE_URL: mssql+pyodbc://localhost:1433/ClinicalAI_TEST;UID=sa;PWD=${{ secrets.TEST_SA_PASSWORD }};TrustServerCertificate=yes
         REDIS_URL: redis://localhost:6379/0
         TEST_AI_RESPONSE_MOCK: true
       run: |
@@ -175,7 +174,7 @@ jobs:
 
     - name: Run performance tests
       env:
-        DATABASE_URL: mssql+pyodbc://localhost:1433/ClinicalAI_TEST;UID=sa;PWD=StrongPassword123!;TrustServerCertificate=yes
+        DATABASE_URL: mssql+pyodbc://localhost:1433/ClinicalAI_TEST;UID=sa;PWD=${{ secrets.TEST_SA_PASSWORD }};TrustServerCertificate=yes
         REDIS_URL: redis://localhost:6379/0
         TEST_AI_RESPONSE_MOCK: true
       run: |
@@ -341,7 +340,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-images, security-scan]
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-    environment: staging
 
     steps:
     - name: Checkout code
@@ -359,21 +357,12 @@ jobs:
         echo "Running smoke tests..."
         # Add smoke test commands here
 
-    - name: Notify deployment status
-      uses: 8398a7/action-slack@v3
-      if: always()
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-
   # Deployment to Production
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [build-images, security-scan]
     if: github.event_name == 'release'
-    environment: production
 
     steps:
     - name: Checkout code
@@ -395,14 +384,6 @@ jobs:
       run: |
         echo "Creating pre-deployment backup..."
         # Add backup commands here
-
-    - name: Notify deployment status
-      uses: 8398a7/action-slack@v3
-      if: always()
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 
   # Release Management
   create-release:

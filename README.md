@@ -156,12 +156,12 @@ mypy src/
 
 Sistem 361 SQL Server tablosunu analiz eder:
 
-- GP_HASTA_*: Hasta demografik bilgileri
-- GP_MUAYENE*: Muayene ve vizit kayıtları
-- GP_RECETE*: Reçete ve ilaç bilgileri
-- GP_HASTANE_TETKIK*: Lab sonuçları
-- LST_*: Referans tabloları
-- DTY_*: Detay tabloları
+- GP*HASTA*\*: Hasta demografik bilgileri
+- GP_MUAYENE\*: Muayene ve vizit kayıtları
+- GP_RECETE\*: Reçete ve ilaç bilgileri
+- GP_HASTANE_TETKIK\*: Lab sonuçları
+- LST\_\*: Referans tabloları
+- DTY\_\*: Detay tabloları
 
 ## 🤖 AI Entegrasyonu
 
@@ -178,20 +178,24 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 ## 🛠️ Teknoloji Stack
 
 **Backend:**
+
 - Python 3.11
 - SQLAlchemy 2.0
 - FastAPI
 - Pydantic
 
 **Frontend:**
+
 - React 18
 - Vite
 - Tailwind CSS
 
 **Desktop:**
+
 - PySide6 (Qt6)
 
 **AI:**
+
 - Anthropic Claude
 - OpenAI GPT-4
 - Google Gemini

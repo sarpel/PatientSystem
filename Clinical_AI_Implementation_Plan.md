@@ -14,23 +14,23 @@ ORTAM:
   Python: 3.11+
   Database: SQL Server 2014/2022 Express
   User: Tek kullanıcı (hekim)
-  
+
 KLİNİK ÖZELLİKLER:
   Tanı Önerisi: ✅ Olasılık skorları ile
   Tedavi Önerisi: ✅ İlaç, test, yaşam tarzı
   İlaç Etkileşimi: ✅ Temel kontrol
   Lab Analizi: ✅ Anormal değer tespiti
   Risk Hesaplama: ✅ Basit risk skorları
-  
+
 AI ENTEGRASYONU:
-  Local: Ollama (Gemma/Qwen) 
+  Local: Ollama (Gemma/Qwen)
   Remote 1: Claude 3.5 Sonnet
   Remote 2: OpenAI GPT-4
   Remote 3: Google Gemini Pro
-  
+
 ARAYÜZLER:
   Desktop: PySide6 (Qt6) GUI
-  Web: React + FastAPI 
+  Web: React + FastAPI
   CLI: Typer komut satırı
 ```
 
@@ -71,7 +71,7 @@ clinical-ai-assistant/
 │   ├── diagnosis_widget.py           # Tanı paneli
 │   └── treatment_widget.py           # Tedavi paneli
 │
-├── web/                              # Web arayüzü  
+├── web/                              # Web arayüzü
 │   ├── src/
 │   │   ├── App.jsx                   # React ana bileşen
 │   │   ├── components/               # UI bileşenleri
@@ -156,6 +156,7 @@ ollama pull gemma:7b
 ### 2. Yapılandırma
 
 `.env` dosyası oluştur:
+
 ```env
 # Database
 DB_SERVER=localhost
@@ -195,11 +196,13 @@ with engine.connect() as conn:
 ## 💻 KULLANIM ÖRNEKLERİ
 
 ### Desktop GUI
+
 ```bash
 python gui/main_window.py
 ```
 
 ### Web Interface
+
 ```bash
 # Backend
 uvicorn src.api.app:app --reload
@@ -209,6 +212,7 @@ cd web && npm start
 ```
 
 ### CLI
+
 ```bash
 # Hasta analizi
 python cli/app.py analyze --tckn 12345678901
@@ -222,11 +226,13 @@ python cli/app.py diagnose --complaint "baş ağrısı ve ateş"
 ## 🔌 BASİT API KULLANIMI
 
 ### Hasta Özeti
+
 ```python
 GET /api/patient/{tckn}/summary
 ```
 
 ### Tanı Önerisi
+
 ```python
 POST /api/diagnosis
 {
@@ -237,10 +243,11 @@ POST /api/diagnosis
 ```
 
 ### Tedavi Önerisi
+
 ```python
 POST /api/treatment
 {
-    "tckn": "12345678901", 
+    "tckn": "12345678901",
     "diagnosis_code": "K29.7"
 }
 ```
@@ -250,6 +257,7 @@ POST /api/treatment
 ## 📊 TEMEL KLİNİK FONKSİYONLAR
 
 ### 1. Tanı Önerisi
+
 ```python
 # src/clinical/diagnosis.py
 def suggest_diagnosis(symptoms, patient_history):
@@ -259,14 +267,16 @@ def suggest_diagnosis(symptoms, patient_history):
 ```
 
 ### 2. Tedavi Planı
+
 ```python
-# src/clinical/treatment.py  
+# src/clinical/treatment.py
 def create_treatment_plan(diagnosis, patient_data):
     # İlaç, test ve yaşam tarzı önerileri
     pass
 ```
 
 ### 3. İlaç Kontrolü
+
 ```python
 # src/clinical/drug_check.py
 def check_drug_interactions(medications):
@@ -275,6 +285,7 @@ def check_drug_interactions(medications):
 ```
 
 ### 4. Lab Analizi
+
 ```python
 # src/clinical/lab_analyzer.py
 def analyze_lab_results(lab_data):
@@ -288,41 +299,49 @@ def analyze_lab_results(lab_data):
 ## 🎯 GELİŞTİRME ADIMLARI
 
 ### Adım 1: Temel Altyapı (2 gün)
+
 - [ ] Proje klasör yapısını oluştur
 - [ ] Veritabanı bağlantısını kur
 - [ ] Temel configuration dosyalarını hazırla
 
 ### Adım 2: AI Entegrasyonları (2 gün)
+
 - [ ] Ollama bağlantısı
 - [ ] OpenAI/Claude/Gemini client'ları
 - [ ] Basit router mantığı
 
 ### Adım 3: Klinik Modüller (3 gün)
+
 - [ ] Tanı önerisi modülü
 - [ ] Tedavi planlama modülü
 - [ ] İlaç kontrolü
 - [ ] Lab analizi
 
 ### Adım 4: API Geliştirme (2 gün)
+
 - [ ] FastAPI server
 - [ ] Temel endpoint'ler
 - [ ] Basit error handling
 
 ### Adım 5: Desktop GUI (3 gün)
+
 - [ ] Ana pencere tasarımı
 - [ ] Hasta arama/görüntüleme
 - [ ] Tanı ve tedavi panelleri
 
 ### Adım 6: Web Arayüzü (2 gün)
+
 - [ ] React setup
 - [ ] Temel component'ler
 - [ ] API bağlantısı
 
 ### Adım 7: CLI (1 gün)
+
 - [ ] Typer komutları
 - [ ] Basit output formatları
 
 ### Adım 8: Test & Dokümantasyon (2 gün)
+
 - [ ] Temel testler
 - [ ] Kullanım dokümantasyonu
 - [ ] Örnek scriptler
@@ -332,7 +351,7 @@ def analyze_lab_results(lab_data):
 ## 📝 NOTLAR
 
 - **Güvenlik:** Development ortamı için güvenlik özellikleri devre dışı
-- **Test:** Zorunlu test coverage yok, sadece kritik fonksiyonlar test edilecek  
+- **Test:** Zorunlu test coverage yok, sadece kritik fonksiyonlar test edilecek
 - **Deployment:** Basit script dosyaları ile çalıştırma
 - **Monitoring:** Log dosyaları ile basit takip
 - **Dokümantasyon:** Minimal, sadece temel kullanım

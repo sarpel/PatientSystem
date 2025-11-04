@@ -18,7 +18,7 @@ console = Console()
 def generate(
     tckn: str = typer.Option(..., "--tckn", help="Patient TCKN"),
     complaint: str = typer.Option(..., "--complaint", help="Chief complaint"),
-    model: str = typer.Option(None, "--model", help="AI model (claude/gpt-4o/gemini/ollama)"),
+    model: str = typer.Option(None, "--model", help="AI model (claude/gpt-5/gemini/ollama)"),
     output: str = typer.Option("text", "--output", "-o", help="Output format (text/json)"),
 ):
     """Generate differential diagnosis from symptoms."""

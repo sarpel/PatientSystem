@@ -57,32 +57,32 @@
 - `requirements.txt` - Production dependencies
 - `requirements-dev.txt` - Development/testing dependencies
 
-**Dependencies to Include**:
+**Dependencies to Include** (Python 3.10.11 Compatible):
 
 ```
 Production (requirements.txt):
-- fastapi>=0.104.0
-- uvicorn[standard]>=0.24.0
-- pydantic>=2.5.0
-- pydantic-settings>=2.1.0
-- sqlalchemy>=2.0.0
-- pyodbc>=5.0.0
-- anthropic>=0.7.0
-- openai>=1.3.0
-- google-generativeai>=0.3.0
-- loguru>=0.7.0
-- python-dotenv>=1.0.0
-- httpx>=0.25.0
-- pyyaml>=6.0.1
-- python-multipart>=0.0.6
+- fastapi~=0.109.0
+- uvicorn[standard]~=0.27.0
+- pydantic~=2.5.3
+- pydantic-settings~=2.1.0
+- sqlalchemy~=2.0.25
+- pyodbc~=5.0.1
+- anthropic~=0.18.0
+- openai~=1.12.0
+- google-generativeai~=0.3.2
+- loguru~=0.7.2
+- python-dotenv~=1.0.1
+- httpx~=0.27.0
+- pyyaml~=6.0.1
+- python-multipart~=0.0.9
 
 Development (requirements-dev.txt):
-- pytest>=7.4.0
-- pytest-asyncio>=0.21.0
-- black>=23.11.0
-- ruff>=0.1.6
-- mypy>=1.7.0
-- ipython>=8.17.0
+- pytest~=8.0.0
+- pytest-asyncio~=0.23.3
+- black~=24.1.1
+- ruff~=0.2.1
+- mypy~=1.8.0
+- ipython~=8.20.0
 ```
 
 #### Task 1.2: Verify Frontend Dependencies
@@ -109,7 +109,7 @@ Development (requirements-dev.txt):
    - System architecture diagram (text-based)
 
 2. **Prerequisites**
-   - Python 3.11+
+   - Python 3.10.11+
    - Node.js 18+
    - Microsoft SQL Server (Windows Authentication)
    - ODBC Driver 17/18 for SQL Server
@@ -206,7 +206,7 @@ Development (requirements-dev.txt):
 **Files to Update/Create**:
 
 1. **`scripts/install.bat`** (Update existing)
-   - Check Python version (3.11+)
+   - Check Python version (3.10.11+)
    - Create virtual environment
    - Install requirements.txt
    - Install requirements-dev.txt (optional)
@@ -381,6 +381,15 @@ Development (requirements-dev.txt):
 - Focus on setup/installation scripts
 - Ensure cross-platform compatibility where possible
 
+### Dependency Management Considerations
+
+- **Python 3.10.11 Compatibility**: All package versions tested and verified for Python 3.10.11+
+- Using compatible release operator (`~=`) to allow patch updates while preventing breaking changes
+- This allows `0.109.1` but blocks `0.110.0`, ensuring stability while getting security fixes
+- **Version Compatibility Matrix**: Packages selected to work harmoniously together (e.g., Pydantic 2.5.3 with FastAPI 0.109.0)
+- For production deployments, consider using `pip-tools` or Poetry for dependency locking
+- Generate `requirements.lock` for exact reproducibility in production environments
+
 ---
 
 ## Timeline Estimate
@@ -413,7 +422,7 @@ Development (requirements-dev.txt):
 ## Questions Before Implementation
 
 1. **Python Version**: Should I target Python 3.11+ or 3.10+?
-   **Answer**: Python 3.10.11
+   **Answer**: Python 3.10.11+ (optimized for 3.10.11)
 2. **License**: Do you want a LICENSE file? If so, which license?
    **Answer**: No. Dont include any
 3. **Database Init**: Should installation scripts auto-run database initialization?

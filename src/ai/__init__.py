@@ -75,7 +75,7 @@ def create_ai_router(
     # Initialize OpenAI GPT client
     if enable_openai and config.openai_api_key:
         try:
-            clients["gpt-4o"] = OpenAIClient(
+            clients["gpt-5"] = OpenAIClient(
                 model_name=config.openai_model,
                 api_key=config.openai_api_key,
                 timeout=config.ai_timeout,
@@ -110,7 +110,7 @@ def create_ai_router(
     router = AIRouter(
         ollama_client=clients.get("ollama"),
         claude_client=clients.get("claude"),
-        openai_client=clients.get("gpt-4o"),
+        openai_client=clients.get("gpt-5"),
         google_client=clients.get("gemini"),
         strategy=config.ai_routing_strategy,
         enable_fallback=config.ai_enable_fallback,

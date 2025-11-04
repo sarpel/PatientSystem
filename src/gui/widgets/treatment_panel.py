@@ -154,7 +154,7 @@ class TreatmentPanelWidget(QWidget):
 
         # Get selected model
         model_text = self.model_combo.currentText()
-        model_map = {"Claude": "claude", "GPT-4o": "gpt-4o", "Gemini": "gemini", "Ollama": "ollama"}
+        model_map = {"Claude": "claude", "GPT-5": "gpt-5", "Gemini": "gemini", "Ollama": "ollama"}
         model = model_map.get(model_text)
 
         # Show progress

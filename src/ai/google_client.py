@@ -16,7 +16,7 @@ class GoogleClient(BaseAIClient):
 
     def __init__(
         self,
-        model_name: str = "gemini-pro",
+        model_name: str = "gemini-2.5-pro",
         api_key: Optional[str] = None,
         timeout: int = 120,
         temperature: float = 0.5,
@@ -26,7 +26,7 @@ class GoogleClient(BaseAIClient):
         Initialize Google Gemini client.
 
         Args:
-            model_name: Gemini model name (gemini-pro, gemini-pro-vision)
+            model_name: Gemini model name (gemini-2.5-pro, gemini-pro-vision)
             api_key: Google API key (or read from GOOGLE_API_KEY env var)
             timeout: Request timeout in seconds
             temperature: Sampling temperature
@@ -151,7 +151,7 @@ class GoogleClient(BaseAIClient):
             ]
         except Exception as e:
             logger.error(f"Failed to list Google models: {e}")
-            return ["gemini-pro", "gemini-pro-vision"]
+            return ["gemini-2.5-pro", "gemini-pro-vision"]
 
     def __repr__(self) -> str:
         """String representation."""

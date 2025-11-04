@@ -44,9 +44,9 @@ class Settings(BaseSettings):
     ollama_model: str = Field(default="gemma:7b", description="Default Ollama model")
 
     # AI Model Configuration
-    claude_model: str = Field(default="claude-3-5-sonnet-20241022", description="Claude model name")
-    openai_model: str = Field(default="gpt-4o", description="OpenAI model name")
-    gemini_model: str = Field(default="gemini-pro", description="Google Gemini model name")
+    claude_model: str = Field(default="claude-sonnet-4.5", description="Claude model name")
+    openai_model: str = Field(default="gpt-5", description="OpenAI model name")
+    gemini_model: str = Field(default="gemini-2.5-pro", description="Google Gemini model name")
 
     # AI Routing Strategy
     ai_routing_strategy: str = Field(

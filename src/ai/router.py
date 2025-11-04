@@ -55,8 +55,8 @@ class AIRouter:
     # Model priority by complexity
     MODEL_PRIORITY: Dict[TaskComplexity, List[str]] = {
         TaskComplexity.SIMPLE: ["ollama"],
-        TaskComplexity.MODERATE: ["ollama", "gpt-4o-mini"],
-        TaskComplexity.COMPLEX: ["claude", "gpt-4o", "gemini", "ollama"],
+        TaskComplexity.MODERATE: ["ollama", "gpt-5-mini"],
+        TaskComplexity.COMPLEX: ["claude", "gpt-5", "gemini", "ollama"],
     }
 
     def __init__(
@@ -84,8 +84,8 @@ class AIRouter:
         self.clients: Dict[str, Optional[BaseAIClient]] = {
             "ollama": ollama_client,
             "claude": claude_client,
-            "gpt-4o": openai_client,
-            "gpt-4o-mini": openai_client,  # Same client, different model
+            "gpt-5": openai_client,
+            "gpt-5-mini": openai_client,  # Same client, different model
             "gemini": google_client,
         }
 
@@ -179,9 +179,9 @@ class AIRouter:
             )
 
             # Handle model-specific routing for OpenAI
-            if provider_name == "gpt-4o-mini" and isinstance(client, OpenAIClient):
+            if provider_name == "gpt-5-mini" and isinstance(client, OpenAIClient):
                 original_model = client.model_name
-                client.model_name = "gpt-4o-mini"
+                client.model_name = "gpt-5-mini"
                 try:
                     response = await client.complete(
                         prompt=request.prompt,

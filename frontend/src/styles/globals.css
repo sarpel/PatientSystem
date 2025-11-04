@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Medical Theme Custom Styles */
+:root {
+  --medical-primary: 59 130 246;
+  --medical-secondary: 96 165 250;
+  --medical-success: 16 185 129;
+  --medical-warning: 245 158 11;
+  --medical-danger: 239 68 68;
+  --medical-critical: 220 38 38;
+}
+
+/* Base layer */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+}
+
+/* Component layer */
+@layer components {
+  /* Button styles */
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
+  }
+
+  .btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+  }
+
+  .btn-warning {
+    @apply bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-lg shadow-md border border-gray-200;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200;
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  /* Table styles */
+  .table {
+    @apply w-full border-collapse border border-gray-200;
+  }
+
+  .table th {
+    @apply bg-gray-50 border border-gray-200 px-4 py-2 text-left font-medium text-gray-900;
+  }
+
+  .table td {
+    @apply border border-gray-200 px-4 py-2 text-gray-700;
+  }
+
+  /* Severity indicators */
+  .severity-critical {
+    @apply bg-red-100 text-red-800 border-red-200;
+  }
+
+  .severity-major {
+    @apply bg-orange-100 text-orange-800 border-orange-200;
+  }
+
+  .severity-moderate {
+    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  }
+
+  .severity-minor {
+    @apply bg-green-100 text-green-800 border-green-200;
+  }
+
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  /* Medical status colors */
+  .status-healthy {
+    @apply text-green-600 bg-green-100;
+  }
+
+  .status-warning {
+    @apply text-yellow-600 bg-yellow-100;
+  }
+
+  .status-error {
+    @apply text-red-600 bg-red-100;
+  }
+
+  .status-info {
+    @apply text-blue-600 bg-blue-100;
+  }
+}

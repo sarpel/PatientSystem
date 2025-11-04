@@ -1,0 +1,85 @@
+# AI Model Configuration for Clinical AI Assistant
+
+# Model Priorities for Different Task Complexities
+routing:
+  simple:
+    - ollama  # Fast, free, local
+  moderate:
+    - ollama
+    - gpt-4o-mini
+  complex:
+    - claude-3.5-sonnet  # Best quality for critical decisions
+    - gpt-4o
+    - gemini-pro
+    - ollama  # Last resort
+
+# Task Complexity Classification
+task_complexity:
+  simple:
+    - patient_summary
+    - basic_stats
+    - visit_count
+  moderate:
+    - lab_trend_analysis
+    - medication_adherence
+    - comorbidity_detection
+  complex:
+    - differential_diagnosis
+    - treatment_planning
+    - drug_interactions
+    - red_flag_detection
+
+# Model-Specific Configurations
+models:
+  ollama:
+    base_url: ${OLLAMA_BASE_URL}
+    model: ${OLLAMA_MODEL}
+    timeout: 30
+    max_retries: 2
+    temperature: 0.3
+
+  claude-3.5-sonnet:
+    api_key: ${ANTHROPIC_API_KEY}
+    model: claude-3-5-sonnet-20241022
+    max_tokens: 4096
+    timeout: 60
+    max_retries: 3
+    temperature: 0.3
+
+  gpt-4o:
+    api_key: ${OPENAI_API_KEY}
+    model: gpt-4o
+    max_tokens: 4096
+    timeout: 60
+    max_retries: 3
+    temperature: 0.3
+
+  gpt-4o-mini:
+    api_key: ${OPENAI_API_KEY}
+    model: gpt-4o-mini
+    max_tokens: 4096
+    timeout: 45
+    max_retries: 3
+    temperature: 0.3
+
+  gemini-pro:
+    api_key: ${GOOGLE_API_KEY}
+    model: gemini-1.5-pro
+    max_tokens: 4096
+    timeout: 60
+    max_retries: 3
+    temperature: 0.3
+
+# Retry Configuration
+retry:
+  max_attempts: 3
+  exponential_backoff:
+    multiplier: 1
+    min_seconds: 1
+    max_seconds: 10
+
+# Response Validation
+validation:
+  require_json: true
+  max_response_length: 10000
+  enforce_schema: true

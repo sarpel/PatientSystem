@@ -1,0 +1,25 @@
+# Clinical AI Assistant - Grafana Prometheus Datasource
+# Grafana datasource configuration for Prometheus
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: "15s"
+      queryTimeout: "60s"
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.40.0
+      cacheLevel: "High"
+      incrementalQueryOverlapWindow: "10m"
+      disableRecordingRules: false
+      incrementalQuery: true
+      prometheusType: Prometheus
+      alertmanagerUid: "alertmanager"
+    secureJsonData: {}

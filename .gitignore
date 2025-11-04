@@ -1,9 +1,25 @@
+# ================================
 # Python
+# ================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
+
+# ================================
+# Virtual Environments
+# ================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 .Python
+
+# ================================
+# Build & Distribution
+# ================================
 build/
 develop-eggs/
 dist/
@@ -20,16 +36,22 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.spec
 
-# Virtual Environment
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-*.ps1
+# ================================
+# Testing & Coverage
+# ================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+coverage.xml
+.benchmarks/
 
-# IDEs
+# ================================
+# IDEs & Editors
+# ================================
 .vscode/
 .idea/
 *.swp
@@ -37,49 +59,81 @@ venv.bak/
 *~
 .DS_Store
 
-# Environment variables
+# ================================
+# Environment & Secrets
+# ================================
 .env
 .env.local
 .env.*.local
+*.ps1
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.hypothesis/
-
+# ================================
 # Logs
+# ================================
 *.log
 logs/
 
-# Database
+# ================================
+# Database Files
+# ================================
 *.db
 *.sqlite
 *.sqlite3
 
-# Node (for frontend)
+# ================================
+# Node/Frontend
+# ================================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-dist/
 .cache/
 
-# Build artifacts
-build/
-*.spec
+# ================================
+# Code Quality & Analysis Tools
+# ================================
+.codacy/
+.codacy-coverage/
+.deepsource.toml
+*.patch
+codacy.patch
+coderabbit.yml
 
-# Temporary files
+# ================================
+# Binary & Media Files
+# ================================
+*.bmp
+*.exe
+bin/
+
+# ================================
+# Temporary Files
+# ================================
 temp/
 tmp/
 *.tmp
+nul
 
-# Config files with sensitive data
+# ================================
+# Config with Sensitive Data
+# ================================
 config/database_schema.yaml
 config/ai_models.yaml
 
-# OS
+# ================================
+# Documentation & Instructions
+# ================================
+.github/instructions/
+.github/workflows/codacy-coverage-reporter.yaml
+
+# ================================
+# OS Specific
+# ================================
 Thumbs.db
 Desktop.ini
+
+# ================================
+# Serena MCP
+# ================================
+.serena/

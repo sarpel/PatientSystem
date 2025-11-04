@@ -1,0 +1,45 @@
+# Core Backend
+sqlalchemy==2.0.23
+pyodbc==5.0.1
+alembic==1.13.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.2
+scipy==1.11.4
+
+# AI Integration - Official SDKs (compatible versions)
+openai>=1.6.1
+anthropic>=0.8.1
+google-generativeai>=0.3.1
+ollama>=0.1.6
+
+# API Server
+fastapi==0.108.0
+uvicorn[standard]==0.25.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Desktop GUI
+PySide6==6.6.1
+pyqtgraph==0.13.3
+matplotlib==3.8.2
+
+# CLI
+typer[all]==0.9.0
+rich==13.7.0
+questionary==2.0.1
+
+# Utilities
+python-dotenv==1.0.0
+pyyaml==6.0.1
+requests>=2.31.0
+httpx>=0.25.2
+aiofiles==23.2.1
+tenacity==8.2.3
+
+# Logging
+loguru==0.7.2
+
+# Turkish NLP (optional)
+# zemberek-python==0.1.3

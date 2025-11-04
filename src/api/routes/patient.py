@@ -56,8 +56,6 @@ async def search_patients(
                         "last_visit": None,  # Would need to query visits
                     }
                 )
-                    }
-                )
 
             logger.info(f"Patient search: query='{q}', results={len(results)}")
             return {"query": q, "count": len(results), "patients": results}

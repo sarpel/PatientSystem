@@ -6,11 +6,11 @@ routing:
     - ollama  # Fast, free, local
   moderate:
     - ollama
-    - gpt-4o-mini
+    - gpt-5-mini
   complex:
-    - claude-3.5-sonnet  # Best quality for critical decisions
-    - gpt-4o
-    - gemini-pro
+    - claude-sonnet-4.5  # Best quality for critical decisions
+    - gpt-5
+    - gemini-2.5-pro
     - ollama  # Last resort
 
 # Task Complexity Classification
@@ -38,33 +38,33 @@ models:
     max_retries: 2
     temperature: 0.3
 
-  claude-3.5-sonnet:
+  claude-sonnet-4.5:
     api_key: ${ANTHROPIC_API_KEY}
-    model: claude-3-5-sonnet-20241022
+    model: claude-sonnet-4.5
     max_tokens: 4096
     timeout: 60
     max_retries: 3
     temperature: 0.3
 
-  gpt-4o:
+  gpt-5:
     api_key: ${OPENAI_API_KEY}
-    model: gpt-4o
+    model: gpt-5
     max_tokens: 4096
     timeout: 60
     max_retries: 3
     temperature: 0.3
 
-  gpt-4o-mini:
+  gpt-5-mini:
     api_key: ${OPENAI_API_KEY}
-    model: gpt-4o-mini
+    model: gpt-5-mini
     max_tokens: 4096
     timeout: 45
     max_retries: 3
     temperature: 0.3
 
-  gemini-pro:
+  gemini-2.5-pro:
     api_key: ${GOOGLE_API_KEY}
-    model: gemini-1.5-pro
+    model: gemini-2.5-pro
     max_tokens: 4096
     timeout: 60
     max_retries: 3

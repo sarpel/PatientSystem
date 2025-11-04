@@ -37,10 +37,7 @@ async def search_patients(
                 query = query.filter(Patient.HASTA_KIMLIK_NO.like(f"{q}%"))
             else:
                 # Search by name
-                query = query.filter(
-                    (Patient.AD.ilike(f"%{q}%"))
-                    | (Patient.SOYAD.ilike(f"%{q}%"))
-                )
+                query = query.filter((Patient.AD.ilike(f"%{q}%")) | (Patient.SOYAD.ilike(f"%{q}%")))
 
             patients = query.limit(limit).all()
 

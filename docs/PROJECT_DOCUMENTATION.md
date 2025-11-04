@@ -156,12 +156,12 @@ mypy src/
 
 Sistem 361 SQL Server tablosunu analiz eder:
 
-- GP_HASTA_*: Hasta demografik bilgileri
-- GP_MUAYENE*: Muayene ve vizit kayıtları
-- GP_RECETE*: Reçete ve ilaç bilgileri
-- GP_HASTANE_TETKIK*: Lab sonuçları
-- LST_*: Referans tabloları
-- DTY_*: Detay tabloları
+- GP*HASTA*\*: Hasta demografik bilgileri
+- GP_MUAYENE\*: Muayene ve vizit kayıtları
+- GP_RECETE\*: Reçete ve ilaç bilgileri
+- GP_HASTANE_TETKIK\*: Lab sonuçları
+- LST\_\*: Referans tabloları
+- DTY\_\*: Detay tabloları
 
 ## 🤖 AI Entegrasyonu
 
@@ -178,20 +178,24 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 ## 🛠️ Teknoloji Stack
 
 **Backend:**
+
 - Python 3.11
 - SQLAlchemy 2.0
 - FastAPI
 - Pydantic
 
 **Frontend:**
+
 - React 18
 - Vite
 - Tailwind CSS
 
 **Desktop:**
+
 - PySide6 (Qt6)
 
 **AI:**
+
 - Anthropic Claude
 - OpenAI GPT-4
 - Google Gemini
@@ -201,6 +205,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 
 **Sürüm:** 0.1.0 (Phase 1 - Foundation)
 **Durum:** Development
+
 # Clinical AI Assistant - Implementation Summary
 
 ## 🎯 Project Overview
@@ -213,10 +218,12 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 ## ✅ Completed Phases
 
 ### Phase 1: AI Integration Layer ✅
+
 **Files**: 9 files, ~1,600 lines
 **Technology**: Python, SQLAlchemy, AsyncIO
 
 **Key Features**:
+
 - Multi-provider AI client architecture (Ollama, Claude, GPT-4o, Gemini)
 - Smart routing system with task complexity classification
 - Automatic fallback and retry logic with exponential backoff
@@ -224,6 +231,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - Health check monitoring for all AI providers
 
 **Components**:
+
 - `src/ai/base_client.py` - Abstract base interface
 - `src/ai/ollama_client.py` - Local Ollama integration
 - `src/ai/anthropic_client.py` - Claude 3.5 Sonnet integration
@@ -234,10 +242,12 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - `src/ai/__init__.py` - Factory function for easy setup
 
 ### Phase 2: API Layer ✅
+
 **Files**: 8 files, ~665 lines
 **Technology**: FastAPI, Pydantic, SQLAlchemy
 
 **Key Features**:
+
 - Complete REST API with health endpoints
 - Patient search and retrieval operations
 - AI-powered diagnosis and treatment generation
@@ -247,6 +257,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - Comprehensive error handling and logging
 
 **Components**:
+
 - `src/api/fastapi_app.py` - Main FastAPI application
 - `src/api/routes/health.py` - Health check endpoints
 - `src/api/routes/patient.py` - Patient management
@@ -256,10 +267,12 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - `src/api/routes/labs.py` - Laboratory analysis
 
 ### Phase 3: CLI Interface ✅
+
 **Files**: 7 files, ~506 lines
 **Technology**: Typer, Rich, AsyncIO
 
 **Key Features**:
+
 - Command-line interface with Rich terminal formatting
 - Patient analysis with JSON/text export options
 - AI-powered diagnosis generation with table display
@@ -268,6 +281,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - Drug interaction checking with severity filtering
 
 **Components**:
+
 - `src/cli/app.py` - Main CLI application
 - `src/cli/commands/analyze.py` - Patient analysis
 - `src/cli/commands/diagnose.py` - Diagnosis generation
@@ -276,10 +290,12 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - `src/cli/commands/drug_check.py` - Drug interaction checking
 
 ### Phase 4: Desktop GUI ✅
+
 **Files**: 14 files, ~2,007 lines
 **Technology**: PySide6 (Qt6), pyqtgraph, AsyncIO
 
 **Key Features**:
+
 - Professional desktop application with medical theme
 - Patient search with real-time results
 - Tabbed clinical dashboard (Diagnosis, Treatment, Labs, etc.)
@@ -290,6 +306,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - Drug interaction alerts with severity-based styling
 
 **Components**:
+
 - `src/gui/main_window.py` - Main application window
 - `src/gui/widgets/patient_search.py` - Patient search widget
 - `src/gui/widgets/clinical_dashboard.py` - Tabbed dashboard
@@ -302,10 +319,12 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - `src/gui/resources/styles.qss` - Medical theme stylesheet
 
 ### Phase 5: Web Interface ✅
+
 **Files**: 22 files, ~2,223 lines
 **Technology**: React 18, TypeScript, Tailwind CSS, Vite
 
 **Key Features**:
+
 - Modern responsive web application
 - Smart patient search with debouncing
 - Comprehensive patient profiles with tabbed interface
@@ -316,6 +335,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 - State management with Zustand persistence
 
 **Components**:
+
 - `frontend/src/App.tsx` - Main application with routing
 - `frontend/src/components/Layout.tsx` - Navigation and layout
 - `frontend/src/components/DiagnosisPanel.tsx` - AI diagnosis interface
@@ -330,6 +350,7 @@ Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dı
 ## 🏗️ Architecture Overview
 
 ### Multi-Interface Architecture
+
 The system provides three distinct interfaces for flexible access:
 
 1. **Desktop GUI (PySide6)**: Rich native application with full features
@@ -337,12 +358,14 @@ The system provides three distinct interfaces for flexible access:
 3. **CLI Interface (Typer)**: Command-line tools for automation and scripting
 
 ### AI Integration Strategy
+
 - **Smart Routing**: Simple tasks → Ollama (local), Complex tasks → Claude → GPT → Gemini
 - **Cost Optimization**: Local models for basic operations, premium models for complex analysis
 - **Reliability**: Automatic fallback with exponential backoff retry logic
 - **Clinical Context**: Turkish medical prompt templates optimized for family medicine
 
 ### Data Access Layer
+
 - **Unified API**: FastAPI backend serving all interfaces
 - **Type Safety**: Pydantic models for request/response validation
 - **Performance**: Connection pooling and async operations
@@ -350,18 +373,19 @@ The system provides three distinct interfaces for flexible access:
 
 ## 📊 Technical Statistics
 
-| Phase | Files | Lines | Primary Technology |
-|-------|-------|-------|-------------------|
-| AI Integration | 9 | 1,600 | Python, AsyncIO |
-| API Layer | 8 | 665 | FastAPI, Pydantic |
-| CLI Interface | 7 | 506 | Typer, Rich |
-| Desktop GUI | 14 | 2,007 | PySide6, Qt6 |
-| Web Interface | 22 | 2,223 | React, TypeScript |
-| **TOTAL** | **60** | **7,001** | **Multi-technology** |
+| Phase          | Files  | Lines     | Primary Technology   |
+| -------------- | ------ | --------- | -------------------- |
+| AI Integration | 9      | 1,600     | Python, AsyncIO      |
+| API Layer      | 8      | 665       | FastAPI, Pydantic    |
+| CLI Interface  | 7      | 506       | Typer, Rich          |
+| Desktop GUI    | 14     | 2,007     | PySide6, Qt6         |
+| Web Interface  | 22     | 2,223     | React, TypeScript    |
+| **TOTAL**      | **60** | **7,001** | **Multi-technology** |
 
 ## 🔧 Technology Stack
 
 ### Backend
+
 - **Python 3.11+**: Core programming language
 - **SQLAlchemy 2.0**: ORM with connection pooling
 - **FastAPI**: Modern async web framework
@@ -369,6 +393,7 @@ The system provides three distinct interfaces for flexible access:
 - **AsyncIO**: Asynchronous programming
 
 ### AI Integration
+
 - **Ollama**: Local AI inference (Gemma, Llama2)
 - **Anthropic**: Claude 3.5 Sonnet for complex tasks
 - **OpenAI**: GPT-4o as secondary fallback
@@ -376,11 +401,13 @@ The system provides three distinct interfaces for flexible access:
 - **Tenacity**: Retry logic with exponential backoff
 
 ### Desktop GUI
+
 - **PySide6**: Qt6 Python bindings
 - **pyqtgraph**: Scientific visualization
 - **QThread**: Background task execution
 
 ### Web Frontend
+
 - **React 18**: Modern UI framework
 - **TypeScript**: Type safety and development experience
 - **Tailwind CSS**: Utility-first styling with medical theme
@@ -389,6 +416,7 @@ The system provides three distinct interfaces for flexible access:
 - **Axios**: HTTP client with interceptors
 
 ### CLI Tools
+
 - **Typer**: Modern CLI framework
 - **Rich**: Terminal formatting and progress bars
 - **Click**: Alternative CLI framework
@@ -396,18 +424,21 @@ The system provides three distinct interfaces for flexible access:
 ## 🏥 Clinical Features
 
 ### Patient Management
+
 - **Smart Search**: TCKN and name-based patient lookup
 - **Comprehensive Profiles**: Complete medical history
 - **Laboratory Integration**: Results with trend analysis
 - **Medication Tracking**: Prescription history and interactions
 
 ### AI-Powered Analysis
+
 - **Differential Diagnosis**: Multi-model AI analysis with probability scoring
 - **Treatment Recommendations**: Evidence-based treatment plans
 - **Drug Interaction Checking**: Safety warnings with severity levels
 - **Clinical Guidelines**: Integrated medical reference data
 
 ### Safety Features
+
 - **Red Flag Detection**: Urgent condition alerts
 - **Interaction Alerts**: Multi-severity drug interaction warnings
 - **Reference Range Highlighting**: Abnormal lab result indicators
@@ -441,18 +472,21 @@ PatientSystem/
 ## 🚀 Deployment Readiness
 
 ### Database Integration
+
 - **SQL Server 2014/2022**: Production database support
 - **Connection Pooling**: Optimized for concurrent access
 - **641 Tables**: Comprehensive medical data schema
 - **7 Years Data**: ~6,000+ patient records
 
 ### Configuration Management
+
 - **Pydantic Settings**: Type-safe configuration
 - **Environment Variables**: Secure API key management
 - **Health Checks**: System status monitoring
 - **Logging**: Comprehensive application logging
 
 ### Multi-Interface Support
+
 - **Desktop**: Standalone PySide6 application
 - **Web**: FastAPI + React full-stack application
 - **CLI**: Automation and scripting capabilities
@@ -461,24 +495,28 @@ PatientSystem/
 ## 📋 Remaining Work
 
 ### Phase 6: Analytics Modules (6 tasks)
+
 - Visit pattern analysis
 - Medication adherence tracking
 - Laboratory trend analysis
 - Clinical performance metrics
 
 ### Phase 7: Testing & QA (17 tasks)
+
 - Unit tests with >80% coverage
 - Integration testing
 - End-to-end testing
 - Performance testing
 
 ### Phase 8: Documentation (15 tasks)
+
 - User guides and tutorials
 - API reference documentation
 - Installation and deployment guides
 - Troubleshooting documentation
 
 ### Phase 9: Deployment & Distribution (12 tasks)
+
 - PyInstaller configuration
 - Deployment scripts
 - Configuration templates
@@ -487,6 +525,7 @@ PatientSystem/
 ## 🎯 Success Metrics
 
 ### Technical Achievements
+
 - ✅ **5 Major Phases Complete**: 45% of total implementation
 - ✅ **7,000+ Lines of Code**: Production-ready system
 - ✅ **Multi-Interface Support**: Desktop, Web, CLI access
@@ -495,6 +534,7 @@ PatientSystem/
 - ✅ **Modern Architecture**: AsyncIO, React, FastAPI
 
 ### Clinical Value
+
 - ✅ **Patient Search**: Fast lookup across 6,000+ records
 - ✅ **AI Diagnosis**: Differential diagnosis with probability scoring
 - ✅ **Treatment Plans**: Evidence-based recommendations
@@ -527,6 +567,7 @@ This document confirms the successful completion of all implementation phases fo
 ## Implementation Summary
 
 ### Phases Completed
+
 - ✅ **Phase 1-3**: Database, Models, Clinical Modules (Previously Completed)
 - ✅ **Phase 4**: AI Integration + Desktop GUI + Web Interface
 - ✅ **Phase 5**: API Layer + CLI Interface
@@ -534,6 +575,7 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ **Phase 7**: Documentation + Deployment
 
 ### Code Statistics
+
 - **Total Lines of Code**: ~8,000+ production code
 - **Test Coverage**: >80% across all modules
 - **Components Implemented**: 179/179 tasks (100%)
@@ -541,7 +583,9 @@ This document confirms the successful completion of all implementation phases fo
 ## System Components
 
 ### 1. AI Integration Layer ✅
+
 **Files**: `src/ai/` (8 modules)
+
 - ✅ Base client abstraction
 - ✅ 4 AI providers (Ollama, Anthropic, OpenAI, Google)
 - ✅ Smart routing with fallback chains
@@ -549,7 +593,9 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ Retry logic with exponential backoff
 
 ### 2. Desktop GUI ✅
+
 **Files**: `src/gui/` (15+ modules)
+
 - ✅ Main window with MenuBar/StatusBar
 - ✅ Patient search with TCKN lookup
 - ✅ Clinical dashboard with tabs
@@ -559,7 +605,9 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ Qt stylesheet (medical theme)
 
 ### 3. Web Interface ✅
+
 **Files**: `frontend/` (React + TypeScript)
+
 - ✅ Vite + React 18 + TypeScript setup
 - ✅ Tailwind CSS + shadcn/ui components
 - ✅ Core components (PatientSearch, Dashboard, Panels, Charts)
@@ -568,7 +616,9 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ Loading states + error boundaries
 
 ### 4. CLI Interface ✅
+
 **Files**: `src/cli/` (7 modules)
+
 - ✅ Typer application structure
 - ✅ 6 commands (analyze, diagnose, inspect, config, drug-check)
 - ✅ Rich terminal output (tables, colors, progress bars)
@@ -576,7 +626,9 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ Verbose mode for debugging
 
 ### 5. API Layer ✅
+
 **Files**: `src/api/` (9 modules)
+
 - ✅ FastAPI application with CORS
 - ✅ 7 route modules (patient, diagnosis, treatment, drugs, labs, health)
 - ✅ Pydantic schemas with validation
@@ -584,14 +636,18 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ OpenAPI documentation
 
 ### 6. Analytics Modules ✅
+
 **Files**: `src/analytics/` (4 modules)
+
 - ✅ Visit pattern analysis
 - ✅ Medication adherence tracking
 - ✅ Lab trend analysis
 - ✅ Comorbidity detection
 
 ### 7. Testing Suite ✅
+
 **Files**: `tests/` (40+ test modules)
+
 - ✅ Unit tests for all components
 - ✅ Integration tests (full workflows)
 - ✅ Performance benchmarks
@@ -599,7 +655,9 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ pytest configuration with coverage
 
 ### 8. Documentation ✅
+
 **Files**: `docs/`, `README.md`
+
 - ✅ 8 user guides (Turkish)
 - ✅ API documentation
 - ✅ Installation guide
@@ -607,7 +665,9 @@ This document confirms the successful completion of all implementation phases fo
 - ✅ Architecture diagrams
 
 ### 9. Deployment ✅
+
 **Files**: `scripts/`, `build/`
+
 - ✅ Windows batch scripts (install, run_desktop, run_web, run_cli, run_tests)
 - ✅ PyInstaller spec for executable
 - ✅ Configuration templates (.env.example, ai_models.yaml.example)
@@ -616,6 +676,7 @@ This document confirms the successful completion of all implementation phases fo
 ## Quick Start
 
 ### Installation
+
 ```bash
 # Run the installer
 scripts\install.bat
@@ -626,6 +687,7 @@ copy .env.example .env
 ```
 
 ### Run the System
+
 ```bash
 # Desktop GUI
 scripts\run_desktop.bat
@@ -640,6 +702,7 @@ scripts\run_cli.bat analyze --tckn 12345678901
 ```
 
 ### Run Tests
+
 ```bash
 scripts\run_tests.bat
 ```
@@ -647,34 +710,40 @@ scripts\run_tests.bat
 ## Success Criteria Met
 
 ### ✅ AI Integration
+
 - All 4 AI providers connected and tested
 - Smart routing operational
 - Fallback mechanisms working
 
 ### ✅ Desktop GUI
+
 - Application launches successfully
 - Patient search functional
 - AI analysis operational
 - Charts rendering correctly
 
 ### ✅ Web Interface
+
 - Frontend and API servers running
 - All endpoints responding
 - Real-time updates working
 - Responsive design verified
 
 ### ✅ CLI Interface
+
 - All commands executing
 - JSON export working
 - Rich formatting operational
 
 ### ✅ System Quality
+
 - Test coverage: >80%
 - All tests passing
 - Performance targets met
 - Documentation complete
 
 ### ✅ Deployment
+
 - Executable build configured
 - Deployment scripts working
 - Installation tested
@@ -682,6 +751,7 @@ scripts\run_tests.bat
 ## Technical Stack
 
 ### Backend
+
 - Python 3.11+
 - SQLAlchemy 2.0 + PyODBC
 - FastAPI + Uvicorn
@@ -689,6 +759,7 @@ scripts\run_tests.bat
 - Typer + Rich
 
 ### Frontend
+
 - React 18 + TypeScript
 - Vite 5
 - Tailwind CSS + shadcn/ui
@@ -696,18 +767,21 @@ scripts\run_tests.bat
 - Chart.js
 
 ### AI Services
+
 - Ollama (local)
 - Anthropic Claude 3.5 Sonnet
 - OpenAI GPT-4o
 - Google Gemini Pro
 
 ### Testing
+
 - pytest + pytest-cov
 - pytest-qt (GUI tests)
 - pytest-asyncio (async tests)
 - Faker (test data)
 
 ## File Structure
+
 ```
 PatientSystem/
 ├── src/
@@ -762,6 +836,7 @@ PatientSystem/
 ---
 
 **🎉 Implementation successfully completed and ready for deployment!**
+
 # 🎉 Clinical AI Assistant - Installation Complete!
 
 ## System Overview
@@ -769,6 +844,7 @@ PatientSystem/
 The Clinical AI Assistant system has been successfully installed and configured. This comprehensive clinical decision support system includes:
 
 ### 🏥 Core Features
+
 - **Multi-Interface Access**: Desktop GUI, Web Interface, and CLI tools
 - **AI-Powered Analysis**: Support for Claude, GPT-4o, Gemini, and local Ollama models
 - **Clinical Decision Support**: Differential diagnosis and treatment recommendations
@@ -778,6 +854,7 @@ The Clinical AI Assistant system has been successfully installed and configured.
 - **Advanced Analytics**: Visit patterns, medication adherence, and comorbidity detection
 
 ### 🛠️ Technical Components
+
 - **Backend**: FastAPI with async/await architecture
 - **Database**: SQL Server with comprehensive medical schema
 - **Frontend**: React 18 + TypeScript with Tailwind CSS
@@ -815,6 +892,7 @@ PatientSystem/
 ## 🚀 Quick Start
 
 ### 1. Development Environment
+
 ```bash
 # Start all services in development mode
 docker-compose up -d
@@ -827,6 +905,7 @@ docker-compose up -d
 ```
 
 ### 2. Production Deployment
+
 ```bash
 # Deploy to production
 ./scripts/deploy.sh production
@@ -839,6 +918,7 @@ docker-compose up -d
 ```
 
 ### 3. CLI Usage
+
 ```bash
 # Activate virtual environment
 source venv/bin/activate  # Linux/Mac
@@ -861,17 +941,20 @@ python -m src.cli.app drugs interactions 12345678901 "Aspirin"
 ## 🎯 Access Points
 
 ### API Services
+
 - **Main API**: http://localhost:8000
 - **Health Check**: http://localhost:8000/health
 - **API Documentation**: http://localhost:8000/docs
 - **Database Health**: http://localhost:8000/health/database
 
 ### User Interfaces
+
 - **Web Application**: http://localhost:5173
 - **Desktop GUI**: Run `python -m src.gui.main_window`
 - **Command Line**: Use `python -m src.cli.app --help`
 
 ### Monitoring & Administration
+
 - **Grafana Dashboard**: http://localhost:3000 (admin/admin)
 - **Prometheus**: http://localhost:9090
 - **Health Monitor**: Run `./scripts/health-check.sh`
@@ -879,6 +962,7 @@ python -m src.cli.app drugs interactions 12345678901 "Aspirin"
 ## 🔧 Configuration
 
 ### Environment Variables
+
 Key configuration options in `environments/.env.production`:
 
 ```bash
@@ -898,7 +982,9 @@ API_WORKERS=4
 ```
 
 ### Database Configuration
+
 The system uses SQL Server with the following key tables:
+
 - `HASTA`: Patient records
 - `MUAYENE`: Medical visits
 - `LAB_SONUCLARI`: Laboratory results
@@ -908,6 +994,7 @@ The system uses SQL Server with the following key tables:
 ## 🔍 System Validation
 
 ### Health Checks
+
 ```bash
 # Comprehensive health check
 ./scripts/health-check.sh
@@ -920,6 +1007,7 @@ docker-compose exec db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong
 ```
 
 ### System Testing
+
 ```bash
 # Run full test suite
 pytest tests/ -v --cov=src
@@ -934,6 +1022,7 @@ pytest tests/performance/ -v
 ## 📊 Monitoring & Logging
 
 ### Key Metrics
+
 - API response times and error rates
 - Database query performance
 - AI service availability and response times
@@ -941,13 +1030,16 @@ pytest tests/performance/ -v
 - User activity and feature usage
 
 ### Log Locations
+
 - **Application Logs**: `logs/clinical_ai.log`
 - **API Logs**: `logs/api.log`
 - **Database Logs**: Docker container logs
 - **System Logs**: `logs/health-check.log`
 
 ### Alerting
+
 The system includes automatic alerting for:
+
 - Service failures
 - High error rates
 - Performance degradation
@@ -956,18 +1048,21 @@ The system includes automatic alerting for:
 ## 🔒 Security Features
 
 ### Authentication & Authorization
+
 - Secure API key management
 - Rate limiting and request throttling
 - CORS configuration
 - Security headers (HSTS, XSS protection, etc.)
 
 ### Data Protection
+
 - Encrypted data transmission (HTTPS)
 - Input validation and sanitization
 - SQL injection prevention
 - Audit logging for all operations
 
 ### Backup & Recovery
+
 ```bash
 # Create database backup
 ./scripts/backup-database.sh full
@@ -979,20 +1074,25 @@ The system includes automatic alerting for:
 ## 🎨 Customization
 
 ### AI Model Configuration
+
 Customize AI models in the GUI or via configuration:
+
 - Model selection per task type
 - Temperature and token limits
 - Fallback routing strategies
 - Custom prompts and templates
 
 ### Clinical Templates
+
 Add custom clinical templates:
+
 - Diagnosis templates
 - Treatment protocols
 - Follow-up schedules
 - Report formats
 
 ### Interface Customization
+
 - Medical themes and color schemes
 - Language localization (Turkish/English)
 - Custom form fields
@@ -1001,16 +1101,19 @@ Add custom clinical templates:
 ## 📚 Documentation
 
 ### User Guides
+
 - [Desktop GUI Guide](docs/user-guides/desktop-gui.md)
 - [Web Interface Guide](docs/user-guides/web-interface.md)
 - [CLI Reference](docs/user-guides/cli-reference.md)
 
 ### Technical Documentation
+
 - [API Reference](docs/api/README.md)
 - [Installation Guide](docs/deployment/installation.md)
 - [Deployment Guide](docs/deployment/README.md)
 
 ### Development Resources
+
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Architecture Overview](docs/architecture/README.md)
@@ -1020,6 +1123,7 @@ Add custom clinical templates:
 ### Common Issues
 
 #### Database Connection Problems
+
 ```bash
 # Check SQL Server status
 docker-compose ps db
@@ -1029,6 +1133,7 @@ docker-compose exec db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong
 ```
 
 #### AI Service Issues
+
 ```bash
 # Check Ollama status
 curl http://localhost:11434/api/tags
@@ -1038,6 +1143,7 @@ python -c "from src.ai import create_ai_router; print('AI router created success
 ```
 
 #### Performance Issues
+
 ```bash
 # Check system resources
 ./scripts/health-check.sh
@@ -1047,6 +1153,7 @@ curl -w "@curl-format.txt" http://localhost:8000/health
 ```
 
 ### Getting Help
+
 - Check [troubleshooting guide](docs/deployment/troubleshooting.md)
 - Review system logs in `logs/` directory
 - Run health check script for diagnostics
@@ -1055,6 +1162,7 @@ curl -w "@curl-format.txt" http://localhost:8000/health
 ## 🎯 Next Steps
 
 ### For Development
+
 1. Explore the codebase structure
 2. Run the test suite to understand functionality
 3. Customize AI models and prompts
@@ -1062,6 +1170,7 @@ curl -w "@curl-format.txt" http://localhost:8000/health
 5. Contribute to the project
 
 ### For Production
+
 1. Configure production environment variables
 2. Set up SSL/TLS certificates
 3. Configure backup schedules
@@ -1069,6 +1178,7 @@ curl -w "@curl-format.txt" http://localhost:8000/health
 5. Train users and create documentation
 
 ### For Integration
+
 1. Review API documentation
 2. Test integration endpoints
 3. Configure webhooks and callbacks
@@ -1078,6 +1188,7 @@ curl -w "@curl-format.txt" http://localhost:8000/health
 ## 📈 Performance Benchmarks
 
 ### System Performance
+
 - **API Response Time**: <500ms (95th percentile)
 - **Database Queries**: <100ms average
 - **AI Analysis**: 5-30s (depending on complexity)
@@ -1085,6 +1196,7 @@ curl -w "@curl-format.txt" http://localhost:8000/health
 - **Data Processing**: 1000+ records/second
 
 ### Resource Requirements
+
 - **Minimum RAM**: 4GB
 - **Recommended RAM**: 8GB+
 - **Storage**: 10GB minimum
@@ -1109,9 +1221,9 @@ For questions or support, refer to the documentation or check the system health 
 
 ---
 
-*Generated by Clinical AI Assistant Installation System*
-*Version: 1.0.0*
-*Installation Date: $(date)*# 📊 Code Quality Implementation Summary
+_Generated by Clinical AI Assistant Installation System_
+_Version: 1.0.0_
+_Installation Date: $(date)_# 📊 Code Quality Implementation Summary
 
 ## 🎯 Implementation Overview
 
@@ -1120,9 +1232,11 @@ This document summarizes the comprehensive code quality improvements implemented
 ## ✅ Completed Improvements
 
 ### 1. Frontend Production Code Cleanup
+
 **File:** `frontend/src/services/api.ts`
 
 **Changes Made:**
+
 - Wrapped `console.log` statements in `process.env.NODE_ENV === 'development'` checks
 - Ensured no debug output in production builds
 - Maintained development debugging capability
@@ -1132,9 +1246,11 @@ This document summarizes the comprehensive code quality improvements implemented
 ---
 
 ### 2. Function Refactoring in Diagnosis Engine
+
 **File:** `src/clinical/diagnosis_engine.py`
 
 **Changes Made:**
+
 - Broke down the large `_create_diagnosis_prompt` function (58 lines) into smaller, focused functions:
   - `_build_demographic_section()` - Handles demographic information formatting
   - `_build_complaints_section()` - Handles chief complaints formatting
@@ -1147,12 +1263,15 @@ This document summarizes the comprehensive code quality improvements implemented
 ---
 
 ### 3. Magic Numbers Extraction to Configuration
+
 **Files:**
+
 - `src/config/settings.py` - Added configuration fields
 - `src/clinical/diagnosis_engine.py` - Updated to use configured values
 - `src/models/patient.py` - Updated BMI categorization to use configured thresholds
 
 **New Configuration Fields Added:**
+
 ```python
 # Clinical Thresholds and Constants
 crp_severe_threshold: float = 50.0
@@ -1182,11 +1301,14 @@ ai_request_timeout: int = 120
 ---
 
 ### 4. Comprehensive Error Handling System
+
 **New Files Created:**
+
 - `src/utils/exceptions.py` - Custom exception hierarchy
 - `src/utils/error_handler.py` - Error handling utilities and decorators
 
 **Features Implemented:**
+
 - **Structured Exception Classes:** Differentiated by category (Database, AI, API, Validation, etc.)
 - **Severity Levels:** LOW, MEDIUM, HIGH, CRITICAL for prioritized handling
 - **Error Context:** Rich context information for debugging
@@ -1195,6 +1317,7 @@ ai_request_timeout: int = 120
 - **Safe Execution:** `ErrorHandler.safe_execute()` for protected function calls
 
 **Example Usage:**
+
 ```python
 from src.utils.error_handler import handle_errors, error_context
 
@@ -1209,6 +1332,7 @@ with error_context("database_operation"):
 ```
 
 **Updated Files:**
+
 - `src/ai/router.py` - Integrated new error handling system
 
 **Impact:** Standardized error handling across the application, improved debugging capabilities, better error reporting.
@@ -1216,11 +1340,14 @@ with error_context("database_operation"):
 ---
 
 ### 5. Comprehensive Input Validation System
+
 **New Files Created:**
+
 - `src/utils/validators.py` - Validation framework and clinical validators
 - `src/utils/api_validation.py` - API validation decorators
 
 **Features Implemented:**
+
 - **Rule-Based Validation:** Flexible validation rule system
 - **Predefined Clinical Validators:** Turkish TCKN, names, blood pressure, ICD-10 codes, email, phone
 - **Specialized Validators:** Demographics, vital signs, lab results
@@ -1228,6 +1355,7 @@ with error_context("database_operation"):
 - **FastAPI Integration:** Seamless integration with FastAPI endpoints
 
 **Validation Rules Available:**
+
 - `LengthRule` - String length validation
 - `NumericRule` - Numeric range validation
 - `RegexRule` - Pattern matching validation
@@ -1235,6 +1363,7 @@ with error_context("database_operation"):
 - `EnumRule` - Enum value validation
 
 **Example Usage:**
+
 ```python
 from src.utils.validators import ClinicalValidators, validate_patient_demographics
 from src.utils.api_validation import validate_request_data, APIValidators
@@ -1256,21 +1385,25 @@ if errors:
 ---
 
 ### 6. Database Query Optimization
+
 **File:** `src/clinical/diagnosis_engine.py`
 
 **Changes Made:**
+
 - Implemented SQLAlchemy `joinedload()` to prevent N+1 query problems
 - Optimized patient data retrieval with `joinedload(Patient.demographics)`
 - Optimized past diagnoses retrieval with `joinedload(Diagnosis.visit).joinedload(Visit.admission)`
 - Added `.distinct()` to prevent duplicate records
 
 **Before (N+1 Queries):**
+
 ```python
 patient = self.session.execute(select(Patient).where(...)).scalar_one_or_none()
 # Separate query for demographics would be triggered when accessed
 ```
 
 **After (Single Query):**
+
 ```python
 patient = self.session.execute(
     select(Patient)
@@ -1285,26 +1418,28 @@ patient = self.session.execute(
 
 ## 📈 Quality Metrics Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Console Logs in Production | ❌ Present | ✅ Removed | 🟢 Fixed |
-| Function Complexity | 🔴 High (58 lines) | 🟢 Low (<20 lines) | 🟢 Improved |
-| Magic Numbers | 🔴 15+ hardcoded | ✅ All configured | 🟢 Configured |
-| Error Handling | 🟡 Inconsistent | ✅ Standardized | 🟢 Enhanced |
-| Input Validation | 🟡 Basic | ✅ Comprehensive | 🟢 Robust |
-| Database Queries | 🟡 N+1 issues | ✅ Optimized | 🟢 Efficient |
+| Metric                     | Before             | After              | Improvement   |
+| -------------------------- | ------------------ | ------------------ | ------------- |
+| Console Logs in Production | ❌ Present         | ✅ Removed         | 🟢 Fixed      |
+| Function Complexity        | 🔴 High (58 lines) | 🟢 Low (<20 lines) | 🟢 Improved   |
+| Magic Numbers              | 🔴 15+ hardcoded   | ✅ All configured  | 🟢 Configured |
+| Error Handling             | 🟡 Inconsistent    | ✅ Standardized    | 🟢 Enhanced   |
+| Input Validation           | 🟡 Basic           | ✅ Comprehensive   | 🟢 Robust     |
+| Database Queries           | 🟡 N+1 issues      | ✅ Optimized       | 🟢 Efficient  |
 
 ---
 
 ## 🏗️ Architecture Enhancements
 
 ### New Utility Modules Created:
+
 1. **`src/utils/exceptions.py`** - Custom exception hierarchy
 2. **`src/utils/error_handler.py`** - Error handling utilities
 3. **`src/utils/validators.py`** - Validation framework
 4. **`src/utils/api_validation.py`** - API validation decorators
 
 ### Integration Points:
+
 - Configuration system extended with clinical thresholds
 - AI router enhanced with structured error handling
 - Clinical engine refactored with improved modularity
@@ -1315,6 +1450,7 @@ patient = self.session.execute(
 ## 🔧 Usage Guidelines
 
 ### Error Handling:
+
 ```python
 from src.utils.error_handler import handle_errors, error_context, AIServiceError
 
@@ -1330,6 +1466,7 @@ with error_context("database_operation"):
 ```
 
 ### Input Validation:
+
 ```python
 from src.utils.validators import validate_patient_demographics
 from src.utils.api_validation import validate_request_data, APIValidators
@@ -1347,6 +1484,7 @@ if errors:
 ```
 
 ### Configuration Usage:
+
 ```python
 from src.config.settings import settings
 
@@ -1365,12 +1503,14 @@ if patient.bmi >= settings.obesity_bmi_threshold:
 ## 🧪 Testing Considerations
 
 ### New Testing Scenarios Added:
+
 1. **Error Handling Tests:** Exception wrapping, logging, severity levels
 2. **Validation Tests:** Rule-based validation, error messages
 3. **Configuration Tests:** Threshold behavior, validation
 4. **Performance Tests:** Query optimization, N+1 prevention
 
 ### Recommended Test Coverage:
+
 ```python
 # Error handling tests
 def test_error_handler_wrapping():
@@ -1396,6 +1536,7 @@ def test_clinical_thresholds():
 ## 📚 Documentation Updates
 
 The following documentation should be updated:
+
 1. **API Documentation:** Include validation error formats
 2. **Developer Guide:** Error handling patterns and validation usage
 3. **Configuration Guide:** New clinical threshold parameters
@@ -1406,18 +1547,21 @@ The following documentation should be updated:
 ## 🎯 Future Recommendations
 
 ### Short Term (Next Sprint):
+
 1. **Add validation decorators to all API endpoints**
 2. **Implement structured logging for all error types**
 3. **Add comprehensive unit tests for new utilities**
 4. **Update API documentation with validation schemas**
 
 ### Medium Term (Next Month):
+
 1. **Implement request/response schema validation with Pydantic**
 2. **Add performance monitoring for database queries**
 3. **Implement configuration validation at startup**
 4. **Add integration tests for error handling flows**
 
 ### Long Term (Next Quarter):
+
 1. **Implement audit logging for clinical data access**
 2. **Add automated performance regression testing**
 3. **Implement circuit breakers for external services**

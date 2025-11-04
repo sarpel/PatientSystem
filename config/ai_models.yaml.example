@@ -33,10 +33,12 @@ task_complexity:
 models:
   ollama:
     base_url: ${OLLAMA_BASE_URL}
-    model: ${OLLAMA_MODEL}
+    model: ${OLLAMA_MODEL}  # Primary: medgemma:4b
     timeout: 30
     max_retries: 2
     temperature: 0.3
+    # Install: https://ollama.ai
+    # Pull model: ollama pull medgemma:4b
 
   claude-sonnet-4.5:
     api_key: ${ANTHROPIC_API_KEY}

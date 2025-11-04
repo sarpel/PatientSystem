@@ -71,7 +71,9 @@ class AIConfigDialog(QDialog):
         model_layout.addRow("OpenAI Model:", self.openai_combo)
 
         self.gemini_combo = QComboBox()
-        self.gemini_combo.addItems(["gemini-2.5-pro", "gemini-1.5-pro", "gemini-1.5-flash"])
+        self.gemini_combo.addItems(
+            ["gemini-2.5-pro", "gemini-1.5-pro", "gemini-1.5-flash"]
+        )
         model_layout.addRow("Gemini Model:", self.gemini_combo)
 
         self.ollama_combo = QComboBox()
@@ -85,7 +87,9 @@ class AIConfigDialog(QDialog):
         routing_layout = QFormLayout(routing_group)
 
         self.strategy_combo = QComboBox()
-        self.strategy_combo.addItems(["smart", "cost_optimized", "quality_first", "round_robin"])
+        self.strategy_combo.addItems(
+            ["smart", "cost_optimized", "quality_first", "round_robin"]
+        )
         routing_layout.addRow("Strategy:", self.strategy_combo)
 
         self.timeout_spin = QSpinBox()
@@ -202,7 +206,9 @@ class AIConfigDialog(QDialog):
                 color = "green" if status else "red"
 
                 item = QTableWidgetItem(status_text)
-                item.setForeground(Qt.GlobalColor.green if status else Qt.GlobalColor.red)
+                item.setForeground(
+                    Qt.GlobalColor.green if status else Qt.GlobalColor.red
+                )
                 self.status_table.setItem(row, 1, item)
 
     def _on_health_check_error(self, error_msg: str):

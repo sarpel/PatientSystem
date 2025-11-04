@@ -68,7 +68,9 @@ class GoogleClient(BaseAIClient):
             )
 
             # Generate content (synchronous - Gemini doesn't have async API yet)
-            response = self.model.generate_content(full_prompt, generation_config=generation_config)
+            response = self.model.generate_content(
+                full_prompt, generation_config=generation_config
+            )
 
             latency_ms = (time.time() - start_time) * 1000
 
@@ -107,13 +109,17 @@ class GoogleClient(BaseAIClient):
                         else None
                     ),
                     "finish_reason": (
-                        response.candidates[0].finish_reason.name if response.candidates else None
+                        response.candidates[0].finish_reason.name
+                        if response.candidates
+                        else None
                     ),
                 },
             )
 
         except google_exceptions.DeadlineExceeded as e:
-            raise TimeoutError(f"Google Gemini request timeout after {self.timeout}s") from e
+            raise TimeoutError(
+                f"Google Gemini request timeout after {self.timeout}s"
+            ) from e
         except google_exceptions.GoogleAPIError as e:
             raise AIProviderError(
                 message=f"Google Gemini API error: {str(e)}",

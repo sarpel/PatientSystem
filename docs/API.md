@@ -16,6 +16,7 @@ FastAPI provides automatic interactive API documentation:
 ## Response Format
 
 ### Success Response
+
 ```json
 {
   "success": true,
@@ -24,6 +25,7 @@ FastAPI provides automatic interactive API documentation:
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -36,15 +38,15 @@ FastAPI provides automatic interactive API documentation:
 
 ## HTTP Status Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | Success (GET, PUT, PATCH, DELETE) |
-| 201 | Created (POST) |
-| 204 | No Content (DELETE) |
-| 400 | Bad Request |
-| 404 | Not Found |
-| 422 | Validation Error |
-| 500 | Server Error |
+| Code | Meaning                           |
+| ---- | --------------------------------- |
+| 200  | Success (GET, PUT, PATCH, DELETE) |
+| 201  | Created (POST)                    |
+| 204  | No Content (DELETE)               |
+| 400  | Bad Request                       |
+| 404  | Not Found                         |
+| 422  | Validation Error                  |
+| 500  | Server Error                      |
 
 ---
 
@@ -55,6 +57,7 @@ FastAPI provides automatic interactive API documentation:
 Check API server status.
 
 **Response**:
+
 ```json
 {
   "status": "healthy",
@@ -76,11 +79,13 @@ Check API server status.
 **GET** `/api/patients?limit=50&offset=0&search=John`
 
 **Query Parameters**:
+
 - `limit` (optional): Max results (default: 50)
 - `offset` (optional): Skip results (default: 0)
 - `search` (optional): Search by name
 
 **Response**:
+
 ```json
 {
   "patients": [
@@ -90,7 +95,7 @@ Check API server status.
       "last_name": "Doe",
       "date_of_birth": "1990-01-15",
       "gender": "M",
-      "contact_info": { }
+      "contact_info": {}
     }
   ],
   "total": 1
@@ -102,6 +107,7 @@ Check API server status.
 **GET** `/api/patients/{patient_id}`
 
 **Response**:
+
 ```json
 {
   "id": 123,
@@ -121,6 +127,7 @@ Check API server status.
 **POST** `/api/patients`
 
 **Request Body**:
+
 ```json
 {
   "first_name": "Jane",
@@ -135,6 +142,7 @@ Check API server status.
 ```
 
 **Response** (201 Created):
+
 ```json
 {
   "id": 124,
@@ -167,6 +175,7 @@ Check API server status.
 **GET** `/api/patients/{patient_id}/visits?limit=20`
 
 **Response**:
+
 ```json
 {
   "visits": [
@@ -177,8 +186,8 @@ Check API server status.
       "chief_complaint": "Persistent cough",
       "diagnosis": "Acute bronchitis",
       "treatment_plan": "Rest, fluids",
-      "medications": [ ],
-      "lab_results": [ ]
+      "medications": [],
+      "lab_results": []
     }
   ]
 }
@@ -189,6 +198,7 @@ Check API server status.
 **POST** `/api/patients/{patient_id}/visits`
 
 **Request Body**:
+
 ```json
 {
   "visit_date": "2024-01-16",
@@ -214,6 +224,7 @@ Check API server status.
 Get AI-powered diagnosis suggestions based on symptoms.
 
 **Request Body**:
+
 ```json
 {
   "patient_id": 123,
@@ -233,6 +244,7 @@ Get AI-powered diagnosis suggestions based on symptoms.
 ```
 
 **Response**:
+
 ```json
 {
   "diagnosis_suggestions": [
@@ -248,9 +260,7 @@ Get AI-powered diagnosis suggestions based on symptoms.
       ]
     }
   ],
-  "red_flags": [
-    "Chest pain with arm radiation - cardiac event likely"
-  ],
+  "red_flags": ["Chest pain with arm radiation - cardiac event likely"],
   "ai_provider": "claude-sonnet-4.5"
 }
 ```
@@ -262,6 +272,7 @@ Get AI-powered diagnosis suggestions based on symptoms.
 Get AI-powered treatment recommendations.
 
 **Request Body**:
+
 ```json
 {
   "patient_id": 123,
@@ -283,6 +294,7 @@ Get AI-powered treatment recommendations.
 ```
 
 **Response**:
+
 ```json
 {
   "treatment_plan": {
@@ -317,6 +329,7 @@ Get AI-powered treatment recommendations.
 **GET** `/api/drugs/search?query=aspirin&limit=10`
 
 **Response**:
+
 ```json
 {
   "drugs": [
@@ -336,6 +349,7 @@ Get AI-powered treatment recommendations.
 **POST** `/api/drugs/interactions`
 
 **Request Body**:
+
 ```json
 {
   "medications": ["Warfarin", "Aspirin", "Ibuprofen"]
@@ -343,6 +357,7 @@ Get AI-powered treatment recommendations.
 ```
 
 **Response**:
+
 ```json
 {
   "interactions": [
@@ -365,6 +380,7 @@ Get AI-powered treatment recommendations.
 **GET** `/api/patients/{patient_id}/labs?start_date=2024-01-01`
 
 **Response**:
+
 ```json
 {
   "lab_results": [
@@ -390,6 +406,7 @@ Get AI-powered treatment recommendations.
 **POST** `/api/patients/{patient_id}/labs`
 
 **Request Body**:
+
 ```json
 {
   "test_date": "2024-01-16",
@@ -415,13 +432,14 @@ Get AI-powered treatment recommendations.
 **GET** `/api/analytics/lab-trends?patient_id=123&test_name=HbA1c&period=6months`
 
 **Response**:
+
 ```json
 {
   "test_name": "HbA1c",
   "data_points": [
-    {"date": "2023-07-15", "value": 9.2},
-    {"date": "2023-10-15", "value": 8.5},
-    {"date": "2024-01-15", "value": 7.8}
+    { "date": "2023-07-15", "value": 9.2 },
+    { "date": "2023-10-15", "value": 8.5 },
+    { "date": "2024-01-15", "value": 7.8 }
   ],
   "trend": "improving",
   "latest_value": 7.8,
@@ -434,6 +452,7 @@ Get AI-powered treatment recommendations.
 **GET** `/api/analytics/medication-adherence?patient_id=123&medication=Metformin`
 
 **Response**:
+
 ```json
 {
   "medication": "Metformin",
@@ -448,13 +467,13 @@ Get AI-powered treatment recommendations.
 
 ## Error Codes
 
-| Code | Description |
-|------|-------------|
-| PATIENT_NOT_FOUND | Patient ID doesn't exist |
-| VISIT_NOT_FOUND | Visit ID doesn't exist |
-| VALIDATION_ERROR | Request data validation failed |
-| DATABASE_ERROR | Database operation failed |
-| AI_PROVIDER_ERROR | AI service unavailable |
+| Code              | Description                    |
+| ----------------- | ------------------------------ |
+| PATIENT_NOT_FOUND | Patient ID doesn't exist       |
+| VISIT_NOT_FOUND   | Visit ID doesn't exist         |
+| VALIDATION_ERROR  | Request data validation failed |
+| DATABASE_ERROR    | Database operation failed      |
+| AI_PROVIDER_ERROR | AI service unavailable         |
 
 ---
 

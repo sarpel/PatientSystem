@@ -35,11 +35,13 @@ scripts\setup-frontend.bat
 ### 3. Veritabanı
 
 `.env` dosyasını düzenle:
+
 ```env
 DATABASE_URL=mssql+pyodbc://localhost\\SQLEXPRESS/ClinicalAI?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes
 ```
 
 Veritabanını başlat:
+
 ```bash
 python scripts\init_db.py
 ```
@@ -48,6 +50,7 @@ python scripts\init_db.py
 
 1. https://ollama.ai adresinden indir ve kur
 2. Medical model'i çek:
+
 ```bash
 ollama pull medgemma:4b
 ```
@@ -59,6 +62,7 @@ scripts\quickstart.bat
 ```
 
 Veya manuel:
+
 ```bash
 # Backend
 venv\Scripts\activate
@@ -88,11 +92,13 @@ PatientSystem/
 ## Sorun Giderme
 
 **Veritabanı bağlanamıyor**:
+
 - SQL Server çalışıyor mu kontrol et
 - Windows Authentication aktif mi bak
 - ODBC Driver kurulu mu kontrol et
 
 **Ollama çalışmıyor**:
+
 - `ollama list` ile model indirilmiş mi bak
 - `ollama serve` ile servisi başlat
 

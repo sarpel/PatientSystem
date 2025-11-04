@@ -48,6 +48,7 @@ frontend/src/
 ## Veritabanı
 
 **Ana Tablolar**:
+
 - `Patient` - Hasta bilgileri
 - `Visit` - Ziyaret kayıtları
 - `Diagnosis` - Tanılar
@@ -55,6 +56,7 @@ frontend/src/
 - `Laboratory` - Lab sonuçları
 
 **İlişkiler**:
+
 ```
 Patient (1) → (N) Visit
 Visit (1) → (N) Diagnosis
@@ -65,12 +67,14 @@ Visit (1) → (N) Laboratory
 ## AI Entegrasyonu
 
 **Sağlayıcı Önceliği**:
+
 1. **Ollama** (MedGemma 4B) - Lokal, ücretsiz
 2. **Anthropic** (Claude) - Yedek
 3. **OpenAI** (GPT) - Yedek
 4. **Google** (Gemini) - Yedek
 
 **Görev Dağılımı**:
+
 - Basit sorgular → Ollama
 - Orta karmaşıklık → Ollama
 - Kritik kararlar → Claude/GPT (yoksa Ollama)
@@ -78,6 +82,7 @@ Visit (1) → (N) Laboratory
 ## Konfigürasyon
 
 **`.env`**:
+
 ```env
 DATABASE_URL=mssql+pyodbc://server\\instance/db?...
 OLLAMA_BASE_URL=http://localhost:11434
@@ -85,6 +90,7 @@ OLLAMA_MODEL=medgemma:4b
 ```
 
 **`config/ai_models.yaml`**:
+
 ```yaml
 routing:
   simple: [ollama]

@@ -85,7 +85,9 @@ class OpenAIClient(BaseAIClient):
                 tokens_used=response.usage.total_tokens if response.usage else None,
                 latency_ms=latency_ms,
                 metadata={
-                    "prompt_tokens": response.usage.prompt_tokens if response.usage else None,
+                    "prompt_tokens": (
+                        response.usage.prompt_tokens if response.usage else None
+                    ),
                     "completion_tokens": (
                         response.usage.completion_tokens if response.usage else None
                     ),

@@ -163,7 +163,10 @@ class AIRouter:
             operation=f"AI provider request: {provider_name}",
             category=ErrorCategory.AI_SERVICE,
             severity=ErrorSeverity.MEDIUM,
-            context={"provider": provider_name, "task_complexity": request.task_complexity.value},
+            context={
+                "provider": provider_name,
+                "task_complexity": request.task_complexity.value,
+            },
         ):
             client = self.clients.get(provider_name)
 

@@ -15,7 +15,7 @@ class AnthropicClient(BaseAIClient):
 
     def __init__(
         self,
-        model_name: str = "claude-3-5-sonnet-20241022",
+        model_name: str = "claude-sonnet-4.5",
         api_key: Optional[str] = None,
         timeout: int = 120,
         temperature: float = 0.5,
@@ -138,7 +138,7 @@ class AnthropicClient(BaseAIClient):
         so we return known models as of 2024.
         """
         return [
-            "claude-3-5-sonnet-20241022",
+            "claude-sonnet-4.5",
             "claude-3-opus-20240229",
             "claude-3-sonnet-20240229",
             "claude-3-haiku-20240307",

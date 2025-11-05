@@ -1,203 +1,109 @@
-# 🏥 Clinical AI Assistant - Hasta Klinik Karar Destek Sistemi
+# Clinical AI Assistant
 
-## 📋 Proje Özeti
+Hasta yönetimi ve AI destekli tıbbi analiz sistemi.
 
-Aile hekimliği pratiği için **SQL Server** tabanlı, **multi-AI destekli** (Local Ollama + Anthropic Claude + OpenAI + Google Gemini), **hybrid interface** (Desktop GUI + Web GUI + CLI) klinik karar destek sistemi.
+## Ne İşe Yarar
 
-### Ana Özellikler
+- Hasta kayıtları ve ziyaret geçmişi
+- Semptomlara göre AI destekli tanı önerileri
+- Tedavi önerileri ve ilaç etkileşim kontrolü
+- Laboratuvar sonuçları takibi
+- İlaç uyum analizi
 
-- ✅ **Tanı Önerisi**: Diferansiyel tanı önerileri ile olasılık skorları
-- ✅ **Tedavi Önerisi**: İlaç, test, konsültasyon ve yaşam tarzı önerileri
-- ✅ **İlaç Etkileşimi**: İlaç-ilaç, ilaç-alerji kontrolleri
-- ✅ **Lab Analizi**: Anormal değer tespiti ve trend analizi
-- ✅ **Risk Stratifikasyonu**: KVH, diyabet, CKD risk hesaplamaları
+## Gereksinimler
 
-## 🚀 Kurulum
+- Python 3.10.11+
+- Node.js 18+
+- SQL Server 2014+ (Windows Authentication)
+- ODBC Driver 17 veya 18
+- Ollama (ücretsiz, lokal AI için)
 
-### Gereksinimler
+## Kurulum
 
-- Python 3.11+
-- SQL Server 2014/2022
-- Windows 11
-- Ollama (opsiyonel, lokal AI için)
-
-### Adım 1: Repository Klonlama
-
-```bash
-git clone <repository-url>
-cd PatientSystem
-```
-
-### Adım 2: Virtual Environment Oluşturma
+### 1. Backend
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
+scripts\install.bat
 ```
 
-### Adım 3: Dependencies Yükleme
+### 2. Frontend
 
 ```bash
-pip install -r requirements.txt
+scripts\setup-frontend.bat
 ```
 
-### Adım 4: Konfigürasyon
+### 3. Veritabanı
 
-`.env` dosyası oluşturun (`.env.example` dosyasından):
-
-```bash
-cp .env.example .env
-```
-
-API anahtarlarını `.env` dosyasına ekleyin:
+`.env` dosyasını düzenle:
 
 ```env
-DB_SERVER=Sarpel-PC\HIZIR
-DB_NAME=TestDB
-
-ANTHROPIC_API_KEY=your-anthropic-key
-OPENAI_API_KEY=your-openai-key
-GOOGLE_API_KEY=your-google-key
+DATABASE_URL=mssql+pyodbc://localhost\\SQLEXPRESS/ClinicalAI?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes
 ```
 
-## 📖 Kullanım
-
-### Desktop GUI
+Veritabanını başlat:
 
 ```bash
-python src/gui/main_window.py
+python scripts\init_db.py
 ```
 
-### Web Interface
+### 4. AI (Ollama)
+
+1. https://ollama.ai adresinden indir ve kur
+2. Medical model'i çek:
 
 ```bash
-# Backend başlatma
-uvicorn src.api.fastapi_app:app --reload --port 8080
+ollama pull medgemma:4b
+```
 
-# Frontend (ayrı terminalde)
+### 5. Başlat
+
+```bash
+scripts\quickstart.bat
+```
+
+Veya manuel:
+
+```bash
+# Backend
+venv\Scripts\activate
+uvicorn src.api.fastapi_app:app --reload
+
+# Frontend (başka terminal)
 cd frontend
-npm install
 npm run dev
 ```
 
-### CLI
+## Erişim
 
-```bash
-# Hasta analizi
-python -m src.cli.app analyze --tckn 12345678901
+- **Uygulama**: http://localhost:5173
+- **API Docs**: http://localhost:8000/docs
 
-# Tanı önerisi
-python -m src.cli.app diagnose --tckn 12345678901 --complaint "ateş, öksürük"
-
-# Veritabanı inspeksiyon
-python -m src.cli.app inspect database
-```
-
-## 🏗️ Proje Yapısı
+## Yapı
 
 ```
-clinical-ai-assistant/
-├── src/
-│   ├── config/          # Konfigürasyon dosyaları
-│   ├── database/        # Veritabanı bağlantı ve query modülleri
-│   ├── ai/              # AI servis entegrasyonları
-│   ├── clinical/        # Klinik karar destek modülleri
-│   ├── analytics/       # Analitik ve raporlama
-│   ├── api/             # REST API (FastAPI)
-│   ├── cli/             # CLI uygulaması
-│   ├── gui/             # Desktop GUI (PySide6)
-│   └── utils/           # Yardımcı fonksiyonlar
-├── tests/               # Test dosyaları
-├── docs/                # Dokümantasyon
-└── frontend/            # Web UI (React + Vite)
+PatientSystem/
+├── src/              # Backend (FastAPI)
+├── frontend/         # Frontend (React)
+├── scripts/          # Kurulum scriptleri
+├── config/           # Konfigürasyon
+└── docs/             # Dökümanlar
 ```
 
-## 🧪 Test
+## Sorun Giderme
 
-```bash
-# Tüm testleri çalıştır
-pytest
+**Veritabanı bağlanamıyor**:
 
-# Coverage raporu
-pytest --cov=src --cov-report=html
+- SQL Server çalışıyor mu kontrol et
+- Windows Authentication aktif mi bak
+- ODBC Driver kurulu mu kontrol et
 
-# Specific test
-pytest tests/unit/test_database/
-```
+**Ollama çalışmıyor**:
 
-## 📚 Dokümantasyon
+- `ollama list` ile model indirilmiş mi bak
+- `ollama serve` ile servisi başlat
 
-Detaylı dokümantasyon için `docs/` klasörüne bakınız:
+## Dokümantasyon
 
-- [Kurulum Rehberi](docs/01_KURULUM.md)
-- [Veritabanı Bağlantısı](docs/02_VERITABANI_BAGLANTI.md)
-- [AI Konfigürasyonu](docs/03_AI_KONFIGURASYONU.md)
-- [GUI Kullanımı](docs/04_KULLANIM_GUI.md)
-- [CLI Kullanımı](docs/05_KULLANIM_CLI.md)
-- [API Dokümantasyonu](docs/06_API_DOKUMANTASYON.md)
-
-## 🔧 Geliştirme
-
-```bash
-# Dev dependencies yükle
-pip install -r requirements-dev.txt
-
-# Code formatting
-black src/
-
-# Linting
-ruff check src/
-
-# Type checking
-mypy src/
-```
-
-## 📊 Veritabanı
-
-Sistem 361 SQL Server tablosunu analiz eder:
-
-- GP_HASTA_*: Hasta demografik bilgileri
-- GP_MUAYENE*: Muayene ve vizit kayıtları
-- GP_RECETE*: Reçete ve ilaç bilgileri
-- GP_HASTANE_TETKIK*: Lab sonuçları
-- LST_*: Referans tabloları
-- DTY_*: Detay tabloları
-
-## 🤖 AI Entegrasyonu
-
-**Senaryo A: Hybrid Smart Routing**
-
-- **Basit görevler** → Ollama (hızlı, lokal)
-- **Karmaşık klinik kararlar** → Claude 3.5 Sonnet (en akıllı)
-- **Fallback** → GPT-4o → Gemini Pro
-
-## 📄 Lisans
-
-Bu proje kişisel kullanım içindir. KVKK ve güvenlik gereksinimleri devre dışıdır (kişisel, güvenli ortam).
-
-## 🛠️ Teknoloji Stack
-
-**Backend:**
-- Python 3.11
-- SQLAlchemy 2.0
-- FastAPI
-- Pydantic
-
-**Frontend:**
-- React 18
-- Vite
-- Tailwind CSS
-
-**Desktop:**
-- PySide6 (Qt6)
-
-**AI:**
-- Anthropic Claude
-- OpenAI GPT-4
-- Google Gemini
-- Ollama (local)
-
----
-
-**Sürüm:** 0.1.0 (Phase 1 - Foundation)
-**Durum:** Development
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Sistem mimarisi
+- [docs/CONFIGURATION.md](docs/CONFIGURATION.md) - Ayarlar
+- [docs/API.md](docs/API.md) - API referansı

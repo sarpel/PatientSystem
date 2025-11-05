@@ -70,7 +70,9 @@ def test_ai():
 
 
 @app.command()
-def set_model(model: str = typer.Argument(..., help="Model name (claude/gpt-4o/gemini)")):
+def set_model(
+    model: str = typer.Argument(..., help="Model name (claude/gpt-5/gemini)")
+):
     """Set preferred AI model (requires env var update)."""
     console.print(
         f"[yellow]To set model preference, update CLAUDE_MODEL, OPENAI_MODEL, or GEMINI_MODEL in .env file[/yellow]"

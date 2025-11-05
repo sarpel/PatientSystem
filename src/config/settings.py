@@ -23,19 +23,26 @@ class Settings(BaseSettings):
 
     # Database Configuration
     db_server: str = Field(
-        default="localhost", description="SQL Server instance name (e.g., Sarpel-PC\\HIZIR)"
+        default="localhost",
+        description="SQL Server instance name (e.g., Sarpel-PC\\HIZIR)",
     )
     db_name: str = Field(default="TestDB", description="Database name")
-    db_driver: str = Field(default="ODBC Driver 18 for SQL Server", description="ODBC driver name")
+    db_driver: str = Field(
+        default="ODBC Driver 18 for SQL Server", description="ODBC driver name"
+    )
     db_trust_certificate: str = Field(
         default="yes", description="Trust server certificate (yes/no)"
     )
     db_timeout: int = Field(default=30, description="Connection timeout in seconds")
 
     # AI API Keys
-    anthropic_api_key: Optional[str] = Field(default=None, description="Anthropic Claude API key")
+    anthropic_api_key: Optional[str] = Field(
+        default=None, description="Anthropic Claude API key"
+    )
     openai_api_key: Optional[str] = Field(default=None, description="OpenAI API key")
-    google_api_key: Optional[str] = Field(default=None, description="Google Gemini API key")
+    google_api_key: Optional[str] = Field(
+        default=None, description="Google Gemini API key"
+    )
 
     # Ollama Configuration
     ollama_base_url: str = Field(
@@ -44,25 +51,37 @@ class Settings(BaseSettings):
     ollama_model: str = Field(default="gemma:7b", description="Default Ollama model")
 
     # AI Model Configuration
-    claude_model: str = Field(default="claude-3-5-sonnet-20241022", description="Claude model name")
-    openai_model: str = Field(default="gpt-4o", description="OpenAI model name")
-    gemini_model: str = Field(default="gemini-pro", description="Google Gemini model name")
+    claude_model: str = Field(
+        default="claude-sonnet-4.5", description="Claude model name"
+    )
+    openai_model: str = Field(default="gpt-5", description="OpenAI model name")
+    gemini_model: str = Field(
+        default="gemini-2.5-pro", description="Google Gemini model name"
+    )
 
     # AI Routing Strategy
     ai_routing_strategy: str = Field(
         default="smart", description="AI routing strategy (smart, manual, round_robin)"
     )
     ai_enable_fallback: bool = Field(
-        default=True, description="Enable automatic fallback to alternative AI providers"
+        default=True,
+        description="Enable automatic fallback to alternative AI providers",
     )
-    ai_max_retries: int = Field(default=3, description="Maximum retry attempts per AI provider")
+    ai_max_retries: int = Field(
+        default=3, description="Maximum retry attempts per AI provider"
+    )
     ai_timeout: int = Field(default=120, description="AI request timeout in seconds")
-    ai_temperature: float = Field(default=0.5, description="AI sampling temperature (0.0-1.0)")
-    ai_max_tokens: int = Field(default=4096, description="Maximum tokens in AI response")
+    ai_temperature: float = Field(
+        default=0.5, description="AI sampling temperature (0.0-1.0)"
+    )
+    ai_max_tokens: int = Field(
+        default=4096, description="Maximum tokens in AI response"
+    )
 
     # Application Settings
     log_level: str = Field(
-        default="DEBUG", description="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)"
+        default="DEBUG",
+        description="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
     )
     environment: str = Field(
         default="development", description="Environment (development, production)"
@@ -99,7 +118,9 @@ class Settings(BaseSettings):
     tachycardia_threshold: int = Field(
         default=100, description="Heart rate threshold for tachycardia (bpm)"
     )
-    obesity_bmi_threshold: float = Field(default=30.0, description="BMI threshold for obesity")
+    obesity_bmi_threshold: float = Field(
+        default=30.0, description="BMI threshold for obesity"
+    )
     overweight_bmi_threshold: float = Field(
         default=25.0, description="BMI threshold for overweight"
     )
@@ -114,13 +135,23 @@ class Settings(BaseSettings):
     ai_retry_delay_multiplier: float = Field(
         default=1.0, description="Base multiplier for retry delay (seconds)"
     )
-    ai_retry_delay_min: float = Field(default=1.0, description="Minimum retry delay (seconds)")
-    ai_retry_delay_max: float = Field(default=10.0, description="Maximum retry delay (seconds)")
+    ai_retry_delay_min: float = Field(
+        default=1.0, description="Minimum retry delay (seconds)"
+    )
+    ai_retry_delay_max: float = Field(
+        default=10.0, description="Maximum retry delay (seconds)"
+    )
 
     # Performance Thresholds
-    api_response_timeout: int = Field(default=30, description="API response timeout (seconds)")
-    database_query_timeout: int = Field(default=30, description="Database query timeout (seconds)")
-    ai_request_timeout: int = Field(default=120, description="AI request timeout (seconds)")
+    api_response_timeout: int = Field(
+        default=30, description="API response timeout (seconds)"
+    )
+    database_query_timeout: int = Field(
+        default=30, description="Database query timeout (seconds)"
+    )
+    ai_request_timeout: int = Field(
+        default=120, description="AI request timeout (seconds)"
+    )
 
     @property
     def database_url(self) -> str:

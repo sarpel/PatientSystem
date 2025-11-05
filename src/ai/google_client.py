@@ -16,7 +16,7 @@ class GoogleClient(BaseAIClient):
 
     def __init__(
         self,
-        model_name: str = "gemini-pro",
+        model_name: str = "gemini-2.5-pro",
         api_key: Optional[str] = None,
         timeout: int = 120,
         temperature: float = 0.5,
@@ -26,7 +26,7 @@ class GoogleClient(BaseAIClient):
         Initialize Google Gemini client.
 
         Args:
-            model_name: Gemini model name (gemini-pro, gemini-pro-vision)
+            model_name: Gemini model name (gemini-2.5-pro, gemini-pro-vision)
             api_key: Google API key (or read from GOOGLE_API_KEY env var)
             timeout: Request timeout in seconds
             temperature: Sampling temperature
@@ -68,7 +68,9 @@ class GoogleClient(BaseAIClient):
             )
 
             # Generate content (synchronous - Gemini doesn't have async API yet)
-            response = self.model.generate_content(full_prompt, generation_config=generation_config)
+            response = self.model.generate_content(
+                full_prompt, generation_config=generation_config
+            )
 
             latency_ms = (time.time() - start_time) * 1000
 
@@ -107,13 +109,17 @@ class GoogleClient(BaseAIClient):
                         else None
                     ),
                     "finish_reason": (
-                        response.candidates[0].finish_reason.name if response.candidates else None
+                        response.candidates[0].finish_reason.name
+                        if response.candidates
+                        else None
                     ),
                 },
             )
 
         except google_exceptions.DeadlineExceeded as e:
-            raise TimeoutError(f"Google Gemini request timeout after {self.timeout}s") from e
+            raise TimeoutError(
+                f"Google Gemini request timeout after {self.timeout}s"
+            ) from e
         except google_exceptions.GoogleAPIError as e:
             raise AIProviderError(
                 message=f"Google Gemini API error: {str(e)}",
@@ -151,7 +157,7 @@ class GoogleClient(BaseAIClient):
             ]
         except Exception as e:
             logger.error(f"Failed to list Google models: {e}")
-            return ["gemini-pro", "gemini-pro-vision"]
+            return ["gemini-2.5-pro", "gemini-pro-vision"]
 
     def __repr__(self) -> str:
         """String representation."""

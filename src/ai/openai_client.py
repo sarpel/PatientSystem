@@ -15,7 +15,7 @@ class OpenAIClient(BaseAIClient):
 
     def __init__(
         self,
-        model_name: str = "gpt-4o",
+        model_name: str = "gpt-5",
         api_key: Optional[str] = None,
         timeout: int = 120,
         temperature: float = 0.5,
@@ -25,7 +25,7 @@ class OpenAIClient(BaseAIClient):
         Initialize OpenAI client.
 
         Args:
-            model_name: OpenAI model name (gpt-4o, gpt-4o-mini, gpt-4-turbo)
+            model_name: OpenAI model name (gpt-5, gpt-5-mini, gpt-4-turbo)
             api_key: OpenAI API key (or read from OPENAI_API_KEY env var)
             timeout: Request timeout in seconds
             temperature: Sampling temperature
@@ -85,7 +85,9 @@ class OpenAIClient(BaseAIClient):
                 tokens_used=response.usage.total_tokens if response.usage else None,
                 latency_ms=latency_ms,
                 metadata={
-                    "prompt_tokens": response.usage.prompt_tokens if response.usage else None,
+                    "prompt_tokens": (
+                        response.usage.prompt_tokens if response.usage else None
+                    ),
                     "completion_tokens": (
                         response.usage.completion_tokens if response.usage else None
                     ),
@@ -125,8 +127,8 @@ class OpenAIClient(BaseAIClient):
     def list_models(self) -> List[str]:
         """List available OpenAI models (common ones)."""
         return [
-            "gpt-4o",
-            "gpt-4o-mini",
+            "gpt-5",
+            "gpt-5-mini",
             "gpt-4-turbo",
             "gpt-4",
             "gpt-3.5-turbo",

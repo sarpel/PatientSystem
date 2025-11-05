@@ -42,7 +42,9 @@ class TreatmentWorker(QThread):
                 engine = TreatmentEngine(session)
                 result = asyncio.run(
                     engine.suggest_treatment_ai(
-                        tckn=self.tckn, diagnosis=self.diagnosis, preferred_provider=self.model
+                        tckn=self.tckn,
+                        diagnosis=self.diagnosis,
+                        preferred_provider=self.model,
                     )
                 )
                 self.finished.emit(result)
@@ -81,7 +83,9 @@ class TreatmentPanelWidget(QWidget):
         controls_layout.addWidget(QLabel("AI Model:"))
 
         self.model_combo = QComboBox()
-        self.model_combo.addItems(["Auto (Smart Routing)", "Claude", "GPT-4o", "Gemini", "Ollama"])
+        self.model_combo.addItems(
+            ["Auto (Smart Routing)", "Claude", "GPT-4o", "Gemini", "Ollama"]
+        )
         controls_layout.addWidget(self.model_combo)
 
         controls_layout.addStretch()
@@ -105,7 +109,9 @@ class TreatmentPanelWidget(QWidget):
 
         self.recommendations_table = QTableWidget()
         self.recommendations_table.setColumnCount(3)
-        self.recommendations_table.setHorizontalHeaderLabels(["Medication", "Dosage", "Duration"])
+        self.recommendations_table.setHorizontalHeaderLabels(
+            ["Medication", "Dosage", "Duration"]
+        )
         self.recommendations_table.setEditTriggers(QTableWidget.NoEditTriggers)
         recommendations_layout.addWidget(self.recommendations_table)
 
@@ -154,7 +160,12 @@ class TreatmentPanelWidget(QWidget):
 
         # Get selected model
         model_text = self.model_combo.currentText()
-        model_map = {"Claude": "claude", "GPT-4o": "gpt-4o", "Gemini": "gemini", "Ollama": "ollama"}
+        model_map = {
+            "Claude": "claude",
+            "GPT-5": "gpt-5",
+            "Gemini": "gemini",
+            "Ollama": "ollama",
+        }
         model = model_map.get(model_text)
 
         # Show progress
@@ -177,9 +188,15 @@ class TreatmentPanelWidget(QWidget):
         self.recommendations_table.setRowCount(len(medications))
 
         for row, med in enumerate(medications):
-            self.recommendations_table.setItem(row, 0, QTableWidgetItem(med.get("name", "")))
-            self.recommendations_table.setItem(row, 1, QTableWidgetItem(med.get("dosage", "")))
-            self.recommendations_table.setItem(row, 2, QTableWidgetItem(med.get("duration", "")))
+            self.recommendations_table.setItem(
+                row, 0, QTableWidgetItem(med.get("name", ""))
+            )
+            self.recommendations_table.setItem(
+                row, 1, QTableWidgetItem(med.get("dosage", ""))
+            )
+            self.recommendations_table.setItem(
+                row, 2, QTableWidgetItem(med.get("duration", ""))
+            )
 
         self.recommendations_table.resizeColumnsToContents()
 

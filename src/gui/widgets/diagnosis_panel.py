@@ -83,7 +83,9 @@ class DiagnosisPanelWidget(QWidget):
         controls_layout.addWidget(QLabel("AI Model:"))
 
         self.model_combo = QComboBox()
-        self.model_combo.addItems(["Auto (Smart Routing)", "Claude", "GPT-4o", "Gemini", "Ollama"])
+        self.model_combo.addItems(
+            ["Auto (Smart Routing)", "Claude", "GPT-4o", "Gemini", "Ollama"]
+        )
         controls_layout.addWidget(self.model_combo)
 
         controls_layout.addStretch()
@@ -161,7 +163,12 @@ class DiagnosisPanelWidget(QWidget):
 
         # Get selected model
         model_text = self.model_combo.currentText()
-        model_map = {"Claude": "claude", "GPT-4o": "gpt-4o", "Gemini": "gemini", "Ollama": "ollama"}
+        model_map = {
+            "Claude": "claude",
+            "GPT-5": "gpt-5",
+            "Gemini": "gemini",
+            "Ollama": "ollama",
+        }
         model = model_map.get(model_text)
 
         # Show progress
@@ -184,7 +191,9 @@ class DiagnosisPanelWidget(QWidget):
         self.results_table.setRowCount(len(diagnoses))
 
         for row, dx in enumerate(diagnoses):
-            self.results_table.setItem(row, 0, QTableWidgetItem(dx.get("diagnosis", "")))
+            self.results_table.setItem(
+                row, 0, QTableWidgetItem(dx.get("diagnosis", ""))
+            )
             self.results_table.setItem(row, 1, QTableWidgetItem(dx.get("icd10", "")))
 
             prob = dx.get("probability", 0)
@@ -225,4 +234,6 @@ class DiagnosisPanelWidget(QWidget):
         """Handle diagnosis error."""
         self.progress_bar.setVisible(False)
         self.analyze_button.setEnabled(True)
-        QMessageBox.critical(self, "Diagnosis Error", f"Failed to generate diagnosis:\n{error_msg}")
+        QMessageBox.critical(
+            self, "Diagnosis Error", f"Failed to generate diagnosis:\n{error_msg}"
+        )

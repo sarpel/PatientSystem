@@ -1,45 +1,34 @@
-# Core Backend
-sqlalchemy==2.0.23
-pyodbc==5.0.1
-alembic==1.13.0
+# Clinical AI Assistant Dependencies
+# Python 3.10.11+
 
-# Data Processing
-pandas==2.1.4
-numpy==1.26.2
-scipy==1.11.4
+# Web Framework
+fastapi~=0.109.0
+uvicorn[standard]~=0.27.0
 
-# AI Integration - Official SDKs (compatible versions)
-openai>=1.6.1
-anthropic>=0.8.1
-google-generativeai>=0.3.1
-ollama>=0.1.6
+# Data Validation
+pydantic~=2.5.3
+pydantic-settings~=2.1.0
 
-# API Server
-fastapi==0.108.0
-uvicorn[standard]==0.25.0
-pydantic==2.5.3
-pydantic-settings==2.1.0
+# Database
+sqlalchemy~=2.0.25
+pyodbc~=5.0.1
 
-# Desktop GUI
-PySide6==6.6.1
-pyqtgraph==0.13.3
-matplotlib==3.8.2
-
-# CLI
-typer[all]==0.9.0
-rich==13.7.0
-questionary==2.0.1
+# AI Providers
+anthropic~=0.18.0
+openai~=1.12.0
+google-generativeai~=0.3.2
 
 # Utilities
-python-dotenv==1.0.0
-pyyaml==6.0.1
-requests>=2.31.0
-httpx>=0.25.2
-aiofiles==23.2.1
-tenacity==8.2.3
+loguru~=0.7.2
+python-dotenv~=1.0.1
+httpx~=0.27.0
+pyyaml~=6.0.1
+python-multipart~=0.0.9
 
-# Logging
-loguru==0.7.2
-
-# Turkish NLP (optional)
-# zemberek-python==0.1.3
+# Development Tools
+pytest~=8.0.0
+pytest-asyncio~=0.23.3
+black~=24.1.1
+ruff~=0.2.1
+mypy~=1.8.0
+ipython~=8.20.0

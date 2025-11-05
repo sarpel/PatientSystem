@@ -9,6 +9,7 @@ import DiagnosisPanel from "../components/DiagnosisPanel";
 import TreatmentPanel from "../components/TreatmentPanel";
 import LabCharts from "../components/LabCharts";
 import apiClient from "../services/api";
+import { logger } from "../utils/logger";
 
 const PatientDetails: React.FC = () => {
   const { tckn } = useParams<{ tckn: string }>();
@@ -33,7 +34,7 @@ const PatientDetails: React.FC = () => {
         const patient = await apiClient.getPatient(tckn);
         setCurrentPatient(patient);
       } catch (error) {
-        console.error("Failed to load patient:", error);
+        logger.error("Failed to load patient:", error);
         setError("Failed to load patient data");
         navigate("/search");
       } finally {

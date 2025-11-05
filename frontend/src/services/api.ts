@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
+import axiosRetry from "axios-retry";
 import { logger } from "../utils/logger";
 
 // Types
@@ -85,6 +86,18 @@ export class ApiClient {
       },
     });
 
+    // Apply retry logic
+    axiosRetry(this.client, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        return (
+          axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+          (error.response?.status ?? 0) >= 500
+        );
+      },
+    });
+
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
@@ -103,7 +116,7 @@ export class ApiClient {
     this.client.interceptors.response.use(
       (response: AxiosResponse) => {
         if (process.env.NODE_ENV === "development") {
-          console.log(
+          logger.debug(
             `API Response: ${response.status} ${response.config.url}`,
           );
         }
@@ -112,7 +125,7 @@ export class ApiClient {
       (error: AxiosError) => {
         const errorMessage = this.handleError(error);
         if (process.env.NODE_ENV === "development") {
-          console.error("API Error:", errorMessage);
+          logger.error("API Error:", errorMessage);
         }
         return Promise.reject(error);
       },

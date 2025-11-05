@@ -15,9 +15,12 @@ from sqlalchemy.pool import NullPool
 from src.config.settings import settings
 
 
-def create_db_engine() -> Engine:
+def create_db_engine(read_only: bool = True) -> Engine:
     """
     Create SQLAlchemy engine for SQL Server with Windows Authentication.
+
+    Args:
+        read_only: If True, enforce READ-ONLY mode on connections (default: True)
 
     Returns:
         SQLAlchemy Engine instance
@@ -26,14 +29,14 @@ def create_db_engine() -> Engine:
         Exception: If engine creation fails
     """
     try:
-        logger.info(f"Creating database engine for {settings.db_server}/{settings.db_name}")
+        logger.info(f"Creating database engine for {settings.db_server}/{settings.db_name} (read_only={read_only})")
 
         engine = create_engine(
             settings.database_url,
             echo=settings.log_level == "DEBUG",
-            pool_size=10,              # ✅ Add
-            max_overflow=20,           # ✅ Add
-            pool_timeout=30,           # ✅ Add
+            pool_size=10,
+            max_overflow=20,
+            pool_timeout=30,
             pool_pre_ping=True,
             pool_recycle=3600,
             connect_args={"timeout": settings.db_timeout},
@@ -43,6 +46,18 @@ def create_db_engine() -> Engine:
         @event.listens_for(engine, "connect")
         def receive_connect(dbapi_conn, connection_record):
             logger.debug("Database connection established")
+
+            # Enforce READ-ONLY mode if requested
+            if read_only:
+                cursor = dbapi_conn.cursor()
+                try:
+                    # Set connection to READ-ONLY mode (SQL Server 2014+ compatible)
+                    cursor.execute("SET TRANSACTION READ ONLY")
+                    logger.debug("Database connection set to READ-ONLY mode")
+                except Exception as e:
+                    logger.warning(f"Failed to set READ-ONLY mode: {e}")
+                finally:
+                    cursor.close()
 
         logger.info("Database engine created successfully")
         return engine

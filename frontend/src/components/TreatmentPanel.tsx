@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TreatmentRequest, TreatmentResponse } from "../services/api";
 import apiClient from "../services/api";
+import { logger } from "../utils/logger";
 
 interface TreatmentPanelProps {
   tckn: string;
@@ -33,7 +34,7 @@ const TreatmentPanel: React.FC<TreatmentPanelProps> = ({ tckn }) => {
       const response = await apiClient.generateTreatment(request);
       setResult(response);
     } catch (err) {
-      console.error("Treatment generation failed:", err);
+      logger.error("Treatment generation failed:", err);
       setError("Failed to generate treatment plan. Please try again.");
     } finally {
       setLoading(false);

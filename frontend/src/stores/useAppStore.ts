@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { apiClient, Patient } from "../services/api";
+import { logger } from "../utils/logger";
 
 // Types
 interface AppState {
@@ -70,7 +71,7 @@ export const useAppStore = create<AppStore>()(
             updateDatabaseStatus("disconnected");
             updateAIStatus("unavailable");
             const errorMessage = error instanceof Error ? error.message : "Unknown error";
-            console.error("Failed to initialize app:", errorMessage);
+            logger.error("Failed to initialize app:", errorMessage);
             setError("Failed to initialize application");
           } finally {
             set({ appReady: true });
@@ -98,7 +99,7 @@ export const useAppStore = create<AppStore>()(
             set({ patientSearchResults: results });
             return results;
           } catch (error) {
-            console.error("Patient search failed:", error);
+            logger.error("Patient search failed:", error);
             set({ error: "Failed to search patients" });
             return [];
           } finally {

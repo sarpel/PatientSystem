@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LabTest } from "../services/api";
 import apiClient from "../services/api";
+import { logger } from "../utils/logger";
 
 interface LabChartsProps {
   tckn: string;
@@ -39,7 +40,7 @@ const LabCharts: React.FC<LabChartsProps> = ({ tckn }) => {
       const data = await apiClient.getLabTests(tckn, selectedTest);
       setLabData(data);
     } catch (err) {
-      console.error("Failed to load lab data:", err);
+      logger.error("Failed to load lab data:", err);
       setError("Failed to load laboratory data");
     } finally {
       setLoading(false);

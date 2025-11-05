@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
+from sqlalchemy import bindparam
 
 from ...clinical.patient_summarizer import PatientSummarizer
 from ...database.connection import get_session
@@ -34,10 +35,15 @@ async def search_patients(
 
             # If query looks like TCKN (numeric), search TCKN
             if q.isdigit():
-                query = query.filter(Patient.HASTA_KIMLIK_NO.like(f"{q}%"))
+                search_pattern = f"{q}%"
+                query = query.filter(Patient.HASTA_KIMLIK_NO.like(bindparam('pattern'))).params(pattern=search_pattern)
             else:
                 # Search by name
-                query = query.filter((Patient.AD.ilike(f"%{q}%")) | (Patient.SOYAD.ilike(f"%{q}%")))
+                search_pattern = f"%{q}%"
+                query = query.filter(
+                    (Patient.AD.ilike(bindparam('pattern'))) |
+                    (Patient.SOYAD.ilike(bindparam('pattern')))
+                ).params(pattern=search_pattern)
 
             patients = query.limit(limit).all()
 

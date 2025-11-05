@@ -31,11 +31,12 @@ def create_db_engine() -> Engine:
         engine = create_engine(
             settings.database_url,
             echo=settings.log_level == "DEBUG",
-            pool_pre_ping=True,  # Enable connection health checks
-            pool_recycle=3600,  # Recycle connections after 1 hour
-            connect_args={
-                "timeout": settings.db_timeout,
-            },
+            pool_size=10,              # ✅ Add
+            max_overflow=20,           # ✅ Add
+            pool_timeout=30,           # ✅ Add
+            pool_pre_ping=True,
+            pool_recycle=3600,
+            connect_args={"timeout": settings.db_timeout},
         )
 
         # Add event listener for connection

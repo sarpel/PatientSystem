@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
+import { logger } from "../utils/logger";
 
 // Types
 export interface Patient {
@@ -89,9 +90,7 @@ export class ApiClient {
       (config) => {
         // Add any request logging or authentication
         if (process.env.NODE_ENV === "development") {
-          console.log(
-            `API Request: ${config.method?.toUpperCase()} ${config.url}`,
-          );
+          logger.debug(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
         }
         return config;
       },

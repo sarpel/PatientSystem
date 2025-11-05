@@ -5,7 +5,7 @@
 
 ---
 
-## 5-Minute Fixes
+<!-- ## 5-Minute Fixes
 
 ### ✅ 1. Install Frontend Dependencies
 
@@ -143,7 +143,7 @@ console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
 // After
 import { logger } from "../utils/logger";
 logger.debug(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
-```
+``` -->
 
 ---
 

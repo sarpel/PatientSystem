@@ -173,7 +173,7 @@ export class ApiClient {
     const response = await this.client.get("/patients/search", {
       params: { q: query, limit },
     });
-    return response.data;
+    return response.data.patients || [];
   }
 
   async getPatient(tckn: string): Promise<Patient> {

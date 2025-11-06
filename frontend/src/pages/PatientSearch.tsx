@@ -30,9 +30,9 @@ const PatientSearch: React.FC = () => {
     }
   }, [debouncedQuery, searchPatients, clearPatientSearch]);
 
-  const handlePatientSelect = (patient: Patient) => {
+  const handlePatientSelect = (patient: any) => {
     setCurrentPatient(patient);
-    navigate(`/patient/${patient.TCKN}`);
+    navigate(`/patient/${patient.tckn}`);
   };
 
   const calculateAge = (birthDate?: string): string => {
@@ -147,37 +147,35 @@ const PatientSearch: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                {patientSearchResults.map((patient) => (
+                {patientSearchResults.map((patient: any) => (
                   <div
-                    key={patient.TCKN}
+                    key={patient.tckn}
                     onClick={() => handlePatientSelect(patient)}
                     className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
                   >
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-semibold text-gray-900">
-                          {patient.ADI} {patient.SOYADI}
+                          {patient.name}
                         </h3>
                         <div className="mt-1 flex flex-wrap gap-2 text-sm text-gray-600">
                           <span className="font-medium">TCKN:</span>
-                          <span>{patient.TCKN}</span>
-                          <span className="font-medium">Age:</span>
-                          <span>{calculateAge(patient.DOGUM_TARIHI)}</span>
+                          <span>{patient.tckn}</span>
+                          {patient.age !== null && (
+                            <>
+                              <span className="font-medium">Age:</span>
+                              <span>{patient.age} years</span>
+                            </>
+                          )}
                           <span className="font-medium">Gender:</span>
                           <span>
-                            {patient.CINSIYET === "E"
+                            {patient.gender === "E"
                               ? "Male"
-                              : patient.CINSIYET === "K"
+                              : patient.gender === "K"
                                 ? "Female"
                                 : "Unknown"}
                           </span>
                         </div>
-                        {patient.TELEFON && (
-                          <div className="mt-1 text-sm text-gray-600">
-                            <span className="font-medium">Phone:</span>{" "}
-                            {patient.TELEFON}
-                          </div>
-                        )}
                       </div>
                       <svg
                         className="h-5 w-5 text-gray-400 mt-1"

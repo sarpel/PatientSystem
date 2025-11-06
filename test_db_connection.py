@@ -17,11 +17,11 @@ from sqlalchemy import create_engine, text
 TESTS = [
     {
         "name": "localhost with HIZIR instance",
-        "url": "mssql+pyodbc://localhost\\HIZIR/TestDB?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes",
+        "url": "mssql+pyodbc://localhost\\HIZIR/TestDB?driver=ODBC+Driver+11+for+SQL+Server&trusted_connection=yes",
     },
     {
         "name": "SARPEL-PC with HIZIR instance",
-        "url": "mssql+pyodbc://SARPEL-PC\\HIZIR/TestDB?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes",
+        "url": "mssql+pyodbc://SARPEL-PC\\HIZIR/TestDB?driver=ODBC+Driver+11+for+SQL+Server&trusted_connection=yes",
     },
 ]
 

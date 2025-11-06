@@ -168,9 +168,9 @@ PatientSystem/
 
 **AI Integration**:
 - Ollama (local, free)
-- Claude 3.5 Sonnet
-- GPT-4o
-- Google Gemini
+- Claude-Sonnet-4.5
+- GPT-5
+- Gemini-2.5-flash
 
 ## 🔧 Yapılandırma
 

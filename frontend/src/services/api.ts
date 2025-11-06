@@ -79,7 +79,7 @@ export class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: "/api",
+      baseURL: "/api/v1",
       timeout: 30000,
       headers: {
         "Content-Type": "application/json",
@@ -159,12 +159,12 @@ export class ApiClient {
 
   // Health checks
   async getHealth() {
-    const response = await this.client.get("/health");
+    const response = await axios.get("/health");
     return response.data;
   }
 
   async getDatabaseHealth() {
-    const response = await this.client.get("/health/database");
+    const response = await axios.get("/health/database");
     return response.data;
   }
 

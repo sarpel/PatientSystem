@@ -67,14 +67,15 @@ export const useAppStore = create<AppStore>()(
             await apiClient.getHealth();
             updateDatabaseStatus("connected");
             updateAIStatus("ready");
+            set({ appReady: true });
           } catch (error: unknown) {
             updateDatabaseStatus("disconnected");
             updateAIStatus("unavailable");
             const errorMessage = error instanceof Error ? error.message : "Unknown error";
             logger.error("Failed to initialize app:", errorMessage);
             setError("Failed to initialize application");
+            set({ appReady: false });
           } finally {
-            set({ appReady: true });
             setLoading(false);
           }
         },

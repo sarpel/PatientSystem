@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -126,10 +127,10 @@ class DiagnosisEngine:
         """
         try:
             with get_app_db_session() as app_session:
-                codes = app_session.query(ICDCode).filter(ICDCode.is_active == True).all()
+                codes = app_session.query(ICDCode).filter(ICDCode.is_active.is_(True)).all()
                 return {code.diagnosis_name_en: code.code for code in codes}
         except Exception as e:
-            # Fallback to empty dict - ICD codes are optional
+            logger.warning(f"Failed to load ICD codes from database, using fallback: {e}")
             return {}
 
     def _load_red_flag_patterns(self) -> List[Dict[str, Any]]:

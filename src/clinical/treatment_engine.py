@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -376,7 +377,7 @@ class TreatmentEngine:
             "egfr": None,  # Would come from lab data
             "creatinine": None,  # Would come from lab data
             "liver_function": None,  # Would come from lab data
-            "allergies": [],  # Note: ILAC_ALERJISI doesn't exist, would need DTY_HASTA_OZLUK_ALERJI
+            "allergies": [""],  # Note: ILAC_ALERJISI doesn't exist, would need DTY_HASTA_OZLUK_ALERJI
             "current_medications": current_medications,
             "comorbidities": [],  # Would come from diagnosis data
             "smoking_status": patient.demographics.SIGARA_KULLANIMI if patient.demographics else None,
@@ -524,7 +525,7 @@ Format: JSON olarak dön.
         for drug_name in guidelines.get("first_line", []):
             if drug_name in self._drug_database:
                 drug_info = self._drug_database[drug_name]
-                meds.append(
+                medications.append(
                     self._create_medication_recommendation(drug_name, drug_info, patient_context)
                 )
 

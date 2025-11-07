@@ -159,12 +159,12 @@ export class ApiClient {
 
   // Health checks
   async getHealth() {
-    const response = await axios.get("/health");
+    const response = await this.client.get("/health");
     return response.data;
   }
 
   async getDatabaseHealth() {
-    const response = await axios.get("/health/database");
+    const response = await this.client.get("/health/database");
     return response.data;
   }
 
@@ -173,7 +173,10 @@ export class ApiClient {
     const response = await this.client.get("/patients/search", {
       params: { q: query, limit },
     });
-    return response.data.patients || [];
+    if (!('patients' in response.data)) {
+      throw new Error("API response missing 'patients' field");
+    }
+    return response.data.patients;
   }
 
   async getPatient(tckn: string): Promise<Patient> {

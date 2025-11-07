@@ -125,7 +125,7 @@ class AppSession(AppBase):
 **Impact**: Maintainable, localizable ICD code mappings
 
 **Features**:
-- Migrates 67 hardcoded ICD-10 mappings to SQLite database
+- Migrates 56 hardcoded ICD-10 mappings to SQLite database
 - Supports Turkish translations
 - Automatic categorization (Cardiovascular, Respiratory, etc.)
 - Version tracking (ICD-10, future ICD-11)

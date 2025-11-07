@@ -42,7 +42,7 @@ def test_connection(config):
         with engine.connect() as conn:
             # Basic query
             result = conn.execute(text("SELECT 1 AS test"))
-            row = result.fetchone()
+            _ = result.fetchone()  # Consume result
 
             # Get server info
             server_info = conn.execute(text("SELECT @@VERSION AS version"))
@@ -70,7 +70,8 @@ def test_connection(config):
     finally:
         try:
             engine.dispose()
-        except:
+        except Exception:
+            # Ignore disposal errors
             pass
 
 def main():

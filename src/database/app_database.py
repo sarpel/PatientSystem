@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Generator
 
 from loguru import logger
-from sqlalchemy import create_engine, event, Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker, declarative_base
 from sqlalchemy.sql import func

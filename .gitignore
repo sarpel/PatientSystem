@@ -133,7 +133,3 @@ config/ai_models.yaml
 Thumbs.db
 Desktop.ini
 
-# ================================
-# Serena MCP
-# ================================
-.serena/

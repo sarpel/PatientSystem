@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { apiClient, Patient } from "../services/api";
+import { logger } from "../utils/logger";
 
 // Types
 interface AppState {
@@ -63,32 +64,17 @@ export const useAppStore = create<AppStore>()(
           setError(null);
 
           try {
-            // Check database and AI health
-            await Promise.all([
-              apiClient
-                .getHealth()
-                .then(() => {
-                  updateDatabaseStatus("connected");
-                })
-                .catch(() => {
-                  updateDatabaseStatus("disconnected");
-                }),
-
-              apiClient
-                .getHealth()
-                .then(() => {
-                  updateAIStatus("ready");
-                })
-                .catch(() => {
-                  updateAIStatus("unavailable");
-                }),
-            ]);
-
-            set({ appReady: true });
-          } catch (error) {
-            console.error("Failed to initialize app:", error);
+            await apiClient.getHealth();
+            updateDatabaseStatus("connected");
+            updateAIStatus("ready");
+          } catch (error: unknown) {
+            updateDatabaseStatus("disconnected");
+            updateAIStatus("unavailable");
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            logger.error("Failed to initialize app:", errorMessage);
             setError("Failed to initialize application");
           } finally {
+            set({ appReady: true });
             setLoading(false);
           }
         },
@@ -113,7 +99,7 @@ export const useAppStore = create<AppStore>()(
             set({ patientSearchResults: results });
             return results;
           } catch (error) {
-            console.error("Patient search failed:", error);
+            logger.error("Patient search failed:", error);
             set({ error: "Failed to search patients" });
             return [];
           } finally {

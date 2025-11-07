@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { DiagnosisRequest, DiagnosisResponse } from "../services/api";
 import apiClient from "../services/api";
+import { logger } from "../utils/logger";
 
 interface DiagnosisPanelProps {
   tckn: string;
@@ -33,7 +34,7 @@ const DiagnosisPanel: React.FC<DiagnosisPanelProps> = ({ tckn }) => {
       const response = await apiClient.generateDiagnosis(request);
       setResult(response);
     } catch (err) {
-      console.error("Diagnosis generation failed:", err);
+      logger.error("Diagnosis generation failed:", err);
       setError("Failed to generate diagnosis. Please try again.");
     } finally {
       setLoading(false);

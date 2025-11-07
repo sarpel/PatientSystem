@@ -16,6 +16,7 @@ if errorlevel 1 (
 echo Checking Node.js version...
 for /f "tokens=1" %%i in ('node --version') do set NODE_VERSION=%%i
 echo Found Node.js %NODE_VERSION%
+echo.
 
 REM Check npm installation
 npm --version >nul 2>&1
@@ -25,36 +26,64 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Checking npm version...
+for /f "tokens=1" %%i in ('npm --version') do set NPM_VERSION=%%i
+echo Found npm %NPM_VERSION%
+echo.
+
+REM Navigate to frontend directory
 echo Navigating to frontend directory...
-cd frontend
-if errorlevel 1 (
+if not exist frontend (
     echo ERROR: frontend directory not found
+    echo Make sure you're running this from the project root
     pause
     exit /b 1
 )
 
+cd frontend
 echo.
-echo [1/2] Installing dependencies...
+
+echo [1/3] Installing dependencies...
 call npm install
 if errorlevel 1 (
     echo ERROR: Failed to install dependencies
+    echo Try deleting node_modules and package-lock.json, then run again
+    cd ..
     pause
     exit /b 1
 )
-
 echo.
-echo [2/2] Verifying installation...
+
+echo [2/3] Building production bundle...
+call npm run build
+if errorlevel 1 (
+    echo WARNING: Build failed - continuing anyway
+    echo You can still use dev mode with: npm run dev
+) else (
+    echo Production build successful!
+)
+echo.
+
+echo [3/3] Verifying installation...
 call npm list --depth=0
-
 echo.
+
+cd ..
+
 echo ========================================
 echo Frontend Setup Complete!
 echo ========================================
 echo.
-echo To start the development server:
+echo Development server:
 echo   cd frontend
 echo   npm run dev
+echo   Opens at: http://localhost:5173
 echo.
-echo The frontend will be available at http://localhost:5173
+echo Production build:
+echo   cd frontend
+echo   npm run build
+echo   Preview with: npm run preview
+echo.
+echo The quickstart script will handle both backend and frontend automatically.
 echo.
 pause

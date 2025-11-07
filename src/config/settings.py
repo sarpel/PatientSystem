@@ -34,6 +34,10 @@ class Settings(BaseSettings):
         default="yes", description="Trust server certificate (yes/no)"
     )
     db_timeout: int = Field(default=30, description="Connection timeout in seconds")
+    # Database Connection Pool
+    db_pool_size: int = Field(default=10, description="Connection pool size")
+    db_pool_max_overflow: int = Field(default=20, description="Max overflow")
+    db_pool_timeout: int = Field(default=30, description="Pool timeout")
 
     # AI API Keys
     anthropic_api_key: Optional[str] = Field(

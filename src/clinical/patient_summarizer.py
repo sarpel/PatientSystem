@@ -90,8 +90,8 @@ class PatientSummarizer:
             "birth_date": patient.DOGUM_TARIHI.isoformat() if patient.DOGUM_TARIHI else None,
             "age": patient.age,
             "gender": patient.CINSIYET,
-            "tc_number": patient.TC_KIMLIK_NO,
-            "blood_type": patient.KAN_GRUBU,
+            "tc_number": patient.HASTA_KIMLIK_NO,
+            "blood_type": patient.demographics.KAN_GRUBU if patient.demographics else None,
             "is_deceased": patient.is_deceased,
         }
 
@@ -104,7 +104,7 @@ class PatientSummarizer:
                     "height_cm": demo.BOY,
                     "bmi": demo.bmi,
                     "bmi_category": demo.bmi_category,
-                    "smoking_status": demo.SIGARA,
+                    "smoking_status": demo.SIGARA_KULLANIMI,
                     "alcohol_use": demo.ALKOL_KULLANIMI,
                 }
             )
@@ -200,13 +200,10 @@ class PatientSummarizer:
         """Get patient allergies."""
         allergies = []
 
-        if patient.ILAC_ALERJISI:
-            allergies.append(f"Drug allergy: {patient.ILAC_ALERJISI}")
-
-        if patient.demographics:
-            demo = patient.demographics
-            if demo.ILAC_ALERJISI:
-                allergies.append(f"Drug allergy (demographics): {demo.ILAC_ALERJISI}")
+        # Note: ILAC_ALERJISI column does not exist in Patient or PatientDemographics models
+        # Allergy information would need to be retrieved from DTY_HASTA_OZLUK_ALERJI table
+        # For now, return empty list as placeholder
+        # TODO: Implement allergy retrieval from DTY_HASTA_OZLUK_ALERJI table
 
         return allergies
 

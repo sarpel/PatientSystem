@@ -376,10 +376,10 @@ class TreatmentEngine:
             "egfr": None,  # Would come from lab data
             "creatinine": None,  # Would come from lab data
             "liver_function": None,  # Would come from lab data
-            "allergies": patient.ILAC_ALERJISI,
+            "allergies": [],  # Note: ILAC_ALERJISI doesn't exist, would need DTY_HASTA_OZLUK_ALERJI
             "current_medications": current_medications,
             "comorbidities": [],  # Would come from diagnosis data
-            "smoking_status": patient.demographics.SIGARA if patient.demographics else None,
+            "smoking_status": patient.demographics.SIGARA_KULLANIMI if patient.demographics else None,
             "alcohol_use": patient.demographics.ALKOL_KULLANIMI if patient.demographics else None,
         }
 
@@ -405,7 +405,7 @@ class TreatmentEngine:
             return self._parse_ai_treatment_response(ai_response)
 
         except Exception as e:
-            print(f"AI treatment failed, using rule-based: {e}")
+            logger.warning(f"AI treatment failed, using rule-based: {e}")
             return self._generate_rule_based_treatment(
                 diagnosis, diagnosis_details, patient_context, patient_factors
             )
@@ -494,7 +494,7 @@ Format: JSON olarak dön.
             return result
 
         except Exception as e:
-            print(f"Failed to parse AI treatment response: {e}")
+            logger.error(f"Failed to parse AI treatment response: {e}")
             return self._get_default_treatment_result()
 
     def _get_default_treatment_result(self) -> Dict[str, Any]:

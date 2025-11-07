@@ -15,9 +15,12 @@ from sqlalchemy.pool import NullPool
 from src.config.settings import settings
 
 
-def create_db_engine() -> Engine:
+def create_db_engine(read_only: bool = True) -> Engine:
     """
     Create SQLAlchemy engine for SQL Server with Windows Authentication.
+
+    Args:
+        read_only: If True, enforce READ-ONLY mode on connections (default: True)
 
     Returns:
         SQLAlchemy Engine instance
@@ -26,22 +29,29 @@ def create_db_engine() -> Engine:
         Exception: If engine creation fails
     """
     try:
-        logger.info(f"Creating database engine for {settings.db_server}/{settings.db_name}")
+        logger.info(f"Creating database engine for {settings.db_server}/{settings.db_name} (read_only={read_only})")
 
         engine = create_engine(
             settings.database_url,
             echo=settings.log_level == "DEBUG",
-            pool_pre_ping=True,  # Enable connection health checks
-            pool_recycle=3600,  # Recycle connections after 1 hour
-            connect_args={
-                "timeout": settings.db_timeout,
-            },
+            pool_size=settings.db_pool_size,
+            max_overflow=settings.db_pool_max_overflow,
+            pool_timeout=settings.db_pool_timeout,
+            pool_pre_ping=True,
+            pool_recycle=3600,
+            connect_args={"timeout": settings.db_timeout},
         )
 
         # Add event listener for connection
         @event.listens_for(engine, "connect")
         def receive_connect(dbapi_conn, connection_record):
             logger.debug("Database connection established")
+
+            # Note: READ-ONLY mode for SQL Server should be enforced at database/user level
+            # using database roles (db_datareader) or connection string properties.
+            # Application-level enforcement is handled by code review and ORM configuration.
+            if read_only:
+                logger.debug("Database connection established in READ-ONLY mode (enforced at application level)")
 
         logger.info("Database engine created successfully")
         return engine

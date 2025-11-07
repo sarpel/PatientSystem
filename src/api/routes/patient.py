@@ -29,26 +29,49 @@ async def search_patients(
     """
     try:
         with get_session() as session:
-            # Search by TCKN or name
-            query = session.query(Patient)
+            # Select only the columns we need to avoid ODBC type compatibility issues
+            query = session.query(
+                Patient.HASTA_KIMLIK_NO,
+                Patient.AD,
+                Patient.SOYAD,
+                Patient.DOGUM_TARIHI,
+                Patient.CINSIYET
+            )
 
             # If query looks like TCKN (numeric), search TCKN
             if q.isdigit():
-                query = query.filter(Patient.HASTA_KIMLIK_NO.like(f"{q}%"))
+                search_pattern = f"{q}%"
+                query = query.filter(Patient.HASTA_KIMLIK_NO.like(search_pattern))
             else:
                 # Search by name
-                query = query.filter((Patient.AD.ilike(f"%{q}%")) | (Patient.SOYAD.ilike(f"%{q}%")))
+                search_pattern = f"%{q}%"
+                query = query.filter(
+                    (Patient.AD.ilike(search_pattern)) |
+                    (Patient.SOYAD.ilike(search_pattern))
+                )
 
             patients = query.limit(limit).all()
 
             # Format results
             results = []
             for patient in patients:
+                # Calculate age from birth date
+                age = None
+                if patient.DOGUM_TARIHI:
+                    from datetime import date
+                    today = date.today()
+                    age = today.year - patient.DOGUM_TARIHI.year - (
+                        (today.month, today.day) < (patient.DOGUM_TARIHI.month, patient.DOGUM_TARIHI.day)
+                    )
+
+                # Build full name
+                full_name = f"{patient.AD or ''} {patient.SOYAD or ''}".strip()
+
                 results.append(
                     {
                         "tckn": str(patient.HASTA_KIMLIK_NO) if patient.HASTA_KIMLIK_NO else None,
-                        "name": patient.full_name,
-                        "age": patient.age,
+                        "name": full_name,
+                        "age": age,
                         "gender": patient.CINSIYET,
                         "last_visit": None,  # Would need to query visits
                     }

@@ -18,7 +18,9 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.clinical.prompt_builder import create_diagnosis_prompt
 from src.config.settings import settings
+from src.database.app_database import ICDCode, get_app_db_session
 from src.models.clinical import Diagnosis
 from src.models.patient import Patient, PatientDemographics
 from src.models.visit import PatientAdmission, Visit
@@ -118,53 +120,18 @@ class DiagnosisEngine:
         return diagnosis_result
 
     def _load_icd10_mapping(self) -> Dict[str, str]:
-        """Load common diagnosis to ICD-10 code mappings."""
-        return {
-            # Respiratory
-            "Acute Bronchitis": "J20.9",
-            "Upper Respiratory Tract Infection": "J06.9",
-            "Pneumonia": "J18.9",
-            "COPD Exacerbation": "J44.1",
-            "Asthma": "J45.9",
-            "Influenza": "J11.1",
-            # Cardiovascular
-            "Hypertension": "I10",
-            "Angina Pectoris": "I20.9",
-            "Myocardial Infarction": "I21.9",
-            "Heart Failure": "I50.9",
-            "Atrial Fibrillation": "I48.91",
-            # Gastrointestinal
-            "Gastritis": "K29.70",
-            "Gastroenteritis": "K52.9",
-            "GERD": "K21.9",
-            "Irritable Bowel Syndrome": "K58.0",
-            "Gastric Ulcer": "K25.9",
-            # Endocrine/Metabolic
-            "Type 2 Diabetes": "E11.9",
-            "Type 1 Diabetes": "E10.9",
-            "Hypothyroidism": "E03.9",
-            "Hyperthyroidism": "E05.9",
-            "Metabolic Syndrome": "E88.81",
-            # Neurological
-            "Migraine": "G43.9",
-            "Tension Headache": "G44.2",
-            "Stroke": "I63.9",
-            "TIA": "G45.9",
-            "Epilepsy": "G40.9",
-            # Musculoskeletal
-            "Low Back Pain": "M54.5",
-            "Osteoarthritis": "M19.9",
-            "Rheumatoid Arthritis": "M06.9",
-            "Fibromyalgia": "M79.7",
-            # Infectious
-            "COVID-19": "U07.1",
-            "UTI": "N39.0",
-            "Cellulitis": "L03.90",
-            # Mental Health
-            "Depression": "F32.9",
-            "Anxiety": "F41.9",
-            "Insomnia": "G47.00",
-        }
+        """
+        Load ICD-10 code mappings from app database.
+        Falls back to empty dict if database is not available.
+        """
+        try:
+            with get_app_db_session() as app_session:
+                codes = app_session.query(ICDCode).filter(ICDCode.is_active).all()
+                return {code.diagnosis_name_en: code.code for code in codes}
+        except Exception as e:
+            # Fallback to empty dict - ICD codes are optional
+            logger.warning(f"Failed to load ICD codes from database: {e}")
+            return {}
 
     def _load_red_flag_patterns(self) -> List[Dict[str, Any]]:
         """Load red flag patterns requiring urgent attention."""
@@ -222,25 +189,24 @@ class DiagnosisEngine:
         if not patient:
             raise ValueError(f"Patient {patient_id} not found")
 
-        # Optimized query using joinedload to fetch related data in single query
+        # Optimized query - directly select only what we need to avoid N+1 and cartesian product
         past_diagnoses_stmt = (
-            select(Diagnosis)
+            select(Diagnosis.TANI_ACIKLAMA)
             .join(Visit)
             .join(PatientAdmission)
-            .options(joinedload(Diagnosis.visit).joinedload(Visit.admission))
             .where(PatientAdmission.HASTA_KAYIT == patient_id)
+            .where(Diagnosis.TANI_ACIKLAMA.isnot(None))
             .distinct()
         )
 
-        past_diagnoses_result = self.session.execute(past_diagnoses_stmt).scalars().all()
-        past_diagnoses = [dx.TANI_ACIKLAMA for dx in past_diagnoses_result if dx.TANI_ACIKLAMA]
+        past_diagnoses = list(self.session.execute(past_diagnoses_stmt).scalars())
 
         # Build demographics
         demographics = {
             "age": patient.age,
             "gender": patient.CINSIYET,
             "bmi": patient.demographics.bmi if patient.demographics else None,
-            "smoking_status": patient.demographics.SIGARA if patient.demographics else None,
+            "smoking_status": patient.demographics.SIGARA_KULLANIMI if patient.demographics else None,
             "comorbidities": past_diagnoses,
         }
 
@@ -278,103 +244,15 @@ class DiagnosisEngine:
 
         except Exception as e:
             # Fallback to rule-based approach
-            print(f"AI diagnosis failed, using rule-based: {e}")
+            logger.warning(f"AI diagnosis failed, using rule-based: {e}")
             return self._generate_rule_based_diagnosis(context)
 
     def _create_diagnosis_prompt(self, context: DiagnosisContext) -> str:
-        """Create structured prompt for AI diagnosis generation."""
-        # Build demographic section
-        demographic_info = self._build_demographic_section(context.demographics)
-
-        # Build clinical data sections
-        complaints_section = self._build_complaints_section(context.chief_complaints)
-        vitals_section = self._build_vitals_section(context.vital_signs)
-        exam_section = self._build_exam_section(context.physical_exam)
-        labs_section = self._build_labs_section(context.lab_results)
-
-        # Assemble complete prompt
-        prompt = f"""Hasta bilgileri:
-
-DEMOGRAFİK BİLGİLER:
-{demographic_info}
-
-ŞİKAYETLER:
-{complaints_section}
-
-VİTAL BULGULARAR:
-{vitals_section}
-
-FİZİK MUAYENE:
-{exam_section}
-
-LAB SONUÇLARI:
-{labs_section}
-
-Lütfen diferansiyel tanı listesi ver. Her tanı için:
-1. Tanı adı (Türkçe)
-2. ICD-10 kodu
-3. Olasılık (% olarak)
-4. Destekleyen bulgular
-5. Kısa gerekçelendirme
-6. Acil durumu (urgent/soon/routine)
-7. Önerilen ek testler
-8. Uyarılar/red flag var mı
-
-Format: JSON dizisi olarak dön.
-
-Örnek format:
-[
-  {{
-    "diagnosis": "Tip 2 Diabetes Mellitus",
-    "icd10": "E11.9",
-    "probability": 0.75,
-    "reasoning": "HbA1c yüksek, açlık glukozu yükselmiş...",
-    "supporting_findings": ["HbA1c 8.4%", "açlık glukozu 165 mg/dL"],
-    "red_flags": [],
-    "recommended_tests": ["Lipid paneli", "Mikroalbüminüri", "Göz muayenesi"],
-    "urgency": "soon"
-  }}
-]"""
-
-        return prompt
-
-    def _build_demographic_section(self, demographics: Dict[str, Any]) -> str:
-        """Build demographic information section for prompt."""
-        age = demographics.get("age", "Bilinmiyor")
-        gender = demographics.get("gender", "Bilinmiyor")
-        bmi = demographics.get("bmi", "Bilinmiyor")
-        smoking = demographics.get("smoking_status", "Bilinmiyor")
-        comorbidities = ", ".join(demographics.get("comorbidities", [])) or "Yok"
-
-        return f"""- Yaş: {age} yıl
-- Cinsiyet: {gender}
-- BMI: {bmi}
-- Sigara kullanımı: {smoking}
-- Geçmiş hastalıklar: {comorbidities}"""
-
-    def _build_complaints_section(self, chief_complaints: List[str]) -> str:
-        """Build chief complaints section for prompt."""
-        if not chief_complaints:
-            return "Mevcut değil"
-        return "\n".join(f"- {complaint}" for complaint in chief_complaints)
-
-    def _build_vitals_section(self, vital_signs: Dict[str, Any]) -> str:
-        """Build vital signs section for prompt."""
-        if not vital_signs:
-            return "Mevcut değil"
-        return "\n".join(f"- {k}: {v}" for k, v in vital_signs.items())
-
-    def _build_exam_section(self, physical_exam: Dict[str, Any]) -> str:
-        """Build physical examination section for prompt."""
-        if not physical_exam:
-            return "Mevcut değil"
-        return "\n".join(f"- {k}: {v}" for k, v in physical_exam.items())
-
-    def _build_labs_section(self, lab_results: Dict[str, Any]) -> str:
-        """Build laboratory results section for prompt."""
-        if not lab_results:
-            return "Mevcut değil"
-        return "\n".join(f"- {k}: {v}" for k, v in lab_results.items())
+        """
+        Create structured prompt for AI diagnosis generation using templates.
+        Delegates to template-based prompt builder for cleaner separation of concerns.
+        """
+        return create_diagnosis_prompt(context)
 
     def _parse_ai_diagnosis_response(self, ai_response: str) -> Dict[str, Any]:
         """Parse AI diagnosis response into structured format."""
@@ -409,7 +287,7 @@ Format: JSON dizisi olarak dön.
             return self._format_diagnosis_result(diagnosis_list)
 
         except Exception as e:
-            print(f"Failed to parse AI response: {e}")
+            logger.error(f"Failed to parse AI response: {e}")
             return {
                 "differential_diagnosis": [],
                 "urgent_conditions": [],

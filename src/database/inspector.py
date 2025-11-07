@@ -292,13 +292,13 @@ class DatabaseInspector:
             "Hasta Demografik": ["GP_HASTA_KAYIT", "GP_HASTA_OZLUK", "DTY_HASTA_OZLUK"],
             "Muayene & Vizit": ["GP_MUAYENE", "GP_HASTA_KABUL", "GP_HASTA_CIKIS"],
             "Tanı (ICD)": ["GP_MUAYENE", "DTY_MUAYENE_EK_TANI", "LST_ICD10"],
-            "Reçete & İlaç": ["GP_RECETE", "DTY_RECETE_ILAC", "HRC_ILAC"],
+            "Reçete & İlaç": ["GP_RECETE", "DTY_RECETE_ILAC", "HRC_ILAC_KULLANIM_VARSAYILANLARI"],
             "Lab & Tetkik": ["GP_HASTANE_TETKIK_ISTEM", "DTY_HASTANE_ISTEM", "HRC_DTY_LAB_SONUC"],
             "Alerji": ["DTY_HASTA_OZLUK_ALERJI"],
             "Gebe İzlem": ["GP_GEBE_IZLEM", "DTY_GEBE_IZLEM"],
             "Bebek & Çocuk": ["GP_BC_IZLEM", "DTY_BC_IZLEM"],
             "Aşı": ["GP_ASI", "HRC_ASI_TAKVIMI"],
-            "Kronik Hastalıklar": ["GP_DIYABET", "GP_KRONIK_HASTALIKLAR", "GP_HYP"],
+            "Kronik Hastalıklar": ["GP_DIYABET", "GP_KRONIK_HASTALIKLAR", "GP_HYP_FIZIKSEL_BULGULAR"],
         }
 
         summary = {

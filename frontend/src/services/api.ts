@@ -1,4 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
+import axiosRetry from "axios-retry";
+import { logger } from "../utils/logger";
 
 // Types
 export interface Patient {
@@ -77,10 +79,22 @@ export class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: "/api",
+      baseURL: "/api/v1",
       timeout: 30000,
       headers: {
         "Content-Type": "application/json",
+      },
+    });
+
+    // Apply retry logic
+    axiosRetry(this.client, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        return (
+          axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+          (error.response?.status ?? 0) >= 500
+        );
       },
     });
 
@@ -89,9 +103,7 @@ export class ApiClient {
       (config) => {
         // Add any request logging or authentication
         if (process.env.NODE_ENV === "development") {
-          console.log(
-            `API Request: ${config.method?.toUpperCase()} ${config.url}`,
-          );
+          logger.debug(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
         }
         return config;
       },
@@ -104,7 +116,7 @@ export class ApiClient {
     this.client.interceptors.response.use(
       (response: AxiosResponse) => {
         if (process.env.NODE_ENV === "development") {
-          console.log(
+          logger.debug(
             `API Response: ${response.status} ${response.config.url}`,
           );
         }
@@ -113,7 +125,7 @@ export class ApiClient {
       (error: AxiosError) => {
         const errorMessage = this.handleError(error);
         if (process.env.NODE_ENV === "development") {
-          console.error("API Error:", errorMessage);
+          logger.error("API Error:", errorMessage);
         }
         return Promise.reject(error);
       },
@@ -161,7 +173,7 @@ export class ApiClient {
     const response = await this.client.get("/patients/search", {
       params: { q: query, limit },
     });
-    return response.data;
+    return response.data.patients || [];
   }
 
   async getPatient(tckn: string): Promise<Patient> {

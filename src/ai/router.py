@@ -11,7 +11,7 @@ from tenacity import (
 )
 
 from ..utils.error_handler import error_context, handle_errors
-from ..utils.exceptions import AIServiceError, ErrorSeverity
+from ..utils.exceptions import AIServiceError, ErrorSeverity, ErrorCategory
 from .anthropic_client import AnthropicClient
 from .base_client import (
     AIProviderError,

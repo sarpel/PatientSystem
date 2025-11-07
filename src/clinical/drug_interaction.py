@@ -392,12 +392,10 @@ class DrugInteractionChecker:
             return []
 
         allergies = []
-        if patient.ILAC_ALERJISI:
-            allergies.append(patient.ILAC_ALERJISI)
-
-        # Also check demographics if available
-        if patient.demographics and patient.demographics.ILAC_ALERJISI:
-            allergies.append(patient.demographics.ILAC_ALERJISI)
+        # Note: ILAC_ALERJISI column does not exist in Patient or PatientDemographics models
+        # Allergy information would need to be retrieved from DTY_HASTA_OZLUK_ALERJI table
+        # For now, return empty list as placeholder
+        # TODO: Implement allergy retrieval from DTY_HASTA_OZLUK_ALERJI table
 
         return allergies
 
@@ -544,7 +542,7 @@ class DrugInteractionChecker:
             return self._parse_ai_interaction_response(ai_response, medications)
 
         except Exception as e:
-            print(f"AI interaction check failed: {e}")
+            logger.warning(f"AI interaction check failed: {e}")
             return []
 
     def _create_interaction_prompt(self, medications: List[str], allergies: List[str]) -> str:
@@ -628,7 +626,7 @@ Return as JSON with structure:
             return interactions
 
         except Exception as e:
-            print(f"Failed to parse AI interaction response: {e}")
+            logger.error(f"Failed to parse AI interaction response: {e}")
             return []
 
     def _deduplicate_interactions(

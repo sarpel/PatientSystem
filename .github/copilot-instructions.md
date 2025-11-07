@@ -11,7 +11,7 @@
 - **Backend**: Python 3.10.11+, FastAPI, SQLAlchemy, Loguru
 - **Frontend**: React 18, TypeScript, Vite, Zustand (state), Tailwind CSS
 - **Database**: MS SQL Server 2014/2022 (READ-ONLY patient data) + SQLite (app data, ICD codes)
-- **AI Integration**: Ollama (local/free), Claude Sonnet, GPT-5, Gemini
+- **AI Integration**: Ollama (local/free), Claude Sonnet, GPT (supports GPT-5, GPT-5-mini, GPT-4-turbo, GPT-4), Gemini
 - **Ports**: Backend API on 8080, Frontend dev on 5173
 
 ## Critical Build & Setup Instructions
@@ -328,12 +328,13 @@ PatientSystem/
 **Diagnosis APIs:**
 - POST `/api/v1/analyze/diagnosis` - AI-powered differential diagnosis
   - Body: `{tckn, chief_complaint, model: 'claude'|'gpt'|'ollama'}`
-  - Note: 'model' refers to AI provider. Use 'claude', 'gpt', or 'ollama' (see config/ai_models.yaml.example for specific models)
+  - Note: 'model' refers to AI provider. Use 'claude', 'gpt', or 'ollama'
+  - GPT provider supports: gpt-5, gpt-5-mini, gpt-4-turbo, gpt-4 (see config/ai_models.yaml.example)
 
 **Treatment APIs:**
 - POST `/api/v1/analyze/treatment` - Generate treatment plan
   - Body: `{tckn, diagnosis, model}`
-  - Note: 'model' parameter same as diagnosis API (provider name, not specific model version)
+  - Note: Same 'model' parameter as diagnosis API (provider name, not specific model version)
 
 **Lab APIs:**
 - GET `/api/v1/labs/{tckn}` - Lab results for patient

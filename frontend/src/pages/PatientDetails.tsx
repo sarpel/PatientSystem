@@ -11,6 +11,50 @@ import LabCharts from "../components/LabCharts";
 import apiClient from "../services/api";
 import { logger } from "../utils/logger";
 
+const formatGender = (
+  gender: string | number | null | undefined,
+): string => {
+  if (gender === null || gender === undefined) {
+    return "Unknown";
+  }
+
+  if (typeof gender === "string") {
+    const normalized = gender.trim().toUpperCase();
+    if (normalized === "E") return "Male";
+    if (normalized === "K") return "Female";
+    if (normalized === "U") return "Unknown";
+    return normalized || "Unknown";
+  }
+
+  switch (gender) {
+    case 1:
+      return "Male";
+    case 2:
+      return "Female";
+    default:
+      return String(gender);
+  }
+};
+
+const calculateAge = (birthDate?: string | null): string | null => {
+  if (!birthDate) return null;
+
+  const birth = new Date(birthDate);
+  if (Number.isNaN(birth.getTime())) {
+    return null;
+  }
+
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age -= 1;
+  }
+
+  return `${age} years`;
+};
+
 const PatientDetails: React.FC = () => {
   const { tckn } = useParams<{ tckn: string }>();
   const navigate = useNavigate();
@@ -21,7 +65,10 @@ const PatientDetails: React.FC = () => {
   const [activeTab, setActiveTab] = useState("diagnosis");
   const [loading, setLoading] = useState(false);
 
-  // Load patient data
+  const currentSummaryTckn = currentPatient?.demographics?.tc_number
+    ? String(currentPatient.demographics.tc_number)
+    : null;
+
   useEffect(() => {
     if (!tckn) {
       navigate("/search");
@@ -42,28 +89,10 @@ const PatientDetails: React.FC = () => {
       }
     };
 
-    if (!currentPatient || currentPatient.TCKN !== tckn) {
+    if (!currentSummaryTckn || currentSummaryTckn !== tckn) {
       loadPatient();
     }
-  }, [tckn, currentPatient, navigate, setCurrentPatient, setError]);
-
-  const calculateAge = (birthDate?: string): string => {
-    if (!birthDate) return "Unknown";
-
-    const birth = new Date(birthDate);
-    const today = new Date();
-    const age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
-      return `${age - 1} years`;
-    }
-
-    return `${age} years`;
-  };
+  }, [tckn, currentSummaryTckn, navigate, setCurrentPatient, setError]);
 
   if (loading || !currentPatient) {
     return (
@@ -77,14 +106,34 @@ const PatientDetails: React.FC = () => {
     );
   }
 
+  const demographics = currentPatient.demographics;
+  const summaryStats = currentPatient.summary_stats;
+  const latestVitals = currentPatient.latest_vitals;
+
+  const patientTckn = demographics.tc_number
+    ? String(demographics.tc_number)
+    : null;
+  const ageLabel =
+    demographics.age !== null && demographics.age !== undefined
+      ? `${demographics.age} years`
+      : calculateAge(demographics.birth_date) ?? "Unknown";
+  const birthDateLabel = demographics.birth_date
+    ? new Date(demographics.birth_date).toLocaleDateString()
+    : "Unknown";
+  const genderLabel = formatGender(demographics.gender);
+
   const tabs = [
-    { id: "diagnosis", label: "AI Diagnosis", disabled: aiStatus !== "ready" },
+    {
+      id: "diagnosis",
+      label: "AI Diagnosis",
+      disabled: aiStatus !== "ready" || !patientTckn,
+    },
     {
       id: "treatment",
       label: "Treatment Plan",
-      disabled: aiStatus !== "ready",
+      disabled: aiStatus !== "ready" || !patientTckn,
     },
-    { id: "labs", label: "Lab Results", disabled: false },
+    { id: "labs", label: "Lab Results", disabled: !patientTckn },
     { id: "medications", label: "Medications", disabled: true },
     { id: "history", label: "Visit History", disabled: true },
   ];
@@ -94,75 +143,173 @@ const PatientDetails: React.FC = () => {
       {/* Patient Header */}
       <div className="card">
         <div className="card-body">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {currentPatient.ADI} {currentPatient.SOYADI}
-              </h1>
-              <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+            <div className="space-y-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {demographics.full_name}
+                </h1>
+                <p className="text-sm text-gray-500">
+                  Patient ID: {demographics.patient_id}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-gray-600">TCKN:</span>
                   <span className="ml-1 text-gray-900">
-                    {currentPatient.TCKN}
+                    {patientTckn ?? "Unknown"}
                   </span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-600">Age:</span>
-                  <span className="ml-1 text-gray-900">
-                    {calculateAge(currentPatient.DOGUM_TARIHI)}
-                  </span>
+                  <span className="ml-1 text-gray-900">{ageLabel}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-600">Gender:</span>
-                  <span className="ml-1 text-gray-900">
-                    {currentPatient.CINSIYET === "E"
-                      ? "Male"
-                      : currentPatient.CINSIYET === "K"
-                        ? "Female"
-                        : "Unknown"}
-                  </span>
+                  <span className="ml-1 text-gray-900">{genderLabel}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-600">Birth Date:</span>
+                  <span className="ml-1 text-gray-900">{birthDateLabel}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Blood Type:</span>
                   <span className="ml-1 text-gray-900">
-                    {currentPatient.DOGUM_TARIHI
-                      ? new Date(
-                          currentPatient.DOGUM_TARIHI,
-                        ).toLocaleDateString()
+                    {demographics.blood_type ?? "Unknown"}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Smoking Status:</span>
+                  <span className="ml-1 text-gray-900">
+                    {demographics.smoking_status ?? "Unknown"}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Weight:</span>
+                  <span className="ml-1 text-gray-900">
+                    {demographics.weight_kg
+                      ? `${demographics.weight_kg.toFixed(1)} kg`
                       : "Unknown"}
                   </span>
                 </div>
-              </div>
-              {currentPatient.TELEFON && (
-                <div className="mt-2 text-sm">
-                  <span className="font-medium text-gray-600">Phone:</span>
+                <div>
+                  <span className="font-medium text-gray-600">Height:</span>
                   <span className="ml-1 text-gray-900">
-                    {currentPatient.TELEFON}
+                    {demographics.height_cm
+                      ? `${demographics.height_cm} cm`
+                      : "Unknown"}
                   </span>
                 </div>
-              )}
-              {currentPatient.ADRES && (
-                <div className="mt-2 text-sm">
-                  <span className="font-medium text-gray-600">Address:</span>
+                <div>
+                  <span className="font-medium text-gray-600">BMI:</span>
                   <span className="ml-1 text-gray-900">
-                    {currentPatient.ADRES}
+                    {demographics.bmi
+                      ? `${demographics.bmi} (${demographics.bmi_category ?? "N/A"})`
+                      : "Unknown"}
                   </span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Alcohol Use:</span>
+                  <span className="ml-1 text-gray-900">
+                    {demographics.alcohol_use ?? "Unknown"}
+                  </span>
+                </div>
+              </div>
+              {demographics.is_deceased && (
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-semibold">
+                  ⚠️ Marked as deceased in registry
                 </div>
               )}
             </div>
-            <button
-              onClick={() => navigate("/search")}
-              className="btn btn-secondary"
-            >
-              Search Another Patient
-            </button>
+            <div>
+              <button
+                onClick={() => navigate("/search")}
+                className="btn btn-secondary"
+              >
+                Search Another Patient
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Snapshot cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Care Summary (Last {summaryStats.period_months} months)
+            </h3>
+          </div>
+          <div className="card-body grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-3xl font-bold text-blue-600">
+                {summaryStats.recent_visit_count}
+              </p>
+              <p className="text-sm text-gray-600">Visits</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-blue-600">
+                {summaryStats.active_diagnosis_count}
+              </p>
+              <p className="text-sm text-gray-600">Active Diagnoses</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-blue-600">
+                {summaryStats.active_prescription_count}
+              </p>
+              <p className="text-sm text-gray-600">Active Prescriptions</p>
+            </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Latest Vitals
+            </h3>
+          </div>
+          <div className="card-body grid grid-cols-2 gap-4 text-sm">
+            {latestVitals ? (
+              <>
+                <div>
+                  <p className="font-medium text-gray-600">Blood Pressure</p>
+                  <p className="text-gray-900">
+                    {latestVitals.blood_pressure_str ?? "Unknown"}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-600">Pulse</p>
+                  <p className="text-gray-900">
+                    {latestVitals.pulse ?? "Unknown"}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-600">Temperature</p>
+                  <p className="text-gray-900">
+                    {latestVitals.temperature_celsius
+                      ? `${latestVitals.temperature_celsius} °C`
+                      : "Unknown"}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-600">BMI</p>
+                  <p className="text-gray-900">
+                    {latestVitals.bmi ?? "Unknown"}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-600">
+                No recent vital signs available.
+              </p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Tab Navigation */}
       <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
+        <nav className="-mb-px flex space-x-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -178,9 +325,7 @@ const PatientDetails: React.FC = () => {
             >
               {tab.label}
               {tab.disabled && (
-                <span className="ml-2 text-xs text-gray-500">
-                  (Coming Soon)
-                </span>
+                <span className="ml-2 text-xs text-gray-500">(Coming Soon)</span>
               )}
             </button>
           ))}
@@ -189,60 +334,32 @@ const PatientDetails: React.FC = () => {
 
       {/* Tab Content */}
       <div className="min-h-[500px]">
-        {activeTab === "diagnosis" && (
-          <DiagnosisPanel tckn={currentPatient.TCKN} />
+        {activeTab === "diagnosis" && patientTckn && (
+          <DiagnosisPanel tckn={patientTckn} />
         )}
-        {activeTab === "treatment" && (
-          <TreatmentPanel tckn={currentPatient.TCKN} />
+        {activeTab === "treatment" && patientTckn && (
+          <TreatmentPanel tckn={patientTckn} />
         )}
-        {activeTab === "labs" && <LabCharts tckn={currentPatient.TCKN} />}
+        {activeTab === "labs" && patientTckn && <LabCharts tckn={patientTckn} />}
         {activeTab === "medications" && (
           <div className="card">
-            <div className="card-body text-center py-12">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400 mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                />
-              </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Medication History
-              </h3>
-              <p className="text-gray-600">
-                Medication history will be available here soon
-              </p>
+            <div className="card-body text-gray-600">
+              Medication history integration coming soon.
             </div>
           </div>
         )}
         {activeTab === "history" && (
           <div className="card">
-            <div className="card-body text-center py-12">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400 mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Visit History
-              </h3>
-              <p className="text-gray-600">
-                Visit history will be available here soon
-              </p>
+            <div className="card-body text-gray-600">
+              Visit history insights coming soon.
+            </div>
+          </div>
+        )}
+        {!patientTckn && (
+          <div className="card">
+            <div className="card-body text-gray-600">
+              Unable to load patient-specific operations because no TC number was
+              provided.
             </div>
           </div>
         )}

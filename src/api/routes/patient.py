@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
-from sqlalchemy import bindparam
+from sqlalchemy import bindparam, select
 
 from ...clinical.patient_summarizer import PatientSummarizer
 from ...database.connection import get_session
@@ -98,12 +98,24 @@ async def get_patient(tckn: str):
         Complete patient summary with demographics, visits, diagnoses, medications
     """
     try:
-        with get_session() as session:
-            summarizer = PatientSummarizer(session)
-            summary = summarizer.get_patient_summary(tckn)
+        try:
+            parsed_tckn = int(tckn)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid TCKN format")
 
-            if not summary:
+        with get_session() as session:
+            patient_stmt = (
+                select(Patient)
+                .where(Patient.HASTA_KIMLIK_NO == parsed_tckn)
+                .limit(1)
+            )
+            patient_record = session.execute(patient_stmt).scalar_one_or_none()
+
+            if not patient_record:
                 raise HTTPException(status_code=404, detail=f"Patient not found: {tckn}")
+
+            summarizer = PatientSummarizer(session)
+            summary = summarizer.get_patient_summary(patient_record.HASTA_KAYIT_ID)
 
             logger.info(f"Patient retrieved: TCKN={tckn}")
             return summary

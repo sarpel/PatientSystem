@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePatientState, useAppActions } from "../stores/useAppStore";
-import { Patient } from "../services/api";
+import { PatientSearchResult } from "../services/api";
 
 const PatientSearch: React.FC = () => {
   const navigate = useNavigate();
@@ -30,27 +30,11 @@ const PatientSearch: React.FC = () => {
     }
   }, [debouncedQuery, searchPatients, clearPatientSearch]);
 
-  const handlePatientSelect = (patient: any) => {
-    setCurrentPatient(patient);
-    navigate(`/patient/${patient.tckn}`);
-  };
-
-  const calculateAge = (birthDate?: string): string => {
-    if (!birthDate) return "Unknown";
-
-    const birth = new Date(birthDate);
-    const today = new Date();
-    const age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
-      return `${age - 1} years`;
+  const handlePatientSelect = (patient: PatientSearchResult) => {
+    setCurrentPatient(null);
+    if (patient.tckn) {
+      navigate(`/patient/${patient.tckn}`);
     }
-
-    return `${age} years`;
   };
 
   return (
@@ -147,9 +131,11 @@ const PatientSearch: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                {patientSearchResults.map((patient: any) => (
+                {patientSearchResults.map((patient) => {
+                  const patientTckn = patient.tckn ?? "unknown";
+                  return (
                   <div
-                    key={patient.tckn}
+                    key={`${patientTckn}-${patient.name}`}
                     onClick={() => handlePatientSelect(patient)}
                     className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
                   >
@@ -160,7 +146,7 @@ const PatientSearch: React.FC = () => {
                         </h3>
                         <div className="mt-1 flex flex-wrap gap-2 text-sm text-gray-600">
                           <span className="font-medium">TCKN:</span>
-                          <span>{patient.tckn}</span>
+                          <span>{patientTckn}</span>
                           {patient.age !== null && (
                             <>
                               <span className="font-medium">Age:</span>
@@ -192,7 +178,8 @@ const PatientSearch: React.FC = () => {
                       </svg>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

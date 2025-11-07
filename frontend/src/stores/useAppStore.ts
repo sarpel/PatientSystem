@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { apiClient, Patient } from "../services/api";
+import {
+  apiClient,
+  PatientSearchResult,
+  PatientSummary,
+} from "../services/api";
 import { logger } from "../utils/logger";
 
 // Types
@@ -11,8 +15,8 @@ interface AppState {
   error: string | null;
 
   // Patient state
-  currentPatient: Patient | null;
-  patientSearchResults: Patient[];
+  currentPatient: PatientSummary | null;
+  patientSearchResults: PatientSearchResult[];
   searchingPatients: boolean;
 
   // Database/AI status
@@ -28,8 +32,8 @@ interface AppActions {
   clearError: () => void;
 
   // Patient actions
-  setCurrentPatient: (patient: Patient | null) => void;
-  searchPatients: (query: string) => Promise<Patient[]>;
+  setCurrentPatient: (patient: PatientSummary | null) => void;
+  searchPatients: (query: string) => Promise<PatientSearchResult[]>;
   clearPatientSearch: () => void;
 
   // Status actions

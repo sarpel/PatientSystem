@@ -3,14 +3,97 @@ import axiosRetry from "axios-retry";
 import { logger } from "../utils/logger";
 
 // Types
-export interface Patient {
-  TCKN: string;
-  ADI: string;
-  SOYADI: string;
-  DOGUM_TARIHI?: string;
-  CINSIYET?: "E" | "K";
-  TELEFON?: string;
-  ADRES?: string;
+export interface PatientSearchResult {
+  tckn: string | null;
+  name: string;
+  age: number | null;
+  gender: string | number | null;
+  last_visit: string | null;
+}
+
+export interface PatientDemographics {
+  patient_id: number;
+  full_name: string;
+  birth_date: string | null;
+  age: number | null;
+  gender: string | number | null;
+  tc_number: string | number | null;
+  blood_type: string | null;
+  is_deceased: boolean;
+  weight_kg?: number | null;
+  height_cm?: number | null;
+  bmi?: number | null;
+  bmi_category?: string | null;
+  smoking_status?: string | number | null;
+  alcohol_use?: string | number | null;
+}
+
+export interface PatientVisitSummary {
+  visit_id: number;
+  admission_id: number;
+  visit_type: number | null;
+  primary_diagnosis: number | null;
+  complaint: string | null;
+  blood_pressure: string | null;
+  pulse: number | null;
+  temperature: number | null;
+  weight_kg: number | null;
+  bmi: number | null;
+}
+
+export interface PatientDiagnosisSummary {
+  diagnosis_id: number;
+  visit_id: number;
+  icd10_code: number | string | null;
+  diagnosis_type: number | null;
+  description: string | null;
+  severity: number | null;
+  diagnosis_date: string | null;
+  is_active: boolean;
+}
+
+export interface PatientPrescriptionSummary {
+  prescription_id: number;
+  visit_id: number | null;
+  prescription_type: number | null;
+  prescription_date: string;
+  prescription_number: string | null;
+  physician_id: number | null;
+  diagnosis_code: number | null;
+  notes: string | null;
+  esy_number: string | null;
+}
+
+export interface PatientVitalsSummary {
+  blood_pressure_systolic: number | null;
+  blood_pressure_diastolic: number | null;
+  blood_pressure_str: string | null;
+  pulse: number | null;
+  temperature_celsius: number | null;
+  weight_kg: number | null;
+  height_cm: number | null;
+  bmi: number | null;
+  waist_circumference_cm: number | null;
+  hip_circumference_cm: number | null;
+  waist_hip_ratio: number | null;
+  glasgow_coma_scale: number | null;
+}
+
+export interface PatientSummaryStats {
+  recent_visit_count: number;
+  active_diagnosis_count: number;
+  active_prescription_count: number;
+  period_months: number;
+}
+
+export interface PatientSummary {
+  demographics: PatientDemographics;
+  recent_visits: PatientVisitSummary[];
+  active_diagnoses: PatientDiagnosisSummary[];
+  active_prescriptions: PatientPrescriptionSummary[];
+  allergies: string[];
+  latest_vitals: PatientVitalsSummary | null;
+  summary_stats: PatientSummaryStats;
 }
 
 export interface DiagnosisRequest {
@@ -169,14 +252,17 @@ export class ApiClient {
   }
 
   // Patient operations
-  async searchPatients(query: string, limit: number = 20): Promise<Patient[]> {
+  async searchPatients(
+    query: string,
+    limit: number = 20,
+  ): Promise<PatientSearchResult[]> {
     const response = await this.client.get("/patients/search", {
       params: { q: query, limit },
     });
     return response.data.patients || [];
   }
 
-  async getPatient(tckn: string): Promise<Patient> {
+  async getPatient(tckn: string): Promise<PatientSummary> {
     const response = await this.client.get(`/patients/${tckn}`);
     return response.data;
   }

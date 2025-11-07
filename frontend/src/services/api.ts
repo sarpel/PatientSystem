@@ -159,12 +159,12 @@ export class ApiClient {
 
   // Health checks
   async getHealth() {
-    const response = await axios.get("/health");
+    const response = await this.client.get("/health");
     return response.data;
   }
 
   async getDatabaseHealth() {
-    const response = await axios.get("/health/database");
+    const response = await this.client.get("/health/database");
     return response.data;
   }
 

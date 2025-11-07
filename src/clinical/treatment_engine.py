@@ -405,7 +405,7 @@ class TreatmentEngine:
             return self._parse_ai_treatment_response(ai_response)
 
         except Exception as e:
-            print(f"AI treatment failed, using rule-based: {e}")
+            logger.warning(f"AI treatment failed, using rule-based: {e}")
             return self._generate_rule_based_treatment(
                 diagnosis, diagnosis_details, patient_context, patient_factors
             )
@@ -494,7 +494,7 @@ Format: JSON olarak dön.
             return result
 
         except Exception as e:
-            print(f"Failed to parse AI treatment response: {e}")
+            logger.error(f"Failed to parse AI treatment response: {e}")
             return self._get_default_treatment_result()
 
     def _get_default_treatment_result(self) -> Dict[str, Any]:

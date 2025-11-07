@@ -125,7 +125,7 @@ class AppSession(AppBase):
 **Impact**: Maintainable, localizable ICD code mappings
 
 **Features**:
-- Migrates 67 hardcoded ICD-10 mappings to SQLite database
+- Migrates 56 hardcoded ICD-10 mappings to SQLite database
 - Supports Turkish translations
 - Automatic categorization (Cardiovascular, Respiratory, etc.)
 - Version tracking (ICD-10, future ICD-11)
@@ -340,7 +340,7 @@ These were NOT implemented as per your requirements (no security features):
 5. `data/app.db` - SQLite database (created by migration)
 6. `IMPLEMENTATION_SUMMARY.md` - This document
 
-### Modified Files (7)
+### Modified Files (8)
 1. `src/database/connection.py` - READ-ONLY mode enforcement
 2. `src/clinical/diagnosis_engine.py` - N+1 fix, ICD database, template usage
 3. `frontend/src/services/api.ts` - Logger integration

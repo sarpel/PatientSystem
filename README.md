@@ -85,7 +85,7 @@ scripts\quickstart.bat
 # Manuel başlatma
 # Terminal 1 - Backend
 venv\Scripts\activate
-uvicorn src.api.fastapi_app:app --reload --port 8000
+uvicorn src.api.fastapi_app:app --reload --port 8080
 
 # Terminal 2 - Frontend
 cd frontend
@@ -95,8 +95,8 @@ npm run dev
 ## 🌐 Erişim
 
 - **Frontend**: http://localhost:5173
-- **API Docs**: http://localhost:8000/docs
-- **API Redoc**: http://localhost:8000/redoc
+- **API Docs**: http://localhost:8080/docs
+- **API Redoc**: http://localhost:8080/redoc
 
 ## 📁 Proje Yapısı
 
@@ -190,7 +190,7 @@ GOOGLE_API_KEY=...
 # Application
 LOG_LEVEL=INFO
 ENVIRONMENT=production
-API_PORT=8000
+API_PORT=8080
 ```
 
 ### FastAPI Dependency Injection
@@ -279,13 +279,13 @@ ls -la data/app.db  # Dosya var mı?
 ### Hasta Arama
 
 ```bash
-curl -X GET "http://localhost:8000/api/patients/search?q=ahmet&limit=10"
+curl -X GET "http://localhost:8080/api/patients/search?q=ahmet&limit=10"
 ```
 
 ### Tanı Oluşturma
 
 ```bash
-curl -X POST "http://localhost:8000/api/analyze/diagnosis" \
+curl -X POST "http://localhost:8080/api/analyze/diagnosis" \
   -H "Content-Type: application/json" \
   -d '{
     "tckn": "12345678901",
@@ -297,7 +297,7 @@ curl -X POST "http://localhost:8000/api/analyze/diagnosis" \
 ### Lab Sonuçları
 
 ```bash
-curl -X GET "http://localhost:8000/api/labs/12345678901?test=Hemoglobin"
+curl -X GET "http://localhost:8080/api/labs/12345678901?test=Hemoglobin"
 ```
 
 ## 🚦 Geliştirme
@@ -319,7 +319,7 @@ cd frontend && npm run dev
 cd frontend && npm run build
 
 # Backend production
-uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8000 --workers 4
+uvicorn src.api.fastapi_app:app --host 0.0.0.0 --port 8080 --workers 4
 ```
 
 ### Code Quality
@@ -359,8 +359,8 @@ npm run lint
 
 ## 📖 Dokümantasyon
 
-- **API Docs**: http://localhost:8000/docs (Swagger UI)
-- **API Redoc**: http://localhost:8000/redoc (Alternative API docs)
+- **API Docs**: http://localhost:8080/docs (Swagger UI)
+- **API Redoc**: http://localhost:8080/redoc (Alternative API docs)
 - **IMPLEMENTATION_SUMMARY.md**: Son implementasyon detayları ve değişiklikler
 
 ## 🤝 Katkı

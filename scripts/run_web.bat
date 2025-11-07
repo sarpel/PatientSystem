@@ -38,12 +38,12 @@ set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
 
 echo [1/2] Starting FastAPI backend server (port 8080)...
-start "Clinical AI Backend" cmd /k "cd /d "%PROJECT_ROOT%" && call venv\Scripts\activate && uvicorn src.api.fastapi_app:app --reload --host localhost --port 8080"
+start "Clinical AI Backend" cmd /k "cd /d ""%PROJECT_ROOT%"" && call venv\Scripts\activate && uvicorn src.api.fastapi_app:app --reload --host localhost --port 8080"
 
 timeout /t 4 /nobreak >nul
 
 echo [2/2] Starting React frontend dev server (port 5173)...
-start "Clinical AI Frontend" cmd /k "cd /d "%PROJECT_ROOT%\frontend" && npm run dev"
+start "Clinical AI Frontend" cmd /k "cd /d ""%PROJECT_ROOT%\frontend"" && npm run dev"
 
 timeout /t 6 /nobreak >nul
 

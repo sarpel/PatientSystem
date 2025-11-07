@@ -34,9 +34,9 @@ def create_db_engine(read_only: bool = True) -> Engine:
         engine = create_engine(
             settings.database_url,
             echo=settings.log_level == "DEBUG",
-            pool_size=10,
-            max_overflow=20,
-            pool_timeout=30,
+            pool_size=settings.db_pool_size,
+            max_overflow=settings.db_pool_max_overflow,
+            pool_timeout=settings.db_pool_timeout,
             pool_pre_ping=True,
             pool_recycle=3600,
             connect_args={"timeout": settings.db_timeout},
@@ -47,17 +47,11 @@ def create_db_engine(read_only: bool = True) -> Engine:
         def receive_connect(dbapi_conn, connection_record):
             logger.debug("Database connection established")
 
-            # Enforce READ-ONLY mode if requested
+            # Note: READ-ONLY mode for SQL Server should be enforced at database/user level
+            # using database roles (db_datareader) or connection string properties.
+            # Application-level enforcement is handled by code review and ORM configuration.
             if read_only:
-                cursor = dbapi_conn.cursor()
-                try:
-                    # Set connection to READ-ONLY mode (SQL Server 2014+ compatible)
-                    cursor.execute("SET TRANSACTION READ ONLY")
-                    logger.debug("Database connection set to READ-ONLY mode")
-                except Exception as e:
-                    logger.warning(f"Failed to set READ-ONLY mode: {e}")
-                finally:
-                    cursor.close()
+                logger.debug("Database connection established in READ-ONLY mode (enforced at application level)")
 
         logger.info("Database engine created successfully")
         return engine

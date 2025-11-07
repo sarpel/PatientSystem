@@ -126,10 +126,11 @@ class DiagnosisEngine:
         """
         try:
             with get_app_db_session() as app_session:
-                codes = app_session.query(ICDCode).filter(ICDCode.is_active == True).all()
+                codes = app_session.query(ICDCode).filter(ICDCode.is_active).all()
                 return {code.diagnosis_name_en: code.code for code in codes}
         except Exception as e:
             # Fallback to empty dict - ICD codes are optional
+            logger.warning(f"Failed to load ICD codes from database: {e}")
             return {}
 
     def _load_red_flag_patterns(self) -> List[Dict[str, Any]]:
@@ -243,7 +244,7 @@ class DiagnosisEngine:
 
         except Exception as e:
             # Fallback to rule-based approach
-            print(f"AI diagnosis failed, using rule-based: {e}")
+            logger.warning(f"AI diagnosis failed, using rule-based: {e}")
             return self._generate_rule_based_diagnosis(context)
 
     def _create_diagnosis_prompt(self, context: DiagnosisContext) -> str:
@@ -286,7 +287,7 @@ class DiagnosisEngine:
             return self._format_diagnosis_result(diagnosis_list)
 
         except Exception as e:
-            print(f"Failed to parse AI response: {e}")
+            logger.error(f"Failed to parse AI response: {e}")
             return {
                 "differential_diagnosis": [],
                 "urgent_conditions": [],

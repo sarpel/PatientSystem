@@ -122,7 +122,7 @@ npm run build
 # Check code quality
 npm run lint
 
-# Known issues (as of Nov 2025):
+# Known issues (current as of repository snapshot):
 # - PatientSearch.tsx: unused 'Patient' import, 'calculateAge' var
 # - Several 'any' type warnings (technical debt, not blockers)
 # - 10 errors, 1 warning total - existing issues, not your fault
@@ -178,7 +178,7 @@ source venv/bin/activate
 # Run pytest with coverage
 pytest tests/ -v --cov=src --cov-report=html --cov-report=term
 
-# Note: No tests/ directory exists yet (as of Nov 2025)
+# Note: No tests/ directory exists yet (at time of writing)
 # If you create tests, follow this pattern
 # Coverage report: htmlcov/index.html
 ```
@@ -328,10 +328,12 @@ PatientSystem/
 **Diagnosis APIs:**
 - POST `/api/v1/analyze/diagnosis` - AI-powered differential diagnosis
   - Body: `{tckn, chief_complaint, model: 'claude'|'gpt'|'ollama'}`
+  - Note: 'model' refers to AI provider. Use 'claude', 'gpt', or 'ollama' (see config/ai_models.yaml.example for specific models)
 
 **Treatment APIs:**
 - POST `/api/v1/analyze/treatment` - Generate treatment plan
   - Body: `{tckn, diagnosis, model}`
+  - Note: 'model' parameter same as diagnosis API (provider name, not specific model version)
 
 **Lab APIs:**
 - GET `/api/v1/labs/{tckn}` - Lab results for patient
@@ -438,7 +440,7 @@ curl http://localhost:8080/api/v1/patients/search?q=test
 
 **Symptoms:** `npm run build` shows TS6133 errors (unused variables)
 
-**Current State:** Known issues exist (as of Nov 2025):
+**Current State:** Known issues exist in the codebase:
 - PatientSearch.tsx: unused 'Patient' import, unused 'calculateAge' function
 - Multiple files: 'any' type usage
 

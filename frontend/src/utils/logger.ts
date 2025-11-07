@@ -1,5 +1,5 @@
 class Logger {
-    private isDev = (import.meta as any).env.MODE === 'development';
+    private isDev = import.meta.env.DEV;
 
     debug(msg: string, ...args: any[]) {
         if (this.isDev) console.debug(`[DEBUG] ${msg}`, ...args);

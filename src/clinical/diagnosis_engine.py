@@ -126,10 +126,11 @@ class DiagnosisEngine:
         """
         try:
             with get_app_db_session() as app_session:
-                codes = app_session.query(ICDCode).filter(ICDCode.is_active == True).all()
+                codes = app_session.query(ICDCode).filter(ICDCode.is_active).all()
                 return {code.diagnosis_name_en: code.code for code in codes}
         except Exception as e:
             # Fallback to empty dict - ICD codes are optional
+            logger.warning(f"Failed to load ICD codes from database: {e}")
             return {}
 
     def _load_red_flag_patterns(self) -> List[Dict[str, Any]]:

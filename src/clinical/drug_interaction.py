@@ -392,12 +392,10 @@ class DrugInteractionChecker:
             return []
 
         allergies = []
-        if patient.ILAC_ALERJISI:
-            allergies.append(patient.ILAC_ALERJISI)
-
-        # Also check demographics if available
-        if patient.demographics and patient.demographics.ILAC_ALERJISI:
-            allergies.append(patient.demographics.ILAC_ALERJISI)
+        # Note: ILAC_ALERJISI column does not exist in Patient or PatientDemographics models
+        # Allergy information would need to be retrieved from DTY_HASTA_OZLUK_ALERJI table
+        # For now, return empty list as placeholder
+        # TODO: Implement allergy retrieval from DTY_HASTA_OZLUK_ALERJI table
 
         return allergies
 

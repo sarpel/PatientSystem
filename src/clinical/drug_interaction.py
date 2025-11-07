@@ -542,7 +542,7 @@ class DrugInteractionChecker:
             return self._parse_ai_interaction_response(ai_response, medications)
 
         except Exception as e:
-            print(f"AI interaction check failed: {e}")
+            logger.warning(f"AI interaction check failed: {e}")
             return []
 
     def _create_interaction_prompt(self, medications: List[str], allergies: List[str]) -> str:
@@ -626,7 +626,7 @@ Return as JSON with structure:
             return interactions
 
         except Exception as e:
-            print(f"Failed to parse AI interaction response: {e}")
+            logger.error(f"Failed to parse AI interaction response: {e}")
             return []
 
     def _deduplicate_interactions(

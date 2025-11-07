@@ -205,7 +205,7 @@ class DiagnosisEngine:
             "age": patient.age,
             "gender": patient.CINSIYET,
             "bmi": patient.demographics.bmi if patient.demographics else None,
-            "smoking_status": patient.demographics.SIGARA if patient.demographics else None,
+            "smoking_status": patient.demographics.SIGARA_KULLANIMI if patient.demographics else None,
             "comorbidities": past_diagnoses,
         }
 

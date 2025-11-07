@@ -376,10 +376,10 @@ class TreatmentEngine:
             "egfr": None,  # Would come from lab data
             "creatinine": None,  # Would come from lab data
             "liver_function": None,  # Would come from lab data
-            "allergies": patient.ILAC_ALERJISI,
+            "allergies": [],  # Note: ILAC_ALERJISI doesn't exist, would need DTY_HASTA_OZLUK_ALERJI
             "current_medications": current_medications,
             "comorbidities": [],  # Would come from diagnosis data
-            "smoking_status": patient.demographics.SIGARA if patient.demographics else None,
+            "smoking_status": patient.demographics.SIGARA_KULLANIMI if patient.demographics else None,
             "alcohol_use": patient.demographics.ALKOL_KULLANIMI if patient.demographics else None,
         }
 

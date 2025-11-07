@@ -1,4 +1,12 @@
-"""Lab results visualization with interactive trend charts."""
+"""Lab results visualization with interactive trend charts.
+
+WARNING: This module uses placeholder table name 'TETKIK' in raw SQL queries that does
+not match the actual database schema. The correct table name should be:
+- TETKIK -> HRC_DTY_LAB_SONUC or HRC_DTY_LAB_SONUCLARI
+
+TODO: Update all raw SQL queries to use actual table names from table_names.csv
+and verify column names match the actual schema.
+"""
 
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional

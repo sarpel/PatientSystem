@@ -1,4 +1,12 @@
-"""Patient visit pattern analytics for clinical insights."""
+"""Patient visit pattern analytics for clinical insights.
+
+WARNING: This module uses placeholder table names in raw SQL queries that do not match
+the actual database schema. The following table name mappings should be used:
+- MUAYENE -> GP_MUAYENE
+
+TODO: Update all raw SQL queries to use actual table names from table_names.csv
+and verify column names match the actual schema.
+"""
 
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple

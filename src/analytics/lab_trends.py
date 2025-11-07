@@ -1,4 +1,14 @@
-"""Laboratory trend analytics for longitudinal patient monitoring."""
+"""Laboratory trend analytics for longitudinal patient monitoring.
+
+WARNING: This module uses placeholder table names in raw SQL queries that do not match
+the actual database schema. The following table name mappings should be used:
+- TETKIK -> HRC_DTY_LAB_SONUC or HRC_DTY_LAB_SONUCLARI
+- HASTA -> GP_HASTA_KAYIT
+- Patient columns: TCKN should be HASTA_KIMLIK_NO, ADI -> AD, SOYADI -> SOYAD
+
+TODO: Update all raw SQL queries to use actual table names from table_names.csv
+and verify column names match the actual schema.
+"""
 
 import statistics
 from datetime import datetime, timedelta
